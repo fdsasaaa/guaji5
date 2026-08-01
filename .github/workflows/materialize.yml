@@ -1,0 +1,40 @@
+name: Materialize V3.9.2 source
+
+on:
+  push:
+    branches:
+      - migration/v3.9.2-github
+    paths:
+      - bootstrap/READY
+
+permissions:
+  contents: write
+
+jobs:
+  materialize:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: migration/v3.9.2-github
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Decode and extract source snapshot
+        shell: bash
+        run: |
+          cat bootstrap/source_v3.9.2.tar.gz.b64.part* > /tmp/source.b64
+          base64 --decode /tmp/source.b64 > /tmp/source.tar.gz
+          tar -xzf /tmp/source.tar.gz -C .
+          rm -rf bootstrap
+          rm -f .github/workflows/materialize.yml
+      - name: Validate materialized repository
+        run: python tools/validate_repository.py
+      - name: Commit structured source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: 迁入V3.9.2结构化系统源" || exit 0
+          git push origin HEAD:migration/v3.9.2-github
