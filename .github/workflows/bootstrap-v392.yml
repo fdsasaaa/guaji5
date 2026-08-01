@@ -1,0 +1,36 @@
+name: Bootstrap V3.9.2 structured source
+
+on:
+  push:
+    branches:
+      - main
+    paths:
+      - GITHUB_MIGRATION_V3.9.2.zip
+
+permissions:
+  contents: write
+
+jobs:
+  bootstrap:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract structured source
+        shell: bash
+        run: |
+          unzip -o GITHUB_MIGRATION_V3.9.2.zip -d .
+          rm -f GITHUB_MIGRATION_V3.9.2.zip
+          rm -f .github/workflows/bootstrap-v392.yml
+      - name: Validate repository
+        run: python tools/validate_repository.py
+      - name: Commit migrated source
+        shell: bash
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          git commit -m "feat: 完成V3.9.2结构化源码迁移" || exit 0
+          git push origin HEAD:main
