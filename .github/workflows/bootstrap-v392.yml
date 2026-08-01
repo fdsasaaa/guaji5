@@ -6,6 +6,7 @@ on:
     branches:
       - main
     paths:
+      - GITHUB_MIGRATION_V3.9.2.zip
       - TRIGGER_V3.9.2.txt
 
 permissions:
@@ -25,6 +26,8 @@ jobs:
           test -f GITHUB_MIGRATION_V3.9.2.zip
           unzip -o GITHUB_MIGRATION_V3.9.2.zip -d .
           rm -f GITHUB_MIGRATION_V3.9.2.zip
+          rm -f TRIGGER_V3.9.2.txt
+          rm -f .github/workflows/validate.yml
       - name: Validate repository
         run: python tools/validate_repository.py
       - name: Commit migrated source
