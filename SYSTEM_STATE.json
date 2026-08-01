@@ -1,0 +1,12 @@
+{
+  "system": "AI挂机方案生成系统",
+  "version": "V3.9.2",
+  "repository": "fdsasaaa/guaji5",
+  "mode": "github_source_control",
+  "rules": [
+    "参考方案允许大幅重构",
+    "无法直接生成TXT时优先改造成可执行方案",
+    "方案必须通过映射重复检查和功能审议"
+  ],
+  "next": "迁移核心目录和验证工具"
+}
