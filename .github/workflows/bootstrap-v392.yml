@@ -1,11 +1,13 @@
 name: Bootstrap V3.9.2 structured source
 
 on:
+  workflow_dispatch:
   push:
     branches:
       - main
     paths:
       - GITHUB_MIGRATION_V3.9.2.zip
+      - TRIGGER_V3.9.2.txt
 
 permissions:
   contents: write
@@ -21,8 +23,10 @@ jobs:
       - name: Extract structured source
         shell: bash
         run: |
+          test -f GITHUB_MIGRATION_V3.9.2.zip
           unzip -o GITHUB_MIGRATION_V3.9.2.zip -d .
           rm -f GITHUB_MIGRATION_V3.9.2.zip
+          rm -f TRIGGER_V3.9.2.txt
           rm -f .github/workflows/bootstrap-v392.yml
       - name: Validate repository
         run: python tools/validate_repository.py
@@ -32,5 +36,5 @@ jobs:
           git config user.name "github-actions[bot]"
           git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
           git add -A
-          git commit -m "feat: 完成V3.9.2结构化源码迁移" || exit 0
+          git commit -m "feat: 完成V3.9.2结构化源码迁移"
           git push origin HEAD:main
