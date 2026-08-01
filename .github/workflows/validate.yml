@@ -17,3 +17,5 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Validate PPT director rules
+        run: python tools/validate_ppt_director_rules.py
