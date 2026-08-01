@@ -24,66 +24,21 @@
     "13_GitHub持续工作区与参考灵感自由重构协议.md"
   ],
   "总典附录": [
-    {
-      "file": "系统状态.json",
-      "format": "json"
-    },
-    {
-      "file": "当前任务.json",
-      "format": "json"
-    },
-    {
-      "file": "历史方案索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "分析角度索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "学习事件索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "规则候选池.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "技术原子表现档案.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "软件行为证据索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "批次索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "方案组合案例索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "负面方案模式索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "功能覆盖索引.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "总控验收测试集.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "功能能力卡片.jsonl",
-      "format": "jsonl"
-    },
-    {
-      "file": "资金路径模板库.jsonl",
-      "format": "jsonl"
-    }
+    {"file": "系统状态.json", "format": "json"},
+    {"file": "当前任务.json", "format": "json"},
+    {"file": "历史方案索引.jsonl", "format": "jsonl"},
+    {"file": "分析角度索引.jsonl", "format": "jsonl"},
+    {"file": "学习事件索引.jsonl", "format": "jsonl"},
+    {"file": "规则候选池.jsonl", "format": "jsonl"},
+    {"file": "技术原子表现档案.jsonl", "format": "jsonl"},
+    {"file": "软件行为证据索引.jsonl", "format": "jsonl"},
+    {"file": "批次索引.jsonl", "format": "jsonl"},
+    {"file": "方案组合案例索引.jsonl", "format": "jsonl"},
+    {"file": "负面方案模式索引.jsonl", "format": "jsonl"},
+    {"file": "功能覆盖索引.jsonl", "format": "jsonl"},
+    {"file": "总控验收测试集.jsonl", "format": "jsonl"},
+    {"file": "功能能力卡片.jsonl", "format": "jsonl"},
+    {"file": "资金路径模板库.jsonl", "format": "jsonl"}
   ],
   "必需目录": [
     "01_本次输入",
@@ -107,10 +62,7 @@
     "功能能力卡片.jsonl",
     "资金路径模板库.jsonl"
   ],
-  "状态文件": [
-    "系统状态.json",
-    "当前任务.json"
-  ],
+  "状态文件": ["系统状态.json", "当前任务.json"],
   "工具": [
     "05_工具/build_total.py",
     "05_工具/validate_package.py",
@@ -121,10 +73,7 @@
   "主方案编码": "GBK CRLF",
   "高级倍投编码": "UTF-8 BOM CRLF",
   "工作包规则": "标准方案任务对外默认只交付方案套ZIP与PPTX；系统源文件、索引、状态和版本记录直接回写GitHub；仅用户明确要求、离线归档、跨平台迁移或仓库不可用时生成工作包ZIP；纯系统升级任务不强制制造无关方案/PPT",
-  "默认用户交付": [
-    "独立方案套ZIP",
-    "实操教程风格讲解PPTX"
-  ],
+  "默认用户交付": ["独立方案套ZIP", "实操教程风格讲解PPTX"],
   "工作包ZIP交付": "默认不生成、不发送；只在例外条件下按需生成",
   "旧版本回滚": "04_回滚源/AI挂机方案生成系统工作包_V3.8.1_直接执行与热5码六期验证版.zip",
   "下一任务": "AUTO-NEXT-EXECUTABLE-SCHEME-008",
@@ -133,6 +82,8 @@
       "方案包ZIP最少": 1,
       "挂机方案TXT最少": 1,
       "讲解PPTX最少": 1,
+      "讲解PPTX最多": 1,
+      "独立PPT配套文件允许": false,
       "禁止仅保存引用": true,
       "对外默认文件数": 2,
       "工作包ZIP默认发送": false
@@ -144,7 +95,15 @@
       "讲解PPTX最少": 0
     }
   },
-  "PPT口语化规则": "观众页禁用内部编号和程序化字段，必须使用大白话表达",
+  "PPT口语化规则": "主讲页禁用内部编号和程序化字段；先举例再归纳规则；统计结果翻译成人话",
+  "PPT单文件原则": true,
+  "PPT三层结构": ["主讲页面", "逐页演讲者备注", "同一PPT末尾技术附录"],
+  "PPT禁止独立配套文件": ["口播稿", "逐页旁白Markdown", "技术报告", "事实校验表", "操作说明"],
+  "PPT生产流程": "技术分析与冻结→讲解导演重排→主讲页→演讲者备注→技术附录→事实校验→人工讲解审查→渲染审查",
+  "PPT人工讲解审查": true,
+  "PPT一页一观点": true,
+  "PPT先举例后规则": true,
+  "PPT观众十秒理解目标": true,
   "SchemeCreator校验": {
     "默认允许非空": false,
     "检查工作包TXT": true,
