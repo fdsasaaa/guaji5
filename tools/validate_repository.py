@@ -7,8 +7,10 @@ import sys
 ROOT = Path(__file__).resolve().parents[1]
 errors = []
 
+
 def err(message: str) -> None:
     errors.append(message)
+
 
 def load_json(path: Path):
     try:
@@ -17,6 +19,7 @@ def load_json(path: Path):
         err(f"{path.name} JSON错误: {exc}")
         return {}
 
+
 required = [
     "AGENTS.md",
     "SYSTEM_MANIFEST.json",
@@ -24,6 +27,7 @@ required = [
     "系统状态.json",
     "当前任务.json",
     "CHANGELOG.md",
+    "05A_方案讲解PPT生产协议.md",
     "10_静默方案总控与外部参考吸收协议.md",
     "11_智能功能调度与资金路径编排协议.md",
     "13_GitHub持续工作区与参考灵感自由重构协议.md",
@@ -62,10 +66,22 @@ if task.get("基线仓库") != "fdsasaaa/guaji5":
     err("当前任务基线仓库错误")
 if "13_GitHub持续工作区与参考灵感自由重构协议.md" not in manifest.get("模块", []):
     err("模块13未登记")
+if "05A_方案讲解PPT生产协议.md" not in manifest.get("模块", []):
+    err("PPT模块05A未登记")
 if not state.get("无需重复上传工作包"):
     err("状态文件未启用无需重复上传工作包")
 if not task.get("无需重复上传工作包"):
     err("当前任务未启用无需重复上传工作包")
+
+# PPT模块必须是单一PPT、三层结构和讲解审查模式。
+if manifest.get("PPT单文件原则") is not True:
+    err("清单未启用PPT单文件原则")
+if manifest.get("PPT人工讲解审查") is not True:
+    err("清单未启用PPT人工讲解审查")
+if state.get("PPT唯一文件") is not True:
+    err("状态文件未启用PPT唯一文件")
+if state.get("PPT人工讲解审查") is not True:
+    err("状态文件未启用PPT人工讲解审查")
 
 for temporary in ["GITHUB_MIGRATION_V3.9.2.zip", "TRIGGER_V3.9.2.txt"]:
     if (ROOT / temporary).exists():
@@ -133,6 +149,30 @@ for phrase in ["无法原样生成TXT时", "自由重构", "四路资金路径",
     if phrase not in protocol:
         err(f"模块13缺少关键语义: {phrase}")
 
+ppt_path = ROOT / "05A_方案讲解PPT生产协议.md"
+ppt_protocol = ppt_path.read_text(encoding="utf-8") if ppt_path.exists() else ""
+for phrase in [
+    "一套方案只生成一个PPT",
+    "主讲页面",
+    "演讲者备注",
+    "技术附录",
+    "先举例，再归纳规则",
+    "观众必须记住的话",
+    "人工讲解审查",
+    "统计结果必须翻译成人话",
+    "PPT_MULTIPLE_COMPANION_FILES",
+    "PPT_STILL_REPORT_STYLE",
+]:
+    if phrase not in ppt_protocol:
+        err(f"PPT模块缺少关键语义: {phrase}")
+
+for deprecated in [
+    "方案ID_PPT逐页脚本与旁白.md",
+    "方案ID_PPT事实校验表.json",
+]:
+    if deprecated in ppt_protocol:
+        err(f"PPT模块仍包含已废止的默认独立文件: {deprecated}")
+
 if errors:
     print("VALIDATION_FAILED")
     for item in errors:
@@ -143,5 +183,6 @@ print(
     "VALIDATION_OK "
     f"version={state.get('当前版本', '?')} "
     f"repo={state.get('仓库', '?')} "
-    f"task={task.get('任务ID', '?')}"
+    f"task={task.get('任务ID', '?')} "
+    "ppt=SINGLE_DECK_THREE_LAYER"
 )
