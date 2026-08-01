@@ -1,11 +1,11 @@
 {
   "系统名称": "AI挂机方案生成系统工作包",
-  "版本": "V3.9.1",
+  "版本": "V3.9.2",
   "版本名称": "GitHub持续工作区与自由重构版",
-  "状态": "READY_SMART_FUNCTION_ORCHESTRATION",
+  "状态": "READY_GITHUB_STRUCTURED_SOURCE",
   "正式源已同步": true,
-  "最后关闭批次": "BATCH-V390-SMART-DIRECTOR-001",
-  "当前任务ID": "AUTO-NEXT-SMART-DIRECTOR-SCHEME-007",
+  "最后关闭批次": "BATCH-V391-NEIGHBOR-001",
+  "当前任务ID": "AUTO-NEXT-EXECUTABLE-SCHEME-008",
   "当前任务状态": "READY",
   "历史方案数量": 8,
   "分析角度数量": 189,
@@ -39,11 +39,11 @@
     "资金路径四路评审需在下一真实批次验证是否避免机械文本",
     "监控/跳转/时间/模拟切换与高级倍投交互仍需单变量E3"
   ],
-  "下一唯一动作": "用户发送本工作包或附带方案要求；系统直接运行功能画像、八层审议、四路资金评审和三件套交付",
+  "下一唯一动作": "用户只需发送方案要求或仅供参考方向；系统从GitHub main读取最新版并直接创建、验证、更新和交付",
   "更新时间": "2026-08-01",
-  "version": "V3.9.0",
-  "修复": "撤回B381常量高级映射；新增功能调度、资金路径评审和语义防呆",
-  "current_delivery": "V3.9.0系统升级工作包ZIP；本次不制造无关方案/PPT",
+  "version": "V3.9.2",
+  "修复": "撤回B381常量高级映射；新增功能调度、资金路径评审、语义防呆与GitHub持续工作区",
+  "current_delivery": "V3.9.2结构化源码已迁入GitHub；main为唯一正式源",
   "PPT表达规则": "观众页禁用B001/B002/BATCH/REUSED_DATA/E4/E5/GUI等内部编号，统一使用口语化表达",
   "SchemeCreator默认规则": "必须为空；只有当前任务明确允许时才能非空",
   "方案组合案例数量": 6,
@@ -66,5 +66,6 @@
   "无需重复上传工作包": true,
   "参考灵感允许自由重构": true,
   "无法原样生成TXT时必须重构": true,
-  "迁移状态": "STRUCTURED_SOURCE_READY"
+  "迁移状态": "STRUCTURED_SOURCE_READY",
+  "长期校验工作流": ".github/workflows/validate.yml"
 }
