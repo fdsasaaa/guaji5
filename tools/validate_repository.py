@@ -51,6 +51,7 @@ required = [
     "系统状态.json",
     "当前任务.json",
     "CHANGELOG.md",
+    "00A_当前强制覆盖与废止规则.md",
     "05A_方案讲解PPT生产协议.md",
     "PPT页面类型卡片.jsonl",
     "PPT讲解验收测试集.jsonl",
@@ -90,10 +91,13 @@ if state.get("仓库") != "fdsasaaa/guaji5":
     err("状态文件仓库标识错误")
 if task.get("基线仓库") != "fdsasaaa/guaji5":
     err("当前任务基线仓库错误")
-if "13_GitHub持续工作区与参考灵感自由重构协议.md" not in manifest.get("模块", []):
-    err("模块13未登记")
-if "05A_方案讲解PPT生产协议.md" not in manifest.get("模块", []):
-    err("PPT模块05A未登记")
+for module in [
+    "00A_当前强制覆盖与废止规则.md",
+    "05A_方案讲解PPT生产协议.md",
+    "13_GitHub持续工作区与参考灵感自由重构协议.md",
+]:
+    if module not in manifest.get("模块", []):
+        err(f"模块未登记: {module}")
 if not state.get("无需重复上传工作包"):
     err("状态文件未启用无需重复上传工作包")
 if not task.get("无需重复上传工作包"):
@@ -229,21 +233,25 @@ for phrase in ["无法原样生成TXT时", "自由重构", "四路资金路径",
     if phrase not in protocol:
         err(f"模块13缺少关键语义: {phrase}")
 
+override_path = ROOT / "00A_当前强制覆盖与废止规则.md"
+override = override_path.read_text(encoding="utf-8") if override_path.exists() else ""
+for phrase in [
+    "废止旧三文件交付",
+    "废止独立PPT配套文件",
+    "废止“先完整案例后规则”",
+    "www.laocaimi.org",
+    "https://t.me/laocaimi1314",
+]:
+    if phrase not in override:
+        err(f"00A覆盖层缺少关键语义: {phrase}")
+
 ppt_path = ROOT / "05A_方案讲解PPT生产协议.md"
 ppt_protocol = ppt_path.read_text(encoding="utf-8") if ppt_path.exists() else ""
-for phrase in [
-    "每个正式项目只生成一个",
-    "讲解蓝图",
-    "动态模块选择",
-    "第一面必须是真正的封面" if False else "第一面",
-]:
-    pass
-
 required_ppt_phrases = [
     "单一PPT原则",
     "讲解导演先于页面生成",
     "动态模块选择",
-    "第一面必须是真正的封面".replace("第一面", "第一页"),
+    "第一页必须是真正的封面",
     "先技术，后案例",
     "技术缘由必须真实",
     "规则必须完整到可独立执行",
