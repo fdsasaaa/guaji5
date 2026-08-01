@@ -53,6 +53,7 @@ required = [
     "CHANGELOG.md",
     "00A_当前强制覆盖与废止规则.md",
     "05A_方案讲解PPT生产协议.md",
+    "11A_本金止盈止损设计与PPT披露协议.md",
     "PPT页面类型卡片.jsonl",
     "PPT讲解验收测试集.jsonl",
     "PPT压缩与精度规则.json",
@@ -96,6 +97,7 @@ if not state.get("无需重复上传工作包") or not task.get("无需重复上
 for module in [
     "00A_当前强制覆盖与废止规则.md",
     "05A_方案讲解PPT生产协议.md",
+    "11A_本金止盈止损设计与PPT披露协议.md",
     "13_GitHub持续工作区与参考灵感自由重构协议.md",
 ]:
     if module not in manifest.get("模块", []):
@@ -126,6 +128,13 @@ ppt_boolean_checks = {
     "清单.PPT停止对象精确检查": manifest.get("PPT停止对象精确检查"),
     "清单.PPT隐藏附录": manifest.get("PPT隐藏附录"),
     "清单.PPT附录证据完整性检查": manifest.get("PPT附录证据完整性检查"),
+    "清单.挂机方案建议本金必须冻结": manifest.get("挂机方案建议本金必须冻结"),
+    "清单.PPT建议本金必须显示金额": manifest.get("PPT建议本金必须显示金额"),
+    "清单.PPT止盈止损模式必须明确": manifest.get("PPT止盈止损模式必须明确"),
+    "清单.PPT启用止盈必须显示金额": manifest.get("PPT启用止盈必须显示金额"),
+    "清单.PPT启用止损必须显示金额": manifest.get("PPT启用止损必须显示金额"),
+    "清单.PPT未启用止盈止损必须显示不设置": manifest.get("PPT未启用止盈止损必须显示不设置"),
+    "清单.PPT本金止盈止损主讲附录一致性检查": manifest.get("PPT本金止盈止损主讲附录一致性检查"),
     "状态.PPT规则修改必须回写GitHub": state.get("PPT规则修改必须回写GitHub"),
     "状态.PPT唯一文件": state.get("PPT唯一文件"),
     "状态.PPT页面价值门槛": state.get("PPT页面价值门槛"),
@@ -141,6 +150,13 @@ ppt_boolean_checks = {
     "状态.PPT压缩审查": state.get("PPT压缩审查"),
     "状态.PPT精度审查": state.get("PPT精度审查"),
     "状态.PPT渲染审查": state.get("PPT渲染审查"),
+    "状态.挂机方案建议本金必须冻结": state.get("挂机方案建议本金必须冻结"),
+    "状态.挂机方案止盈止损模式必须明确": state.get("挂机方案止盈止损模式必须明确"),
+    "状态.PPT建议本金必须显示金额": state.get("PPT建议本金必须显示金额"),
+    "状态.PPT启用止盈必须显示金额": state.get("PPT启用止盈必须显示金额"),
+    "状态.PPT启用止损必须显示金额": state.get("PPT启用止损必须显示金额"),
+    "状态.PPT未启用止盈止损必须显示不设置": state.get("PPT未启用止盈止损必须显示不设置"),
+    "状态.PPT本金止盈止损主讲附录一致性检查": state.get("PPT本金止盈止损主讲附录一致性检查"),
 }
 for field, value in ppt_boolean_checks.items():
     if value is not True:
@@ -150,8 +166,18 @@ if manifest.get("PPT规则正式源") != "GitHub main" or state.get("PPT规则�
     err("PPT规则正式源不是GitHub main")
 if manifest.get("PPT简单技术主讲页建议") != [7, 9] or state.get("PPT简单技术主讲页建议") != [7, 9]:
     err("简单技术主讲页建议不是7至9页")
-if manifest.get("PPT讲解验收测试数量", 0) < 40 or state.get("PPT讲解验收测试数量", 0) < 40:
-    err("PPT讲解验收测试数量不足40")
+if manifest.get("PPT讲解验收测试数量", 0) < 46 or state.get("PPT讲解验收测试数量", 0) < 46:
+    err("PPT讲解验收测试数量不足46")
+
+allowed_stop_modes = ["NONE", "STOP_LOSS_ONLY", "TAKE_PROFIT_ONLY", "BOTH"]
+if manifest.get("PPT允许止盈止损模式") != allowed_stop_modes:
+    err("清单止盈止损模式列表错误")
+if state.get("挂机方案允许止盈止损模式") != allowed_stop_modes:
+    err("状态止盈止损模式列表错误")
+if manifest.get("挂机方案资金披露协议") != "11A_本金止盈止损设计与PPT披露协议.md":
+    err("清单未登记正确资金披露协议")
+if state.get("挂机方案资金披露协议") != "11A_本金止盈止损设计与PPT披露协议.md":
+    err("状态未登记正确资金披露协议")
 
 brand = manifest.get("PPT固定品牌结束页", {})
 if brand.get("必须最后正常播放页") is not True:
@@ -183,8 +209,22 @@ if len(ppt_precision.get("隐藏附录", {}).get("数据项目最低证据", [])
     err("结构化规则隐藏附录最低证据不足")
 if ppt_precision.get("结论要求", {}).get("必须与建议一致") is not True:
     err("结构化规则未要求结论建议一致")
-if len(ppt_precision.get("精度检查", [])) < 10:
+if len(ppt_precision.get("精度检查", [])) < 14:
     err("结构化规则精度检查不足")
+funding = ppt_precision.get("资金披露", {})
+for key in [
+    "建议本金必须显示金额",
+    "启用止盈必须显示金额",
+    "启用止损必须显示金额",
+    "未启用项目必须显示不设置",
+    "主讲附录金额必须一致",
+]:
+    if funding.get(key) is not True:
+        err(f"结构化资金披露规则未启用: {key}")
+if funding.get("止盈止损模式必须明确") != allowed_stop_modes:
+    err("结构化资金披露模式列表错误")
+if len(funding.get("隐藏附录必须保存", [])) < 8:
+    err("结构化资金披露附录证据不足")
 
 workflow = ROOT / ".github/workflows/validate.yml"
 if workflow.exists() and "tools/validate_repository.py" not in workflow.read_text(encoding="utf-8"):
@@ -234,11 +274,17 @@ brand_items = [item for item in page_types if item.get("页面类型ID") == "BRA
 if not brand_items or brand_items[0].get("隐藏页") is not False:
     err("品牌页隐藏属性错误")
 appendix_main = [item for item in page_types if item.get("页面类型ID") == "APPENDIX"]
-if not appendix_main or len(appendix_main[0].get("最低证据", [])) < 10:
+if not appendix_main or len(appendix_main[0].get("最低证据", [])) < 14:
     err("APPENDIX页面卡片最低证据不足")
+for page_id in ["RISK", "ADVICE"]:
+    candidates = [item for item in page_types if item.get("页面类型ID") == page_id]
+    if not candidates or "建议本金金额" not in candidates[0].get("主页面重点", []):
+        err(f"{page_id}页面卡片未要求显示建议本金金额")
+if not appendix_main or "建议本金计算过程" not in appendix_main[0].get("最低证据", []):
+    err("APPENDIX页面卡片未保存建议本金计算过程")
 
 ppt_tests = loaded.get("PPT讲解验收测试集.jsonl", [])
-if len(ppt_tests) < 40:
+if len(ppt_tests) < 46:
     err(f"PPT讲解验收测试数量不足: {len(ppt_tests)}")
 required_failure_states = {
     "PPT_MULTIPLE_COMPANION_FILES", "PPT_RULE_NOT_IN_GITHUB",
@@ -256,7 +302,10 @@ required_failure_states = {
     "PPT_MAIN_APPENDIX_MISMATCH", "PPT_BRAND_PAGE_NOT_LAST",
     "PPT_BRAND_CONTACT_WRONG", "PPT_FIXED_TEMPLATE_OVERUSE",
     "PPT_NARRATION_REVIEW_FAILED", "PPT_PRECISION_REVIEW_FAILED",
-    "PPT_RENDER_REVIEW_FAILED",
+    "PPT_RENDER_REVIEW_FAILED", "CAPITAL_RECOMMENDATION_MISSING",
+    "STOP_MODE_UNDECIDED", "PPT_CAPITAL_MISSING",
+    "PPT_TAKE_PROFIT_MISSING", "PPT_STOP_LOSS_MISSING",
+    "PPT_CAPITAL_STOP_MISMATCH",
 }
 actual_failure_states = {item.get("失败状态") for item in ppt_tests}
 if required_failure_states - actual_failure_states:
@@ -285,8 +334,10 @@ override = (ROOT / "00A_当前强制覆盖与废止规则.md").read_text(encodin
 for phrase in [
     "GitHub是唯一正式规则源", "废止旧三文件交付",
     "废止独立PPT配套文件", "废止机械拆页和固定结构",
-    "废止程序化和重复表达", "PPT压缩与精度规则.json",
-    "www.laocaimi.org", "https://t.me/laocaimi1314",
+    "废止程序化和重复表达", "挂机方案本金与止盈止损硬标准",
+    "11A_本金止盈止损设计与PPT披露协议.md",
+    "PPT压缩与精度规则.json", "www.laocaimi.org",
+    "https://t.me/laocaimi1314",
 ]:
     if phrase not in override:
         err(f"00A覆盖层缺少关键语义: {phrase}")
@@ -307,6 +358,18 @@ for phrase in [
 ]:
     if phrase not in ppt_protocol:
         err(f"PPT模块缺少关键语义: {phrase}")
+
+fund_protocol = (ROOT / "11A_本金止盈止损设计与PPT披露协议.md").read_text(encoding="utf-8")
+for phrase in [
+    "四种允许模式", "建议本金冻结", "PPT主讲披露",
+    "PPT隐藏附录证据", "NONE", "STOP_LOSS_ONLY",
+    "TAKE_PROFIT_ONLY", "BOTH", "建议本金：¥X",
+    "止盈：不设置 / ¥Y", "止损：不设置 / ¥Z",
+    "PPT_CAPITAL_MISSING", "PPT_TAKE_PROFIT_MISSING",
+    "PPT_STOP_LOSS_MISSING", "PPT_CAPITAL_STOP_MISMATCH",
+]:
+    if phrase not in fund_protocol:
+        err(f"11A资金披露协议缺少关键语义: {phrase}")
 
 for deprecated in [
     "方案ID_PPT逐页脚本与旁白.md",
@@ -330,5 +393,5 @@ print(
     f"task={task.get('任务ID', '?')} "
     f"ppt_page_types={len(page_types)} "
     f"ppt_tests={len(ppt_tests)} "
-    "ppt=COMPRESSED_NATURAL_PRECISION_DIRECTOR"
+    "ppt=COMPRESSED_NATURAL_PRECISION_CAPITAL_STOP_DIRECTOR"
 )
