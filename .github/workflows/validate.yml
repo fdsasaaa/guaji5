@@ -26,11 +26,11 @@ jobs:
       - name: Validate fixed PPT pages
         run: python tools/validate_ppt_fixed_pages.py
       - name: Build current delivery
-        run: python tools/build_current_delivery.py
+        run: python tools/build_b394_delivery.py
       - name: Upload current delivery
         uses: actions/upload-artifact@v4
         with:
-          name: B393_SET_001_delivery
-          path: dist/B393_SET_001_delivery/**
+          name: B394_SET_001_delivery
+          path: dist/B394_SET_001_delivery/**
           if-no-files-found: error
           retention-days: 7
