@@ -470,7 +470,7 @@ def validate_outputs(stats: dict) -> None:
         raise AssertionError("核心TXT文件名缺失")
     prs = Presentation(PPT_PATH)
     hidden = [slide for slide in prs.slides if slide._element.get("show") == "0"]
-    if len(prs.slides) != 13 or len(hidden) != 2:
+    if len(prs.slides) != 14 or len(hidden) != 2:
         raise AssertionError(f"PPT结构错误: slides={len(prs.slides)} hidden={len(hidden)}")
     for index, slide in enumerate(prs.slides, 1):
         if not slide.notes_slide.notes_text_frame.text.strip():
