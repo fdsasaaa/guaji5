@@ -30,7 +30,7 @@ jobs:
       - name: Upload current delivery
         uses: actions/upload-artifact@v4
         with:
-          name: B393_SET_001_delivery
-          path: dist/B393_SET_001_delivery/**
+          name: B394_SET_001_delivery
+          path: dist/B394_SET_001_delivery/**
           if-no-files-found: error
           retention-days: 7
