@@ -94,9 +94,9 @@ def add_round_rect(slide, x, y, w, h, fill, line, radius_type=MSO_AUTO_SHAPE_TYP
 
 def add_link_overlay(slide, x, y, w, h, url: str) -> None:
     s = slide.shapes.add_shape(MSO_AUTO_SHAPE_TYPE.RECTANGLE, x, y, w, h)
-    s.fill.solid()
-    s.fill.fore_color.rgb = RGBColor(255, 255, 255)
-    s.fill.transparency = 100
+    # noFill is safer than a 100%-transparent solid fill: LibreOffice can
+    # otherwise render the clickable overlay as an opaque white rectangle.
+    s.fill.background()
     s.line.fill.background()
     s.click_action.hyperlink.address = url
 
