@@ -10,14 +10,17 @@
 2. `SYSTEM_MANIFEST.json`
 3. `SYSTEM_STATE.json`
 4. `00_启动入口与系统状态.md`
-5. `10_静默方案总控与外部参考吸收协议.md`
-6. `11_智能功能调度与资金路径编排协议.md`
-7. `13_GitHub持续工作区与参考灵感自由重构协议.md`
+5. `00A_当前强制覆盖与废止规则.md`
+6. `00B_统一交付文件夹规则.md`
+7. `10_静默方案总控与外部参考吸收协议.md`
+8. `11_智能功能调度与资金路径编排协议.md`
+9. `13_GitHub持续工作区与参考灵感自由重构协议.md`
 
 ## 质量闸门
 
 ```bash
 python tools/validate_repository.py
+python tools/validate_delivery_folder_policy.py
 ```
 
 只有校验通过的任务分支才允许合并到`main`。
@@ -29,3 +32,4 @@ python tools/validate_repository.py
 - 高级功能必须有真实语义，禁止用常量映射伪装。
 - 倍投必须经过多路径比较，不能机械默认直线平倍。
 - ZIP和PPT是构建产物，源文件才是长期记忆。
+- 标准方案仍生成原方案套ZIP与原PPTX，但对外只发送一个统一交付文件夹ZIP，解压后仅包含这两个文件。
