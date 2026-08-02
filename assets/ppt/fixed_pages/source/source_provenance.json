@@ -1,0 +1,12 @@
+{
+  "version": "V3.9.3-FIXED-PAGES-1",
+  "user_sources": {
+    "首页背景图谱.png": {"sha256": "5574bea71874f1310e2fa4231474726437e636a681c8ea593a2a5c1a13ed321f"},
+    "第二页.jpg": {"sha256": "510f98516ab83c0ec5449005d9fca31cb214b40690693d56594a852e62bd2882"},
+    "最后一页.pptx": {"sha256": "1cc85051451c25107400e1124be71e5b0936e673dc594e1e32da4cf3359afc40"}
+  },
+  "embedded_renders": {
+    "cover": {"size": "800x450", "sha256": "7a54206c5d98b4e5f780e94859c47e69adf05ac37e03040afe1ea98c10fad6e7"},
+    "end": {"size": "800x450", "sha256": "b7da4dd05512bbc0364431be6c51e6059a1766d9e4ef3ca579092a84e7706fa9"}
+  }
+}
