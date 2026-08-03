@@ -30,7 +30,7 @@ jobs:
       - name: Upload current delivery
         uses: actions/upload-artifact@v4
         with:
-          name: B394_SET_001_delivery
-          path: dist/B394_SET_001_delivery/**
+          name: 冷热三角快照接力_交付
+          path: dist/冷热三角快照接力_交付/**
           if-no-files-found: error
           retention-days: 7
