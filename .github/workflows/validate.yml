@@ -27,10 +27,15 @@ jobs:
         run: python tools/validate_ppt_fixed_pages.py
       - name: Build current delivery
         run: python tools/build_b394_delivery.py
+      - name: Package YouTube-ready delivery
+        run: >-
+          python tools/package_youtube_delivery.py
+          --delivery-dir dist/冷热三角快照接力_交付
+          --seo-config youtube_seo/冷热三角快照接力.json
       - name: Upload current delivery
         uses: actions/upload-artifact@v4
         with:
-          name: 冷热三角快照接力_交付
-          path: dist/冷热三角快照接力_交付/**
+          name: 冷热三角快照接力_完整交付
+          path: dist/冷热三角快照接力_交付/冷热三角快照接力_完整交付.zip
           if-no-files-found: error
           retention-days: 7
