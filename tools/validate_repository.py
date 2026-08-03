@@ -30,14 +30,18 @@ if m.get('仓库')!='fdsasaaa/guaji5' or s.get('仓库')!='fdsasaaa/guaji5': err
 if task.get('基线仓库')!='fdsasaaa/guaji5': err('当前任务基线仓库错误')
 for module in ['00A_当前强制覆盖与废止规则.md','05A_方案讲解PPT生产协议.md','05B_固定首页与末页协议.md','11A_本金止盈止损设计与PPT披露协议.md','13_GitHub持续工作区与参考灵感自由重构协议.md']:
  if module not in m.get('模块',[]): err(f'模块未登记: {module}')
-checks={'PPT规则修改必须回写GitHub':True,'PPT单文件原则':True,'PPT人工讲解审查':True,'PPT压缩审查':True,'PPT精度审查':True,'PPT页面价值门槛':True,'PPT先技术后案例':True,'PPT规则独立执行检查':True,'PPT技术缘由真实性检查':True,'PPT标题核心准确检查':True,'PPT自然语言转换':True,'PPT视觉去重':True,'挂机方案建议本金必须冻结':True,'PPT建议本金必须显示金额':True,'PPT止盈止损模式必须明确':True,'PPT启用止盈必须显示金额':True,'PPT启用止损必须显示金额':True,'PPT未启用止盈止损必须显示不设置':True,'PPT工程编号禁止可见':True,'PPT挂机前禁止结果结论':True,'PPT结果复盘必须来自实际挂机记录':True}
+common_checks={'PPT规则修改必须回写GitHub':True,'PPT人工讲解审查':True,'PPT压缩审查':True,'PPT精度审查':True,'PPT页面价值门槛':True,'PPT先技术后案例':True,'PPT规则独立执行检查':True,'PPT技术缘由真实性检查':True,'PPT标题核心准确检查':True,'PPT自然语言转换':True,'PPT视觉去重':True,'挂机方案建议本金必须冻结':True,'PPT建议本金必须显示金额':True,'PPT启用止盈必须显示金额':True,'PPT启用止损必须显示金额':True,'PPT未启用止盈止损必须显示不设置':True,'PPT工程编号禁止可见':True,'PPT挂机前禁止结果结论':True,'PPT结果复盘必须来自实际挂机记录':True}
 for obj,label in [(m,'清单'),(s,'状态')]:
- for k,v in checks.items():
+ for k,v in common_checks.items():
   if obj.get(k)!=v: err(f'{label}.{k}未启用')
  if obj.get('PPT金额单位')!='元': err(f'{label}.PPT金额单位不是元')
  if obj.get('PPT固定第二页') is not False: err(f'{label}.PPT固定第二页未关闭')
  if obj.get('PPT隐藏附录') is not False: err(f'{label}.PPT隐藏附录未关闭')
  if obj.get('PPT默认阶段')!='PRE_RUN_SETUP': err(f'{label}.PPT默认阶段错误')
+if m.get('PPT单文件原则') is not True: err('清单.PPT单文件原则未启用')
+if s.get('PPT唯一文件') is not True: err('状态.PPT唯一文件未启用')
+if m.get('PPT止盈止损模式必须明确') is not True: err('清单.PPT止盈止损模式必须明确未启用')
+if s.get('挂机方案止盈止损模式必须明确') is not True: err('状态.挂机方案止盈止损模式必须明确未启用')
 if m.get('PPT页面类型数量')!=12 or s.get('PPT页面类型数量')!=12: err('PPT页面类型数量未同步为12')
 if m.get('PPT讲解验收测试数量')!=49 or s.get('PPT讲解验收测试数量')!=49: err('PPT测试数量未同步为49')
 allowed=['NONE','STOP_LOSS_ONLY','TAKE_PROFIT_ONLY','BOTH']
