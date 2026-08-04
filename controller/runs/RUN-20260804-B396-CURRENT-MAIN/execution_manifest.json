@@ -1,0 +1,28 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "EXECUTION",
+  "status": "IMPLEMENTED_AWAITING_CI",
+  "builder": "tools/build_b396_delivery.py",
+  "source_files": [
+    "tools/build_b396_delivery.py",
+    "youtube_seo/前值转移三码.json",
+    "03_批次归档/BATCH-B396-FIRST-ORDER-TRANSITION-001.json"
+  ],
+  "generated_outputs": [
+    "dist/前值转移三码_交付/前值转移三码_方案套.zip",
+    "dist/前值转移三码_交付/前值转移三码_挂机前讲解.pptx",
+    "dist/前值转移三码_交付/前值转移三码_YouTube发布参考.txt",
+    "dist/前值转移三码_交付/前值转移三码_完整交付.zip",
+    "dist/前值转移三码_交付/前值转移三码_验证记录.json",
+    "dist/前值转移三码_交付/DELIVERY_MANIFEST.json"
+  ],
+  "contract_drift": false,
+  "rework_rounds": 0,
+  "prior_artifact_independent_check": {
+    "artifact_id": 8878517880,
+    "outer_artifact_sha256": "a7dc65c3cbaa1991d5118e8675206dae21cd112ed2a7b6a0c61577085a59e88e",
+    "complete_delivery_sha256": "34aa4ffc683d3dbb7828b52d430f5b38af043492cdcb791a496f7db1e89973aa",
+    "complete_delivery_root_items": 3,
+    "scheme_txt_count": 6
+  }
+}
