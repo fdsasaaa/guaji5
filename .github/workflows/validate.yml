@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -23,6 +25,15 @@ jobs:
         run: python tools/lottery_controller.py validate
       - name: Validate full-function orchestration
         run: python tools/validate_function_orchestration.py --self-test --scan-runs
+      - name: Validate scheme PR orchestration gate
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$PR_BASE_SHA" ] && git diff --name-only "$PR_BASE_SHA...HEAD" | grep -Eq '^(tools/build_.*delivery\.py|03_批次归档/|youtube_seo/)'; then
+            python tools/validate_scheme_orchestration_gate.py --base "$PR_BASE_SHA"
+          else
+            python tools/validate_scheme_orchestration_gate.py
+          fi
       - name: Smoke-test controller task envelope
         run: |
           python tools/lottery_controller.py start \
@@ -55,4 +66,7 @@ jobs:
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
           test -f controller/templates/function_orchestration.template.json
+          test -f controller/feature_evidence_registry.json
+          test -f controller/function_coverage_ledger.json
           test -f tools/validate_function_orchestration.py
+          test -f tools/validate_scheme_orchestration_gate.py
