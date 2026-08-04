@@ -1,0 +1,25 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "DELIVERY",
+  "status": "USER_DELIVERY_READY_CURRENT_MAIN_REBUILD_PENDING",
+  "user_file": "前值转移三码_完整交付.zip",
+  "user_file_sha256": "34aa4ffc683d3dbb7828b52d430f5b38af043492cdcb791a496f7db1e89973aa",
+  "root_items": [
+    "前值转移三码_方案套.zip",
+    "前值转移三码_挂机前讲解.pptx",
+    "前值转移三码_YouTube发布参考.txt"
+  ],
+  "root_item_count": 3,
+  "scheme_package": {
+    "main_txt": 3,
+    "control_txt": 3,
+    "main_default_enabled": true,
+    "control_default_enabled": false
+  },
+  "delivery_source": {
+    "workflow_run": 30873009860,
+    "artifact_id": 8878517880,
+    "expires_at": "2026-08-11T02:51:16Z"
+  },
+  "current_main_rebuild": "PENDING_GITHUB_ACTIONS"
+}
