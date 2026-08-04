@@ -83,6 +83,13 @@ for key, expected in manifest_expect.items():
 if manifest.get("总控扩展域") != ["PPT", "SCHEME", "PROGRAM", "SYSTEM", "CLEANUP"]:
     err("SYSTEM_MANIFEST.总控扩展域错误")
 
+if pipeline.get("status") != "ACTIVE":
+    err(f"pipeline状态不是ACTIVE: {pipeline.get('status')!r}")
+if pipeline.get("activated_by_pr") != 16:
+    err("pipeline.activated_by_pr不是16")
+if pipeline.get("activated_at_commit") != "2dc89ebe01f4d2f1804735140ce55c42ee447a5b":
+    err("pipeline.activated_at_commit与PR #16合并提交不一致")
+
 phases = pipeline.get("phases", [])
 phase_ids = [item.get("id") for item in phases]
 required_phases = [
