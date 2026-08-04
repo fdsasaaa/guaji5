@@ -86,7 +86,7 @@
       "path": "tools/validate_controller_architecture.py",
       "action": "CREATE",
       "before_blob_sha": null,
-      "after_blob_sha": "f3100493ec3d5f7fd3dd01ff262f6e783abfccc0",
+      "after_blob_sha": "09afe1b3c345b0583dc147df54b4050dcf1613c1",
       "rollback": "delete only through a reviewed revert commit"
     },
     {
