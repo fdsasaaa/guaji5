@@ -1,0 +1,35 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-20260804-B397-ZONE-CHAMPION-001",
+  "status": "CONTRACT_FROZEN",
+  "mature_evidence_baseline_path_id": "FLAT",
+  "selected_delivery_path": {
+    "path_id": "PRESS_DELIVERY_SOFT_8",
+    "kind": "PRESSURE_RELEASE",
+    "selection_scope": "CONTROLLED_EXPERIMENT",
+    "sequence": [1, 1, 2, 3, 2, 1, 1, 1],
+    "software_evidence_level": "E2",
+    "unit_exposure": 3,
+    "max_multiplier": 3,
+    "cycle_total_multiplier": 12,
+    "cycle_worst_case_exposure": 36,
+    "max_periods": 24,
+    "stage_gross_exposure_budget": 108,
+    "hard_stop": "满24期停止",
+    "reset_rule": "按软件普通倍投序列运行；首次导入核对命中/未中后的步进与复位",
+    "requires_user_import_validation": true,
+    "profitability_claim_forbidden": true,
+    "source_candidate_path_id": "PRESS",
+    "sequence_override_reason": "用户要求避免机械平倍；在原压力释放候选基础上增加低压起步与低压收尾。"
+  },
+  "user_feedback_override": {
+    "flat_default_forbidden": true,
+    "reason": "用户明确指出连续使用1,1,1...缺少设计感，要求在底层资金路径上形成真实变化。"
+  },
+  "delivery_consistency": {
+    "scheme_txt_must_match_sequence": true,
+    "ppt_must_show_sequence": true,
+    "betting_numbers_must_appear_in_filename_txt_ppt": true,
+    "outer_zip_exactly_three_items": true
+  }
+}

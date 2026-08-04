@@ -2,7 +2,7 @@
 
 任何AI或自动化代理接管本仓库时必须：
 
-1. 先读取 `SYSTEM_MANIFEST.json`、`SYSTEM_STATE.json`、`00_启动入口与系统状态.md`、`00A_当前强制覆盖与废止规则.md` 和第10—14号协议。00A用于覆盖00中保留的历史旧条款。
+1. 先读取 `SYSTEM_MANIFEST.json`、`SYSTEM_STATE.json`、`00_启动入口与系统状态.md`、`00A_当前强制覆盖与废止规则.md` 和第10—15号协议。00A用于覆盖00中保留的历史旧条款。
 2. 默认直接执行用户任务，不等待二次确认。
 3. 用户的“仅供参考”不是硬规格，无法直接生成TXT时必须优先重构为可执行方案。
 4. 不得用错误软件类别伪造TXT；高级映射不得把同一常量集合复制到0—9。
@@ -43,13 +43,13 @@
 39. 每个画像必须独立填写A—H八层能力审议；整批共用一份笼统审议或只写“默认关闭”不合格。
 40. 资金路径必须同时形成 `FLAT`、`LIMITED_LINEAR`、`PRESSURE_RELEASE`、`ADVANCED_STATE` 四条具体路径，保存序列或状态、最高倍数、总倍数、最大暴露、复位、封顶和软件证据。
 41. 每批至少两类更多设置形成具体候选参数，范围包括监控、盈亏跳转、盈亏停止、模拟真实切换、时间范围、换号、正反集、轮投或组合。
-42. E3以下功能不得进入正式方案；只能进入隔离、单变量、最多30期并有成本上限的 `PROBE_ONLY`。
+42. E3以下功能不得冒充正式成熟能力；E2普通倍投可按第15号协议进入受控用户交付实验，但必须有独立 `delivery_execution_contract.json`、最高倍数、期数硬停止、毛暴露预算和首次导入核对。
 43. 连续两批纯 `BASELINE_ONLY` 后，下一批必须交付非基准实验或隔离探针，除非所有到期探索功能均有证据化阻塞。
 44. 同一功能指纹连续三批必须施加重复惩罚；仍入选时必须给出可核对的例外理由。
 45. 低覆盖功能最多跨3批不形成实质候选；到期后必须进入候选、探针或提供带证据引用的阻塞原因。
 46. 新状态功能首次启用时不得同时首次正式启用高级状态资金路径，避免多变量混杂。
 47. 标准方案交付前必须运行 `python tools/validate_function_orchestration.py --evidence controller/runs/<RUN_ID>/function_orchestration.json`；仓库CI必须运行 `python tools/validate_function_orchestration.py --self-test --scan-runs`。
-48. 平倍可以最终入选，但不得因为方便而成为无比较的默认答案；若选择 `1,1,1...`，仍必须保留其他三路的具体设计、暴露计算和淘汰证据。
+48. 平倍可以作为成熟证据基准，但不得因为方便而成为用户交付的自动答案；用户明确要求差异化资金路径时，最终TXT不得继续写全1序列。
 49. 所有功能证据等级必须从 `controller/feature_evidence_registry.json` 读取；不得在本次方案中自行把E1或E2写成E3。
 50. 每个新标准方案必须读取并更新 `controller/function_coverage_ledger.json`；不得清空 `next_due_features` 或用“本次无关”逃避到期功能。
 51. 每个画像和资金路径必须使用 `controller/templates/orchestration_scorecard.template.json` 的10维评分；默认选择最高分且正式合格的画像和资金路径，选择低分项必须有证据化覆盖理由。
@@ -57,3 +57,12 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
+56. 标准方案任务必须读取 `15_单一完整包与投注资金可见性协议.md` 和 `controller/external_delivery_contract.json`。
+57. 对用户只发送一个完整ZIP下载链接；禁止并列发送方案、PPT、JSON和Actions制品多个链接。
+58. 完整ZIP根目录严格为一个方案文件夹、一个PPTX、一个SEO TXT，共3项；禁止嵌套方案ZIP。
+59. 用户方案文件夹只保留可导入文件；说明、核对表、记录模板、随机对照、探针和内部证据不得进入最终包。
+60. 固定投注数字必须同时写入方案文件名、TXT真实投注字段和PPT主讲页面。
+61. SEO TXT固定为1个标题、1行8—10个英文逗号标签、1份描述，不再提供多套备选。
+62. 实际写入TXT的资金路径必须冻结在本次 `delivery_execution_contract.json`；TXT、PPT、本金和停止条件必须与该合同一致。
+63. 用户明确反对机械平倍时，禁止继续交付 `1,1,1...`；默认受控候选为 `1,1,2,3,2,1,1,1`，最高3倍、24期硬停止，但未来不得机械复制该序列。
+64. 每次构建后必须运行 `python tools/validate_external_delivery.py --delivery-zip <完整ZIP> --execution-contract <delivery_execution_contract.json>`，通过前不得称为完成交付。
