@@ -1,0 +1,12 @@
+{"测试ID":"PPT-S001","名称":"号码来源存在","检查":"PPT展示具体号码前，GitHub批次记录已保存真实历史数据来源","失败状态":"PPT_NUMBER_SOURCE_MISSING"}
+{"测试ID":"PPT-S002","名称":"分析角度登记","检查":"主技术对应02A或分析角度索引中的正式角度","失败状态":"PPT_ANALYSIS_ANGLE_UNREGISTERED"}
+{"测试ID":"PPT-S003","名称":"关键计算可见","检查":"观众能看到主要频次、遗漏、排序、阈值或映射过程，而不只看到最终号码","失败状态":"PPT_NUMBER_CALCULATION_MISSING"}
+{"测试ID":"PPT-S004","名称":"号码可复算","检查":"按PPT给出的窗口、位置、选取规则和并列规则可以复算出相同号码","失败状态":"PPT_NUMBER_REASON_NOT_REPRODUCIBLE"}
+{"测试ID":"PPT-S005","名称":"禁止先定号码后补故事","检查":"号码由冻结统计结果产生，不是先选数字再贴热码、温码、冷码或回补标签","失败状态":"PPT_STORY_BACKFILLED_AFTER_NUMBERS"}
+{"测试ID":"PPT-S006","名称":"分析与执行一致","检查":"PPT声称的动态或静态更新方式与TXT和软件真实能力一致","失败状态":"PPT_ANALYSIS_EXECUTION_MISMATCH"}
+{"测试ID":"PPT-S007","名称":"快照冻结说明","检查":"若号码只在挂机前计算一次，PPT说明数据窗口、冻结时间和运行中不更新","失败状态":"PPT_ANALYSIS_EXECUTION_MISMATCH"}
+{"测试ID":"PPT-S008","名称":"对照组分层","检查":"随机出号或安慰剂只作为对照，未被包装成主技术组成","失败状态":"PPT_CONTROL_GROUP_CONFUSED_WITH_MAIN"}
+{"测试ID":"PPT-S009","名称":"客户页面无纠错语言","检查":"页面不出现更严谨的说法、四组测试码预设、给用户看的等内部纠错措辞","失败状态":"PPT_INTERNAL_CORRECTION_LANGUAGE_VISIBLE"}
+{"测试ID":"PPT-S010","名称":"三方数字一致","检查":"PPT、TXT与号码来源证据包中的号码、位置、窗口和更新方式一致","失败状态":"PPT_NUMBER_EVIDENCE_MISMATCH"}
+{"测试ID":"PPT-S011","名称":"技术来源页优先","检查":"号码来源与计算页位于投注和轮换规则页之前","失败状态":"PPT_NUMBER_SOURCE_MISSING"}
+{"测试ID":"PPT-S012","名称":"标签不是证据","检查":"热码防守、温码接力、冷码回补等名称必须附真实统计，不能单独充当号码来源","失败状态":"PPT_NUMBER_CALCULATION_MISSING"}
