@@ -3,12 +3,12 @@
   "phase": "VALIDATION",
   "status": "PASS",
   "branch": "agent/enforce-full-function-orchestration",
-  "validated_head": "684aea3ede57aba4b8d58e13caf8b773c0ba9b2a",
+  "validated_head": "4c8ae350c2391b2060247fc743171aad9d34c9c2",
   "pull_request": 19,
   "github_actions": {
     "workflow": "Validate system repository",
-    "run_id": 30880696727,
-    "run_number": 344,
+    "run_id": 30881063902,
+    "run_number": 360,
     "conclusion": "success"
   },
   "checks": {
@@ -19,6 +19,8 @@
     "orchestration_scoring_scan": "PASS",
     "adversarial_gate_tests": "PASS",
     "scheme_pr_orchestration_gate": "PASS",
+    "base_to_branch_ledger_transition": "PASS",
+    "historical_run_ledger_immutability": "PASS",
     "controller_smoke_test": "PASS",
     "ppt_director_and_number_provenance": "PASS",
     "fixed_ppt_pages": "PASS"
@@ -29,6 +31,8 @@
     "E2_advanced_state_formal_selection_rejected": true,
     "monitoring_E1_inflated_to_E3_rejected": true,
     "central_due_features_cleared_rejected": true,
+    "stale_coverage_ledger_rejected": true,
+    "old_evidence_cannot_close_future_ledger": true,
     "missing_scorecard_rejected": true,
     "lower_score_selected_without_evidence_rejected": true
   },
