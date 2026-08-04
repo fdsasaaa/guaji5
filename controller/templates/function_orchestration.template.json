@@ -3,14 +3,20 @@
   "run_id": "REPLACE_RUN_ID",
   "task_type": "STANDARD_SCHEME_TASK",
   "status": "DIRECTOR_COMPLETE",
+  "instructions": {
+    "central_evidence_registry": "controller/feature_evidence_registry.json",
+    "central_coverage_ledger": "controller/function_coverage_ledger.json",
+    "rule": "复制四个画像后分别填写；不得删除类型。证据等级、到期功能和sequence必须从中央文件读取，不得自行提高或清空。"
+  },
   "candidate_profiles": [
     {
       "profile_id": "BASELINE",
       "profile_type": "BASELINE",
-      "name": "基准画像",
+      "name": "",
       "decision": "REJECTED",
-      "reason": "必须填写",
+      "reason": "",
       "features": [],
+      "feature_evidence": [],
       "layers": {
         "A": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
         "B": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
@@ -21,53 +27,88 @@
         "G": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
         "H": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"}
       },
-      "material_signature": {
-        "number_logic": "",
-        "trigger": "",
-        "execution": "",
-        "funding": "",
-        "stop": "",
-        "time_simulation": ""
-      },
+      "material_signature": {"number_logic": "", "trigger": "", "execution": "", "funding": "", "stop": "", "time_simulation": ""},
       "first_use": false,
       "new_state_features": []
+    },
+    {
+      "profile_id": "STATE",
+      "profile_type": "STATE",
+      "name": "",
+      "decision": "REJECTED",
+      "reason": "",
+      "features": [],
+      "feature_evidence": [],
+      "layers": {
+        "A": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "B": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "C": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "E": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "F": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "G": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"}
+      },
+      "material_signature": {"number_logic": "", "trigger": "", "execution": "", "funding": "", "stop": "", "time_simulation": ""},
+      "first_use": false,
+      "new_state_features": []
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "profile_type": "EXECUTION_OR_FUNDING",
+      "name": "",
+      "decision": "REJECTED",
+      "reason": "",
+      "features": [],
+      "feature_evidence": [],
+      "layers": {
+        "A": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "B": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "C": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "E": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "F": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "G": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"}
+      },
+      "material_signature": {"number_logic": "", "trigger": "", "execution": "", "funding": "", "stop": "", "time_simulation": ""},
+      "first_use": false,
+      "new_state_features": []
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "profile_type": "LOW_COVERAGE_PROBE",
+      "name": "",
+      "decision": "PROBE_ONLY",
+      "reason": "",
+      "features": [],
+      "feature_evidence": [],
+      "layers": {
+        "A": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "B": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "C": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "E": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "F": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "G": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"}
+      },
+      "material_signature": {"number_logic": "", "trigger": "", "execution": "", "funding": "", "stop": "", "time_simulation": ""},
+      "first_use": true,
+      "new_state_features": [],
+      "probe_constraints": {"isolated": true, "single_variable": true, "max_periods": 1, "max_cost": 1}
     }
   ],
   "funding_paths": [
-    {
-      "path_id": "FLAT",
-      "kind": "FLAT",
-      "sequence": [1, 1, 1],
-      "max_multiplier": 1,
-      "total_multiplier": 3,
-      "worst_case_exposure": 0,
-      "reset_rule": "",
-      "cap_rule": "",
-      "software_evidence_level": "E0",
-      "decision": "REJECTED",
-      "reason": ""
-    }
+    {"path_id": "FLAT", "kind": "FLAT", "sequence": [1, 1, 1], "max_multiplier": 1, "total_multiplier": 3, "worst_case_exposure": 1, "reset_rule": "", "cap_rule": "", "software_evidence_level": "E0", "evidence_refs": [], "decision": "REJECTED", "reason": ""},
+    {"path_id": "LIMITED_LINEAR", "kind": "LIMITED_LINEAR", "sequence": [1, 1, 2], "max_multiplier": 2, "total_multiplier": 4, "worst_case_exposure": 1, "reset_rule": "", "cap_rule": "", "software_evidence_level": "E0", "evidence_refs": [], "decision": "REJECTED", "reason": ""},
+    {"path_id": "PRESSURE_RELEASE", "kind": "PRESSURE_RELEASE", "sequence": [1, 2, 1], "max_multiplier": 2, "total_multiplier": 4, "worst_case_exposure": 1, "reset_rule": "", "cap_rule": "", "software_evidence_level": "E0", "evidence_refs": [], "decision": "REJECTED", "reason": ""},
+    {"path_id": "ADVANCED_STATE", "kind": "ADVANCED_STATE", "states": ["START", "RESET"], "transitions": ["START->RESET", "RESET->START"], "max_multiplier": 1, "total_multiplier": 2, "worst_case_exposure": 1, "reset_rule": "", "cap_rule": "", "software_evidence_level": "E0", "evidence_refs": [], "decision": "PROBE_ONLY", "reason": "", "probe_constraints": {"isolated": true, "single_variable": true, "max_periods": 1, "max_cost": 1}}
   ],
   "more_settings_review": [],
-  "repeat_guard": {
-    "fingerprint": "",
-    "last_three_fingerprints": [],
-    "repeat_count": 0,
-    "penalty_applied": false,
-    "selected_same_fingerprint": false,
-    "override_reason": ""
-  },
-  "coverage_debt": {
-    "due_features": [],
-    "blocked_features": [],
-    "all_exploration_blocked": false
-  },
-  "selection": {
-    "selected_profile_id": "",
-    "selected_funding_path_id": "",
-    "companion_probe_profile_id": null,
-    "delivery_mode": "BASELINE_ONLY",
-    "reason": ""
-  },
+  "repeat_guard": {"fingerprint": "", "last_three_fingerprints": [], "repeat_count": 0, "penalty_applied": false, "selected_same_fingerprint": false, "override_reason": ""},
+  "coverage_debt": {"due_features": ["READ_FROM_CENTRAL_LEDGER"], "blocked_features": [], "all_exploration_blocked": false},
+  "ledger_update": {"from_sequence": "READ_FROM_CENTRAL_LEDGER", "to_sequence": "ADD_ONE", "outcomes": {}, "next_due_features": []},
+  "selection": {"selected_profile_id": "", "selected_funding_path_id": "", "companion_probe_profile_id": null, "delivery_mode": "BASELINE_ONLY", "reason": ""},
   "recent_delivery_modes": []
 }
