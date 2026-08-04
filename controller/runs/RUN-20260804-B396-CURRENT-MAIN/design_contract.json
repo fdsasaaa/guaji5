@@ -1,0 +1,70 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "CONTRACT_FROZEN",
+  "status": "FROZEN",
+  "contract_version": 1,
+  "research_question": "同一位置的最新前值之后，历史条件频率最高的三个后继数字，能否在新的固定30期中表现得与随机三码不同？",
+  "data": {
+    "file": "01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+    "range": "202607310181—202607310380",
+    "periods": 200,
+    "holdout_status": "REUSED_DATA_NOT_INDEPENDENT_HOLDOUT",
+    "random_baseline": "每位置随机三码，理论命中率30%"
+  },
+  "number_logic": {
+    "positions": ["百位", "十位", "个位"],
+    "model": "同位置一阶转移条件频率",
+    "tie_break": "条件后继频次降序；并列按同位置全局后继频次降序；再按数字升序",
+    "pick_count": 3,
+    "frozen_numbers": {"百位": [1, 6, 2], "十位": [7, 3, 0], "个位": [6, 5, 0]},
+    "runtime_update": false
+  },
+  "execution": {
+    "bet_direction": "正投",
+    "main_txt": "三份定位胆定码轮换",
+    "rotation": "手工开启顶部方案轮投，每期一个位置",
+    "main_periods": 30,
+    "control": "主方案结束后单独运行三份随机三码30期",
+    "parallel_run": false,
+    "time_limit": "不设置时段限制",
+    "simulation_real_switch": "不启用自动切换",
+    "monitoring": "不启用投注监控和跳转",
+    "change_numbers_during_run": false
+  },
+  "funding_review": {
+    "flat_bet": {"decision": "SELECTED", "reason": "隔离选号规则效果，风险和解释最清楚"},
+    "linear_martingale": {"decision": "REJECT", "reason": "放大连挂风险并污染对照"},
+    "advanced_martingale": {"decision": "REJECT", "reason": "增加状态变量，当前软件交互证据不足"},
+    "simulation_switch_path": {"decision": "REJECT", "reason": "会改变样本暴露和真实成本"}
+  },
+  "risk": {
+    "cost_per_period": "3元",
+    "main_budget": "90元",
+    "control_budget": "90元",
+    "recommended_bankroll": "180元",
+    "take_profit": "不设置",
+    "stop_loss": "不设置",
+    "hard_stop": "每阶段满30期",
+    "reset": "阶段结束后关闭当前文件夹，再开始下一阶段",
+    "cap": "禁止倍投，单期固定3元"
+  },
+  "txt": {"encoding": "GBK", "line_endings": "CRLF", "scheme_creator": "EMPTY"},
+  "ppt": {
+    "stage": "PRE_RUN_SETUP",
+    "title": "前值转移三码",
+    "slides": 10,
+    "hidden_slides": 0,
+    "all_slides_have_notes": true,
+    "order": ["封面", "研究问题", "计算方法", "号码证据", "完整复算", "执行规则", "随机对照", "资金风险", "记录判定", "固定品牌页"],
+    "no_result_claim_before_run": true
+  },
+  "acceptance": [
+    "号码可从冻结数据和排序规则复算",
+    "主方案与随机对照物理分层",
+    "6份TXT为GBK CRLF且SchemeCreator为空",
+    "PPT、TXT、验证记录号码一致",
+    "外层ZIP根目录严格3项",
+    "GitHub Actions在当前main基线上通过"
+  ],
+  "failure_route": "任一关键逻辑漂移退回DIRECTOR或CONTRACT_FROZEN"
+}
