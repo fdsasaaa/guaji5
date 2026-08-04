@@ -1,5 +1,5 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "controller_id": "LOTTERY-CONTROLLER-V1",
   "status": "ACTIVE",
   "activated_by_pr": 16,
@@ -8,66 +8,36 @@
   "branch_required": true,
   "direct_main_write_forbidden": true,
   "max_rework_rounds": 3,
-  "default_delivery": [
-    "方案套ZIP",
-    "讲解PPTX"
-  ],
+  "default_delivery": ["完整交付ZIP"],
+  "function_orchestration": {
+    "config": "controller/function_orchestration.json",
+    "template": "controller/templates/function_orchestration.template.json",
+    "scorecard_template": "controller/templates/orchestration_scorecard.template.json",
+    "evidence_registry": "controller/feature_evidence_registry.json",
+    "coverage_ledger": "controller/function_coverage_ledger.json",
+    "validator": "tools/validate_function_orchestration.py",
+    "scoring_validator": "tools/validate_orchestration_scoring.py",
+    "pr_gate": "tools/validate_scheme_orchestration_gate.py",
+    "required_for_task_types": ["STANDARD_SCHEME_TASK"],
+    "required_evidence": "function_orchestration.json",
+    "missing_evidence_failure": "ORCHESTRATION_MISSING",
+    "must_pass_before_contract_freeze": true,
+    "central_evidence_level_cap_required": true,
+    "coverage_ledger_update_required": true,
+    "highest_eligible_score_required": true
+  },
   "phases": [
-    {
-      "id": "INTAKE",
-      "role": "接收一句话任务并形成结构化任务单",
-      "required_outputs": ["task.json"]
-    },
-    {
-      "id": "PREFLIGHT",
-      "role": "读取main、校验版本、输入、依赖与仓库健康状态",
-      "required_outputs": ["preflight.json", "rollback_manifest.json"]
-    },
-    {
-      "id": "DIRECTOR",
-      "role": "全能力审议、候选画像比较与方案架构选择",
-      "required_outputs": ["director_decision.json"]
-    },
-    {
-      "id": "CONTRACT_FROZEN",
-      "role": "冻结号码、监控、资金、风险、验证与PPT合同",
-      "required_outputs": ["design_contract.json"]
-    },
-    {
-      "id": "EXECUTION",
-      "role": "生成方案源、TXT、回测输入和PPT蓝图",
-      "required_outputs": ["execution_manifest.json"]
-    },
-    {
-      "id": "VALIDATION",
-      "role": "格式、编码、引用、数据、风险和运行验证",
-      "required_outputs": ["validation_report.json"]
-    },
-    {
-      "id": "AUDIT",
-      "role": "语义、重复、后验拟合、PPT一致性和交付审计",
-      "required_outputs": ["audit_report.json"]
-    },
-    {
-      "id": "REWORK",
-      "role": "按失败类型返回对应阶段，最多三轮",
-      "required_outputs": ["rework_record.json"]
-    },
-    {
-      "id": "DELIVERY",
-      "role": "生成并核对方案套ZIP与唯一讲解PPTX",
-      "required_outputs": ["delivery_manifest.json"]
-    },
-    {
-      "id": "LEARNING",
-      "role": "写入历史、覆盖、失败证据与规则候选，不自动晋级核心规则",
-      "required_outputs": ["learning_record.json"]
-    },
-    {
-      "id": "COMPLETED",
-      "role": "任务完成，所有证据可追踪",
-      "required_outputs": ["completion.json"]
-    }
+    {"id": "INTAKE", "role": "接收一句话任务并形成结构化任务单", "required_outputs": ["task.json"]},
+    {"id": "PREFLIGHT", "role": "读取main、校验版本、输入、依赖、功能覆盖债务与仓库健康状态", "required_outputs": ["preflight.json", "rollback_manifest.json"]},
+    {"id": "DIRECTOR", "role": "四类功能画像、八层能力、资金四路、更多设置、中央证据、评分与覆盖债务审议", "required_outputs": ["director_decision.json", "function_orchestration.json"]},
+    {"id": "CONTRACT_FROZEN", "role": "仅在功能编排、证据上限、评分和覆盖账本机器校验通过后冻结合同", "required_outputs": ["design_contract.json"]},
+    {"id": "EXECUTION", "role": "按冻结合同生成方案源、TXT、行为探针、回测输入和PPT蓝图", "required_outputs": ["execution_manifest.json"]},
+    {"id": "VALIDATION", "role": "格式、编码、引用、数据、资金暴露、功能编排和运行验证", "required_outputs": ["validation_report.json"]},
+    {"id": "AUDIT", "role": "语义、重复、评分、覆盖债务、后验拟合、PPT一致性和交付审计", "required_outputs": ["audit_report.json"]},
+    {"id": "REWORK", "role": "按失败类型返回对应阶段，最多三轮", "required_outputs": ["rework_record.json"]},
+    {"id": "DELIVERY", "role": "生成并核对完整交付ZIP；探针与正式方案必须物理分层", "required_outputs": ["delivery_manifest.json"]},
+    {"id": "LEARNING", "role": "写入历史、中央功能覆盖债务、失败证据与规则候选，不自动晋级核心规则", "required_outputs": ["learning_record.json"]},
+    {"id": "COMPLETED", "role": "任务完成，所有证据可追踪", "required_outputs": ["completion.json"]}
   ],
   "transitions": {
     "INTAKE": ["PREFLIGHT"],
@@ -85,6 +55,20 @@
   },
   "failure_routes": {
     "INPUT_OR_VERSION": "PREFLIGHT",
+    "ORCHESTRATION_MISSING": "DIRECTOR",
+    "PROFILE_FAMILY_INCOMPLETE": "DIRECTOR",
+    "PROFILE_NOT_MATERIAL": "DIRECTOR",
+    "FUNDING_REVIEW_INCOMPLETE": "DIRECTOR",
+    "MORE_SETTINGS_NOT_MATERIAL": "DIRECTOR",
+    "UNVERIFIED_FEATURE_SELECTED": "CONTRACT_FROZEN",
+    "BASELINE_ONLY_REPEAT_LIMIT": "DIRECTOR",
+    "COVERAGE_DEBT_UNRESOLVED": "DIRECTOR",
+    "NEW_STATE_AND_ADVANCED_FIRST_USE_CONFLICT": "DIRECTOR",
+    "EVIDENCE_LEVEL_EXCEEDS_REGISTRY": "CONTRACT_FROZEN",
+    "SCHEME_PR_EVIDENCE_MISSING": "DIRECTOR",
+    "COVERAGE_LEDGER_NOT_UPDATED": "DIRECTOR",
+    "SCORING_MISSING_OR_INVALID": "DIRECTOR",
+    "LOWER_SCORE_SELECTED_WITHOUT_EVIDENCE": "DIRECTOR",
     "LOGIC_OR_OVERFIT": "DIRECTOR",
     "CONTRACT_DRIFT": "CONTRACT_FROZEN",
     "TXT_OR_BUILD": "EXECUTION",
@@ -93,9 +77,9 @@
     "DELIVERY_INTEGRITY": "DELIVERY"
   },
   "learning_levels": {
-    "L1": "自动写入批次事实、覆盖和失败证据",
+    "L1": "自动写入批次事实、功能覆盖债务、画像评分和失败证据",
     "L2": "写入规则候选池，保持候选状态",
-    "L3": "只有多次证据、治理校验和独立PR通过后才可晋级正式规则"
+    "L3": "只有多次证据、样本外验证、治理校验和独立PR通过后才可晋级正式规则"
   },
   "rollback": {
     "base_ref_required": true,

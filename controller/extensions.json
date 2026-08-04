@@ -20,29 +20,29 @@
     },
     {
       "id": "SCHEME",
-      "purpose": "方案逻辑、TXT格式、枪弹组合、监控、正反投和资金路径",
-      "owned_paths": ["01_软件", "02_技术", "03_思路", "04_验证", "10_静默", "11_智能", "12_双期", "功能能力卡片", "资金路径模板库", "方案"],
+      "purpose": "方案逻辑、TXT格式、枪弹组合、监控、正反投、功能编排和资金路径",
+      "owned_paths": ["01_软件", "02_技术", "03_思路", "04_验证", "10_静默", "11_智能", "12_双期", "功能能力卡片", "资金路径模板库", "方案", "controller/runs/*/function_orchestration.json"],
       "protected_dependencies": ["PPT固定品牌页", "GitHub治理规则", "历史证据不可删除"],
-      "required_validators": ["tools/validate_repository.py", "tools/audit_scheme_semantics.py"],
-      "compatibility_contract": "正式TXT必须可导入、可追踪，并与设计合同一致",
-      "rollback_unit": "方案规则、模板、测试与对应索引"
+      "required_validators": ["tools/validate_repository.py", "tools/audit_scheme_semantics.py", "tools/validate_function_orchestration.py"],
+      "compatibility_contract": "正式TXT必须可导入、可追踪，并与通过机器校验的功能编排和设计合同一致",
+      "rollback_unit": "方案规则、功能编排、模板、测试与对应索引"
     },
     {
       "id": "PROGRAM",
       "purpose": "Python工具、构建器、校验器、自动化脚本与接口",
       "owned_paths": ["tools/", "05_工具/", ".github/workflows/"],
       "protected_dependencies": ["正式协议语义", "历史方案记录", "稳定交付格式"],
-      "required_validators": ["python语法检查", "tools/validate_repository.py", "相关专项校验"],
+      "required_validators": ["python语法检查", "tools/validate_repository.py", "tools/validate_controller_architecture.py", "tools/validate_function_orchestration.py --self-test"],
       "compatibility_contract": "程序升级必须向后兼容现有正式源，破坏性变化需迁移器",
       "rollback_unit": "单个工具或一组明确耦合的工具"
     },
     {
       "id": "SYSTEM",
-      "purpose": "总控流程、版本、状态、协议、治理、学习与回滚",
-      "owned_paths": ["AGENTS.md", "README.md", "SYSTEM_", "系统状态", "当前任务", "CHANGELOG", "00_", "09_", "13_", "14_", "controller/"],
+      "purpose": "总控流程、功能覆盖债务、版本、状态、协议、治理、学习与回滚",
+      "owned_paths": ["AGENTS.md", "README.md", "SYSTEM_", "系统状态", "当前任务", "CHANGELOG", "00_", "09_", "11_智能", "13_", "14_", "controller/"],
       "protected_dependencies": ["可导入TXT", "已验证PPT规则", "失败审计证据"],
-      "required_validators": ["tools/validate_repository.py", "tools/validate_controller_architecture.py"],
-      "compatibility_contract": "系统规则修改不得静默改变方案或PPT的已冻结含义",
+      "required_validators": ["tools/validate_repository.py", "tools/validate_controller_architecture.py", "tools/validate_function_orchestration.py --self-test --scan-runs"],
+      "compatibility_contract": "系统规则修改不得静默改变方案或PPT的已冻结含义；功能编排未通过不得冻结合同",
       "rollback_unit": "一个可解释的系统能力升级"
     },
     {

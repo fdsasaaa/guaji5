@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -21,6 +23,21 @@ jobs:
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
         run: python tools/lottery_controller.py validate
+      - name: Validate full-function orchestration
+        run: python tools/validate_function_orchestration.py --self-test --scan-runs
+      - name: Validate orchestration scoring
+        run: python tools/validate_orchestration_scoring.py --scan-runs
+      - name: Adversarial-test orchestration gates
+        run: python tools/test_orchestration_gates.py
+      - name: Validate scheme PR orchestration gate
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          if [ -n "$PR_BASE_SHA" ]; then
+            python tools/validate_scheme_orchestration_gate.py --base "$PR_BASE_SHA"
+          else
+            python tools/validate_scheme_orchestration_gate.py
+          fi
       - name: Smoke-test controller task envelope
         run: |
           python tools/lottery_controller.py start \
@@ -51,3 +68,12 @@ jobs:
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
+          test -f controller/function_orchestration.json
+          test -f controller/templates/function_orchestration.template.json
+          test -f controller/templates/orchestration_scorecard.template.json
+          test -f controller/feature_evidence_registry.json
+          test -f controller/function_coverage_ledger.json
+          test -f tools/validate_function_orchestration.py
+          test -f tools/validate_scheme_orchestration_gate.py
+          test -f tools/validate_orchestration_scoring.py
+          test -f tools/test_orchestration_gates.py

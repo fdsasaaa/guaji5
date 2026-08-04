@@ -1,0 +1,19 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "PREFLIGHT",
+  "status": "PASS",
+  "repository": "fdsasaaa/guaji5",
+  "base_commit": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "controller_status": "ACTIVE",
+  "root_cause_confirmed": true,
+  "root_cause": [
+    "协议存在但缺少机器证据格式",
+    "资金四路可被一句笼统拒绝绕过",
+    "更多设置可全部写成默认关闭",
+    "无连续纯平倍限制",
+    "无覆盖债务强制关闭机制"
+  ],
+  "scope": ["SYSTEM", "PROGRAM"],
+  "scheme_logic_changed": false,
+  "ppt_logic_changed": false
+}

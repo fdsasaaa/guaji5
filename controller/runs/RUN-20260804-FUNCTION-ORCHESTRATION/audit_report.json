@@ -1,0 +1,44 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "AUDIT",
+  "status": "PASS",
+  "findings": {
+    "doc_only_bypass_closed": true,
+    "scheme_pr_without_orchestration_evidence_blocked": true,
+    "self_declared_evidence_inflation_blocked": true,
+    "central_coverage_debt_cannot_be_silently_cleared": true,
+    "four_funding_paths_require_concrete_parameters": true,
+    "more_settings_require_material_configuration": true,
+    "flat_bet_remains_allowed_but_not_unreviewed_default": true,
+    "lower_score_selection_requires_evidence_override": true,
+    "new_unverified_state_features_are_probe_only": true,
+    "new_state_and_advanced_first_use_mixing_blocked": true,
+    "historical_runs_preserved_without_rewriting": true,
+    "no_existing_scheme_or_ppt_semantics_changed": true,
+    "no_files_deleted": true,
+    "force_push_and_auto_merge_disabled": true
+  },
+  "adversarial_questions": [
+    {
+      "question": "执行者能否只新增方案构建器而不生成function_orchestration.json？",
+      "answer": "不能；PR差异闸门检测方案构建、批次归档或YouTube配置信号并阻断。"
+    },
+    {
+      "question": "执行者能否把监控字段自行声明为E3后正式启用？",
+      "answer": "不能；中央证据注册表把监控上限固定为E1，伪造等级由对抗测试拒绝。"
+    },
+    {
+      "question": "执行者能否永远给出四套形式不同但实质相同的平倍画像？",
+      "answer": "不能；至少三个六维签名必须实质不同，复制画像测试会失败。"
+    },
+    {
+      "question": "执行者能否每次仍选平倍？",
+      "answer": "最多连续两批纯BASELINE_ONLY；之后必须交付非基准实验或隔离探针，除非所有到期功能均有证据化阻塞。"
+    },
+    {
+      "question": "执行者能否通过随意评分继续选自己偏好的方案？",
+      "answer": "评分必须10维、逐项给理由、总分可复算；默认必须选择最高分且正式合格项，低分覆盖需证据引用。"
+    }
+  ],
+  "conclusion": "本次修复从提示词约束升级为配置、中央证据、中央覆盖账本、透明评分、PR差异闸门和对抗测试的多层机器治理。"
+}

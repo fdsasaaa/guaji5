@@ -1,0 +1,43 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "VALIDATION",
+  "status": "PASS",
+  "branch": "agent/enforce-full-function-orchestration",
+  "validated_head": "4c8ae350c2391b2060247fc743171aad9d34c9c2",
+  "pull_request": 19,
+  "github_actions": {
+    "workflow": "Validate system repository",
+    "run_id": 30881063902,
+    "run_number": 360,
+    "conclusion": "success"
+  },
+  "checks": {
+    "repository": "PASS",
+    "controller_architecture": "PASS",
+    "controller_runtime_configuration": "PASS",
+    "function_orchestration_self_test_and_scan": "PASS",
+    "orchestration_scoring_scan": "PASS",
+    "adversarial_gate_tests": "PASS",
+    "scheme_pr_orchestration_gate": "PASS",
+    "base_to_branch_ledger_transition": "PASS",
+    "historical_run_ledger_immutability": "PASS",
+    "controller_smoke_test": "PASS",
+    "ppt_director_and_number_provenance": "PASS",
+    "fixed_ppt_pages": "PASS"
+  },
+  "negative_tests": {
+    "flat_only_superficial_review_rejected": true,
+    "copied_profiles_rejected": true,
+    "E2_advanced_state_formal_selection_rejected": true,
+    "monitoring_E1_inflated_to_E3_rejected": true,
+    "central_due_features_cleared_rejected": true,
+    "stale_coverage_ledger_rejected": true,
+    "old_evidence_cannot_close_future_ledger": true,
+    "missing_scorecard_rejected": true,
+    "lower_score_selected_without_evidence_rejected": true
+  },
+  "limitations": [
+    "监控、高级状态倍投和模拟/真实切换当前最高证据低于E3，因此下一批只能进入具体候选或隔离探针，不能伪装为成熟正式功能。",
+    "本次是系统升级，不生成新的方案交付物。"
+  ]
+}

@@ -1,0 +1,42 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "CONTRACT_FROZEN",
+  "status": "FROZEN",
+  "contract_version": 1,
+  "goal": "让总控能够证明自己全面审议并实质设计软件功能，而不是长期回退到静态号码、轮投和平倍1序列",
+  "mandatory_outputs_for_future_standard_task": [
+    "controller/runs/<RUN_ID>/function_orchestration.json",
+    "四类画像",
+    "逐画像A—H八层",
+    "四条具体资金路径",
+    "至少两类更多设置具体候选",
+    "重复与覆盖债务记录",
+    "正式选择或隔离探针"
+  ],
+  "hard_limits": {
+    "minimum_profiles": 4,
+    "minimum_distinct_signatures": 3,
+    "minimum_material_more_settings": 2,
+    "funding_kinds": 4,
+    "formal_selection_minimum_evidence": "E3",
+    "probe_max_periods": 30,
+    "baseline_only_max_consecutive": 2,
+    "exploration_window_batches": 3,
+    "max_rework_rounds": 3
+  },
+  "non_goals": [
+    "强迫每套方案使用高级倍投",
+    "把所有按钮一次性混装",
+    "修改既有号码语义",
+    "伪造软件字段或E3证据"
+  ],
+  "acceptance": [
+    "有效综合夹具通过",
+    "纯平倍空审议夹具失败",
+    "伪多画像夹具失败",
+    "E2高级状态正式入选夹具失败",
+    "CI运行新校验器",
+    "流水线在合同冻结前要求function_orchestration.json",
+    "系统清单和扩展域登记新能力"
+  ]
+}

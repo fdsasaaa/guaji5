@@ -1,0 +1,34 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "DIRECTOR",
+  "status": "SELECTED",
+  "candidate_architectures": [
+    {
+      "id": "DOC_ONLY",
+      "decision": "REJECTED",
+      "reason": "继续增加文字规则无法阻止执行者形式化写关闭理由"
+    },
+    {
+      "id": "FORCE_COMPLEX_FEATURE_EVERY_BATCH",
+      "decision": "REJECTED",
+      "reason": "会从功能失忆滑向功能堆砌并增加多变量风险"
+    },
+    {
+      "id": "MACHINE_ENFORCED_ORCHESTRATION",
+      "decision": "SELECTED",
+      "reason": "用证据模板、负面自测、CI失败门槛、连续平倍限制和覆盖债务实现可执行治理"
+    }
+  ],
+  "selected_components": [
+    "四类候选画像",
+    "逐画像A—H八层",
+    "资金四路具体量化",
+    "至少两类更多设置具体参数",
+    "E3正式入选门槛",
+    "隔离单变量探针",
+    "连续纯平倍上限",
+    "重复惩罚",
+    "功能覆盖债务",
+    "GitHub Actions自测和扫描"
+  ]
+}

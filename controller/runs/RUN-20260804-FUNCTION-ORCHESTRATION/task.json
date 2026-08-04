@@ -1,0 +1,10 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "task_type": "SYSTEM_UPGRADE_ONLY",
+  "request": "修复总控长期只使用平倍、直线倍投1序列且未主动形成监控、高级倍投、跳转、模拟切换等具体候选的问题",
+  "domains": ["SYSTEM", "PROGRAM"],
+  "base_branch": "main",
+  "base_commit": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "task_branch": "agent/enforce-full-function-orchestration",
+  "confirmation_policy": "DIRECT_EXECUTION_NO_SECOND_CONFIRMATION"
+}

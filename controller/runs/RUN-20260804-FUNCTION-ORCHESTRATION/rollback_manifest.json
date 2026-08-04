@@ -1,0 +1,19 @@
+{
+  "run_id": "RUN-20260804-FUNCTION-ORCHESTRATION",
+  "phase": "PREFLIGHT",
+  "upgrade_id": "FUNCTION-ORCHESTRATION-V1",
+  "base_branch": "main",
+  "base_commit": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "task_branch": "agent/enforce-full-function-orchestration",
+  "rollback_record": "docs/upgrades/2026-08-04_FUNCTION_ORCHESTRATION_V1.rollback.json",
+  "force_push_allowed": false,
+  "auto_merge_allowed": false,
+  "delete_allowed": false,
+  "rollback_order": [
+    "停止新方案生成",
+    "创建恢复分支",
+    "revert合并提交或按记录恢复修改前blob",
+    "运行仓库、总控和功能编排全部校验",
+    "保留失败分支与CI证据"
+  ]
+}
