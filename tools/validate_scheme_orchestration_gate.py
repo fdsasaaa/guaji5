@@ -10,8 +10,7 @@ from pathlib import Path
 from typing import Any
 
 ROOT = Path(__file__).resolve().parents[1]
-CORE_PATH = ROOT / "tools" / "validate_function_orchestration.py"
-sys.path.insert(0, str(CORE_PATH.parent))
+sys.path.insert(0, str(ROOT / "tools"))
 import validate_function_orchestration as core
 
 LEVEL = {f"E{i}": i for i in range(8)}
@@ -19,7 +18,6 @@ SCHEME_PATTERNS = [
     re.compile(r"^tools/build_.*delivery\.py$"),
     re.compile(r"^03_批次归档/.*\.json$"),
     re.compile(r"^youtube_seo/.*\.json$"),
-    re.compile(r"^controller/runs/[^/]+/task\.json$"),
 ]
 FUNDING_REGISTRY = {
     "FLAT": "FUNDING_FLAT",
@@ -37,6 +35,7 @@ MORE_SETTING_REGISTRY = {
     "BET_DIRECTION": "BET_DIRECTION",
     "ROTATION_OR_COMBINATION": "ROTATION_OR_COMBINATION",
 }
+OUTCOMES = {"CANDIDATE", "PROBE_ONLY", "SELECTED", "BLOCKED"}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -59,18 +58,35 @@ def git_changed(base: str) -> list[str]:
     return [line.strip() for line in process.stdout.splitlines() if line.strip()]
 
 
+def git_show_json(base: str, path: str) -> dict[str, Any] | None:
+    try:
+        process = subprocess.run(
+            ["git", "show", f"{base}:{path}"],
+            cwd=ROOT,
+            text=True,
+            capture_output=True,
+            check=True,
+        )
+        return json.loads(process.stdout)
+    except Exception:
+        return None
+
+
 def registry_map(registry: dict[str, Any]) -> dict[str, dict[str, Any]]:
     return {item["feature_id"]: item for item in registry.get("features", [])}
 
 
 def check_claim(
     errors: list[str],
-    feature_id: str,
+    feature_id: Any,
     claimed: Any,
     refs: Any,
     registry: dict[str, dict[str, Any]],
     label: str,
 ) -> None:
+    if not isinstance(feature_id, str) or not feature_id:
+        errors.append(f"{label}: feature_id缺失")
+        return
     item = registry.get(feature_id)
     if not item:
         errors.append(f"{label}: 未登记功能{feature_id}")
@@ -93,15 +109,17 @@ def check_claim(
         errors.append(f"{label}: 引用未登记证据{sorted(unknown)}")
 
 
-def validate_registry_and_ledger(
+def validate_registry(
     evidence: dict[str, Any],
     registry_object: dict[str, Any],
-    ledger: dict[str, Any],
 ) -> list[str]:
     errors: list[str] = []
     registry = registry_map(registry_object)
 
     for profile in evidence.get("candidate_profiles", []):
+        if not isinstance(profile, dict):
+            errors.append("候选画像必须为对象")
+            continue
         profile_id = profile.get("profile_id", "<unknown>")
         claims = profile.get("feature_evidence", [])
         if not isinstance(claims, list) or not claims:
@@ -113,7 +131,8 @@ def validate_registry_and_ledger(
                 errors.append(f"{profile_id}: feature_evidence项必须为对象")
                 continue
             feature_id = claim.get("feature_id")
-            claimed_ids.add(feature_id)
+            if isinstance(feature_id, str):
+                claimed_ids.add(feature_id)
             check_claim(
                 errors,
                 feature_id,
@@ -122,11 +141,14 @@ def validate_registry_and_ledger(
                 registry,
                 f"{profile_id}.{feature_id}",
             )
-        features = set(profile.get("features", []))
+        features = set(profile.get("features", [])) if isinstance(profile.get("features"), list) else set()
         if not features.issubset(claimed_ids):
             errors.append(f"{profile_id}: features缺少证据声明{sorted(features - claimed_ids)}")
 
     for path in evidence.get("funding_paths", []):
+        if not isinstance(path, dict):
+            errors.append("资金路径必须为对象")
+            continue
         feature_id = FUNDING_REGISTRY.get(path.get("kind"))
         if feature_id:
             check_claim(
@@ -139,6 +161,9 @@ def validate_registry_and_ledger(
             )
 
     for setting in evidence.get("more_settings_review", []):
+        if not isinstance(setting, dict):
+            errors.append("更多设置记录必须为对象")
+            continue
         category = setting.get("category")
         feature_id = MORE_SETTING_REGISTRY.get(category)
         if feature_id:
@@ -150,37 +175,63 @@ def validate_registry_and_ledger(
                 registry,
                 f"更多设置{category}",
             )
+    return errors
 
-    due = ledger.get("next_due_features", [])
+
+def validate_ledger_transition(
+    evidence: dict[str, Any],
+    base_ledger: dict[str, Any],
+) -> list[str]:
+    errors: list[str] = []
+    due = base_ledger.get("next_due_features", [])
     evidence_due = evidence.get("coverage_debt", {}).get("due_features", [])
     if evidence_due != due:
-        errors.append(f"coverage_debt.due_features必须等于中央账本: expected={due}, actual={evidence_due}")
+        errors.append(f"coverage_debt.due_features必须等于基线中央账本: expected={due}, actual={evidence_due}")
     update = evidence.get("ledger_update", {})
-    if update.get("from_sequence") != ledger.get("sequence"):
-        errors.append("ledger_update.from_sequence与中央账本不一致")
-    if update.get("to_sequence") != ledger.get("sequence", -1) + 1:
-        errors.append("ledger_update.to_sequence必须加1")
+    if not isinstance(update, dict):
+        return errors + ["ledger_update必须为对象"]
+    base_sequence = base_ledger.get("sequence")
+    if update.get("from_sequence") != base_sequence:
+        errors.append("ledger_update.from_sequence与基线中央账本不一致")
+    if not isinstance(base_sequence, int) or update.get("to_sequence") != base_sequence + 1:
+        errors.append("ledger_update.to_sequence必须相对基线加1")
     outcomes = update.get("outcomes", {})
+    if not isinstance(outcomes, dict):
+        outcomes = {}
+        errors.append("ledger_update.outcomes必须为对象")
     for feature_id in due:
         outcome = outcomes.get(feature_id)
         if not isinstance(outcome, dict):
             errors.append(f"到期功能缺少结果: {feature_id}")
             continue
-        if outcome.get("outcome") not in {"CANDIDATE", "PROBE_ONLY", "SELECTED", "BLOCKED"}:
+        result = outcome.get("outcome")
+        if result not in OUTCOMES:
             errors.append(f"{feature_id}: outcome无效")
-        if not outcome.get("evidence_ref"):
+        if not str(outcome.get("evidence_ref", "")).strip():
             errors.append(f"{feature_id}: 缺少结果证据引用")
+        if result == "BLOCKED" and not str(outcome.get("blocked_reason", "")).strip():
+            errors.append(f"{feature_id}: BLOCKED缺少blocked_reason")
     next_due = update.get("next_due_features")
     if not isinstance(next_due, list) or not next_due:
         errors.append("ledger_update.next_due_features不能为空")
+    if len(next_due) != len(set(next_due)):
+        errors.append("ledger_update.next_due_features存在重复")
     return errors
+
+
+def validate_registry_and_ledger(
+    evidence: dict[str, Any],
+    registry_object: dict[str, Any],
+    base_ledger: dict[str, Any],
+) -> list[str]:
+    return validate_registry(evidence, registry_object) + validate_ledger_transition(evidence, base_ledger)
 
 
 def validate_run(
     run_dir: Path,
     config: dict[str, Any],
     registry: dict[str, Any],
-    ledger: dict[str, Any],
+    base_ledger: dict[str, Any] | None = None,
 ) -> list[str]:
     errors: list[str] = []
     task = load(run_dir / "task.json")
@@ -194,7 +245,9 @@ def validate_run(
             errors.append(f"{required}缺失")
     evidence = load(evidence_path)
     errors += core.validate_evidence(evidence, config)
-    errors += validate_registry_and_ledger(evidence, registry, ledger)
+    errors += validate_registry(evidence, registry)
+    if base_ledger is not None:
+        errors += validate_ledger_transition(evidence, base_ledger)
     return errors
 
 
@@ -208,37 +261,64 @@ def validate_branch_ledger(
     if not evidence_paths:
         return errors
     if "controller/function_coverage_ledger.json" not in changed:
-        errors.append("标准方案PR必须更新中央功能覆盖账本")
-        return errors
+        return ["标准方案PR必须更新中央功能覆盖账本"]
     if base_ledger is None:
-        errors.append("无法读取基线功能覆盖账本")
-        return errors
-    if branch_ledger.get("sequence") != base_ledger.get("sequence", -1) + 1:
-        errors.append("中央功能覆盖账本sequence必须加1")
+        return ["无法读取基线功能覆盖账本"]
     if len(evidence_paths) != 1:
-        errors.append("一个PR只能关闭一个标准方案批次的覆盖债务")
-        return errors
+        return ["一个PR只能关闭一个标准方案批次的覆盖债务"]
+
     evidence = load(evidence_paths[0])
     update = evidence.get("ledger_update", {})
+    run_id = evidence.get("run_id")
+    base_sequence = base_ledger.get("sequence")
+    if not isinstance(base_sequence, int) or branch_ledger.get("sequence") != base_sequence + 1:
+        errors.append("中央功能覆盖账本sequence必须相对基线加1")
+    if branch_ledger.get("sequence") != update.get("to_sequence"):
+        errors.append("分支账本sequence与证据ledger_update.to_sequence不一致")
     if branch_ledger.get("next_due_features") != update.get("next_due_features"):
         errors.append("分支账本next_due_features与证据ledger_update不一致")
-    if branch_ledger.get("last_run_id") != evidence.get("run_id"):
+    if branch_ledger.get("last_run_id") != run_id:
         errors.append("分支账本last_run_id与本次run_id不一致")
+
+    branch_features = branch_ledger.get("features", {})
+    if not isinstance(branch_features, dict):
+        return errors + ["分支账本features必须为对象"]
+    outcomes = update.get("outcomes", {})
+    for feature_id in base_ledger.get("next_due_features", []):
+        outcome = outcomes.get(feature_id, {}) if isinstance(outcomes, dict) else {}
+        entry = branch_features.get(feature_id)
+        if not isinstance(entry, dict):
+            errors.append(f"分支账本缺少到期功能: {feature_id}")
+            continue
+        result = outcome.get("outcome")
+        if result in {"CANDIDATE", "PROBE_ONLY", "SELECTED"}:
+            if entry.get("last_material_candidate_run") != run_id:
+                errors.append(f"{feature_id}: last_material_candidate_run未更新")
+            if entry.get("consecutive_not_material") != 0:
+                errors.append(f"{feature_id}: consecutive_not_material未清零")
+        if result == "SELECTED" and entry.get("last_selected_run") != run_id:
+            errors.append(f"{feature_id}: last_selected_run未更新")
+        if result == "BLOCKED":
+            if entry.get("blocked_reason") != outcome.get("blocked_reason"):
+                errors.append(f"{feature_id}: blocked_reason未同步")
+            if entry.get("blocked_evidence_ref") != outcome.get("evidence_ref"):
+                errors.append(f"{feature_id}: blocked_evidence_ref未同步")
     return errors
 
 
-def git_show_json(base: str, path: str) -> dict[str, Any] | None:
-    try:
-        process = subprocess.run(
-            ["git", "show", f"{base}:{path}"],
-            cwd=ROOT,
-            text=True,
-            capture_output=True,
-            check=True,
-        )
-        return json.loads(process.stdout)
-    except Exception:
-        return None
+def changed_standard_task(changed: list[str]) -> bool:
+    for path in changed:
+        if not re.fullmatch(r"controller/runs/[^/]+/task\.json", path):
+            continue
+        target = ROOT / path
+        if not target.exists():
+            continue
+        try:
+            if load(target).get("task_type") == "STANDARD_SCHEME_TASK":
+                return True
+        except Exception:
+            return True
+    return False
 
 
 def main() -> int:
@@ -248,20 +328,28 @@ def main() -> int:
 
     config = load(ROOT / "controller" / "function_orchestration.json")
     registry = load(ROOT / "controller" / "feature_evidence_registry.json")
-    ledger = load(ROOT / "controller" / "function_coverage_ledger.json")
+    branch_ledger = load(ROOT / "controller" / "function_coverage_ledger.json")
     errors: list[str] = []
 
+    # Historical runs are immutable evidence. Validate their internal semantics and
+    # registry claims only; never reinterpret an old run against a later ledger state.
     for task_path in sorted((ROOT / "controller" / "runs").glob("*/task.json")):
-        run_errors = validate_run(task_path.parent, config, registry, ledger)
+        run_errors = validate_run(task_path.parent, config, registry, None)
         errors += [f"{task_path.parent.relative_to(ROOT)}: {error}" for error in run_errors]
 
     changed: list[str] = []
+    base_ledger: dict[str, Any] | None = None
     if args.base:
         try:
             changed = git_changed(args.base)
+            base_ledger = git_show_json(args.base, "controller/function_coverage_ledger.json")
         except RuntimeError as exc:
             errors.append(str(exc))
-    scheme_signal = any(any(pattern.match(path) for pattern in SCHEME_PATTERNS) for path in changed)
+
+    scheme_signal = (
+        any(any(pattern.match(path) for pattern in SCHEME_PATTERNS) for path in changed)
+        or changed_standard_task(changed)
+    )
     changed_evidence = [
         ROOT / path
         for path in changed
@@ -269,15 +357,16 @@ def main() -> int:
     ]
     if scheme_signal and not changed_evidence:
         errors.append("标准方案PR出现方案交付信号但没有新增function_orchestration.json")
+
     for path in changed_evidence:
         if not path.exists():
             errors.append(f"变更证据不存在: {path.relative_to(ROOT)}")
             continue
-        run_errors = validate_run(path.parent, config, registry, ledger)
+        run_errors = validate_run(path.parent, config, registry, base_ledger)
         errors += [f"{path.parent.relative_to(ROOT)}: {error}" for error in run_errors]
+
     if changed_evidence:
-        base_ledger = git_show_json(args.base, "controller/function_coverage_ledger.json") if args.base else None
-        errors += validate_branch_ledger(changed, changed_evidence, base_ledger, ledger)
+        errors += validate_branch_ledger(changed, changed_evidence, base_ledger, branch_ledger)
 
     if errors:
         print("SCHEME_ORCHESTRATION_GATE_INVALID")
