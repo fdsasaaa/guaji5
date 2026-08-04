@@ -2,7 +2,7 @@
   "schema_version": 1,
   "upgrade_id": "CONTROLLER-PIPELINE-V1",
   "date": "2026-08-04",
-  "status": "DRAFT_PR_VALIDATED",
+  "status": "MERGED_ACTIVE",
   "repository": "fdsasaaa/guaji5",
   "base_branch": "main",
   "base_commit": "6df377889c82ec20f7f8de7c5d7797d898b22454",
@@ -13,14 +13,25 @@
   "failed_evidence_must_remain": true,
   "pr": {
     "number": 16,
-    "draft": true,
+    "draft": false,
+    "merged": true,
     "base": "main",
     "head": "agent/controller-pipeline-rollback-extensibility",
-    "initial_validated_head": "fe8bdf68ea45d0d18c2c650f00e66991ad73f0f4",
-    "workflow_run_id": 30875695751,
-    "workflow_run_number": 253,
+    "final_head": "f953a1aaf9ed79cbe2f129128c495c29e826152c",
+    "merge_commit": "2dc89ebe01f4d2f1804735140ce55c42ee447a5b",
+    "merged_at": "2026-08-04T12:02:54+08:00",
+    "workflow_run_id": 30875759115,
+    "workflow_run_number": 257,
     "workflow_conclusion": "success",
-    "main_modified": false
+    "main_modified": true
+  },
+  "activation_closure": {
+    "reason": "replace pre-merge candidate marker with ACTIVE after PR #16 merged",
+    "branch": "agent/activate-controller-after-merge",
+    "pipeline_status": "ACTIVE",
+    "activated_by_pr": 16,
+    "activated_at_commit": "2dc89ebe01f4d2f1804735140ce55c42ee447a5b",
+    "validator_prevents_candidate_regression": true
   },
   "files": [
     {
@@ -74,9 +85,10 @@
     },
     {
       "path": "controller/pipeline.json",
-      "action": "CREATE",
+      "action": "CREATE_THEN_ACTIVATE",
       "before_blob_sha": null,
-      "after_blob_sha": "3e9d245f383c3fc5f9948937a07bbbc1b621be49",
+      "merged_blob_sha": "3e9d245f383c3fc5f9948937a07bbbc1b621be49",
+      "active_blob_sha": "2dbd42d48d7e57fc00e59cbdc1abb75d4e47d332",
       "rollback": "delete only through a reviewed revert commit"
     },
     {
@@ -95,21 +107,23 @@
     },
     {
       "path": "tools/validate_controller_architecture.py",
-      "action": "CREATE",
+      "action": "CREATE_THEN_HARDEN",
       "before_blob_sha": null,
-      "after_blob_sha": "09afe1b3c345b0583dc147df54b4050dcf1613c1",
+      "merged_blob_sha": "09afe1b3c345b0583dc147df54b4050dcf1613c1",
+      "active_blob_sha": "ba081ca0f70c00a1af559604a2c2ff73f6655148",
       "rollback": "delete only through a reviewed revert commit"
     },
     {
       "path": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md",
-      "action": "CREATE",
+      "action": "CREATE_THEN_FINALIZE",
       "before_blob_sha": null,
-      "after_blob_sha": "59c796fa358b07835c2f1c044cc5c1bd189e596e",
+      "merged_blob_sha": "59c796fa358b07835c2f1c044cc5c1bd189e596e",
+      "active_blob_sha": "e32257c18e5897fed2eb69ae1812139465321679",
       "rollback": "preserve as historical evidence even if functionality is reverted"
     },
     {
       "path": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.rollback.json",
-      "action": "CREATE",
+      "action": "CREATE_THEN_FINALIZE",
       "before_blob_sha": null,
       "after_blob_sha": "SELF_AFTER_WRITE",
       "rollback": "preserve as historical evidence"
