@@ -100,6 +100,13 @@
       "max_formal_level": "E3",
       "evidence_refs": ["HISTORICAL-RANDOM-CONTROL-RUNTIME"],
       "boundary": "仅用于同成本对照"
+    },
+    {
+      "feature_id": "RISK_HARD_STOP",
+      "name": "固定期数硬停止",
+      "max_formal_level": "E3",
+      "evidence_refs": ["PROCEDURAL-PERIOD-HARD-STOP"],
+      "boundary": "这是外部程序或人工强制停止边界，不证明软件内部盈亏停止字段的E3行为"
     }
   ]
 }
