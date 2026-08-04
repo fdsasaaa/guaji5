@@ -38,6 +38,7 @@
     "在客户页面出现内部纠错和工程语言"
   ],
   "仓库记录": "03_批次归档/BATCH-B395-ADJACENT-GAP-001.json",
+  "版本": "V3.9.2",
   "基线仓库": "fdsasaaa/guaji5",
   "基线分支": "main",
   "任务分支": "agent/ppt-number-provenance-gate",
