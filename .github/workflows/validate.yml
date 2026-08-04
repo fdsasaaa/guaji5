@@ -33,7 +33,7 @@ jobs:
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          if [ -n "$PR_BASE_SHA" ] && git diff --name-only "$PR_BASE_SHA...HEAD" | grep -Eq '^(tools/build_.*delivery\.py|03_批次归档/|youtube_seo/)'; then
+          if [ -n "$PR_BASE_SHA" ]; then
             python tools/validate_scheme_orchestration_gate.py --base "$PR_BASE_SHA"
           else
             python tools/validate_scheme_orchestration_gate.py
