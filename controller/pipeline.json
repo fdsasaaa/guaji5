@@ -1,0 +1,114 @@
+{
+  "schema_version": 1,
+  "controller_id": "LOTTERY-CONTROLLER-V1",
+  "status": "CANDIDATE_UNTIL_MERGED",
+  "stable_source": "main",
+  "branch_required": true,
+  "direct_main_write_forbidden": true,
+  "max_rework_rounds": 3,
+  "default_delivery": [
+    "方案套ZIP",
+    "讲解PPTX"
+  ],
+  "phases": [
+    {
+      "id": "INTAKE",
+      "role": "接收一句话任务并形成结构化任务单",
+      "required_outputs": ["task.json"]
+    },
+    {
+      "id": "PREFLIGHT",
+      "role": "读取main、校验版本、输入、依赖与仓库健康状态",
+      "required_outputs": ["preflight.json", "rollback_manifest.json"]
+    },
+    {
+      "id": "DIRECTOR",
+      "role": "全能力审议、候选画像比较与方案架构选择",
+      "required_outputs": ["director_decision.json"]
+    },
+    {
+      "id": "CONTRACT_FROZEN",
+      "role": "冻结号码、监控、资金、风险、验证与PPT合同",
+      "required_outputs": ["design_contract.json"]
+    },
+    {
+      "id": "EXECUTION",
+      "role": "生成方案源、TXT、回测输入和PPT蓝图",
+      "required_outputs": ["execution_manifest.json"]
+    },
+    {
+      "id": "VALIDATION",
+      "role": "格式、编码、引用、数据、风险和运行验证",
+      "required_outputs": ["validation_report.json"]
+    },
+    {
+      "id": "AUDIT",
+      "role": "语义、重复、后验拟合、PPT一致性和交付审计",
+      "required_outputs": ["audit_report.json"]
+    },
+    {
+      "id": "REWORK",
+      "role": "按失败类型返回对应阶段，最多三轮",
+      "required_outputs": ["rework_record.json"]
+    },
+    {
+      "id": "DELIVERY",
+      "role": "生成并核对方案套ZIP与唯一讲解PPTX",
+      "required_outputs": ["delivery_manifest.json"]
+    },
+    {
+      "id": "LEARNING",
+      "role": "写入历史、覆盖、失败证据与规则候选，不自动晋级核心规则",
+      "required_outputs": ["learning_record.json"]
+    },
+    {
+      "id": "COMPLETED",
+      "role": "任务完成，所有证据可追踪",
+      "required_outputs": ["completion.json"]
+    }
+  ],
+  "transitions": {
+    "INTAKE": ["PREFLIGHT"],
+    "PREFLIGHT": ["DIRECTOR", "BLOCKED"],
+    "DIRECTOR": ["CONTRACT_FROZEN", "BLOCKED"],
+    "CONTRACT_FROZEN": ["EXECUTION", "DIRECTOR"],
+    "EXECUTION": ["VALIDATION", "REWORK", "BLOCKED"],
+    "VALIDATION": ["AUDIT", "REWORK", "BLOCKED"],
+    "AUDIT": ["DELIVERY", "REWORK", "BLOCKED"],
+    "REWORK": ["DIRECTOR", "CONTRACT_FROZEN", "EXECUTION", "VALIDATION", "AUDIT", "BLOCKED"],
+    "DELIVERY": ["LEARNING", "REWORK", "BLOCKED"],
+    "LEARNING": ["COMPLETED", "BLOCKED"],
+    "COMPLETED": [],
+    "BLOCKED": []
+  },
+  "failure_routes": {
+    "INPUT_OR_VERSION": "PREFLIGHT",
+    "LOGIC_OR_OVERFIT": "DIRECTOR",
+    "CONTRACT_DRIFT": "CONTRACT_FROZEN",
+    "TXT_OR_BUILD": "EXECUTION",
+    "DATA_OR_BACKTEST": "VALIDATION",
+    "PPT_OR_SEMANTIC": "AUDIT",
+    "DELIVERY_INTEGRITY": "DELIVERY"
+  },
+  "learning_levels": {
+    "L1": "自动写入批次事实、覆盖和失败证据",
+    "L2": "写入规则候选池，保持候选状态",
+    "L3": "只有多次证据、治理校验和独立PR通过后才可晋级正式规则"
+  },
+  "rollback": {
+    "base_ref_required": true,
+    "base_commit_required_before_write": true,
+    "changed_files_hash_required": true,
+    "validation_evidence_required": true,
+    "failed_version_evidence_must_remain": true,
+    "rollback_target": "last_verified_main_commit",
+    "force_push_forbidden": true
+  },
+  "cleanup": {
+    "default_action": "PLAN_ONLY",
+    "direct_delete_forbidden": true,
+    "quarantine_first": true,
+    "reference_scan_required": true,
+    "restore_manifest_required": true
+  }
+}

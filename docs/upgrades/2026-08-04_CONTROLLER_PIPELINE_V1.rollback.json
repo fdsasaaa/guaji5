@@ -1,0 +1,134 @@
+{
+  "schema_version": 1,
+  "upgrade_id": "CONTROLLER-PIPELINE-V1",
+  "date": "2026-08-04",
+  "status": "DRAFT_PR_VALIDATED",
+  "repository": "fdsasaaa/guaji5",
+  "base_branch": "main",
+  "base_commit": "6df377889c82ec20f7f8de7c5d7797d898b22454",
+  "working_branch": "agent/controller-pipeline-rollback-extensibility",
+  "domains": ["SYSTEM", "PROGRAM"],
+  "force_push_allowed": false,
+  "auto_merge_allowed": false,
+  "failed_evidence_must_remain": true,
+  "pr": {
+    "number": 16,
+    "draft": true,
+    "base": "main",
+    "head": "agent/controller-pipeline-rollback-extensibility",
+    "initial_validated_head": "fe8bdf68ea45d0d18c2c650f00e66991ad73f0f4",
+    "workflow_run_id": 30875695751,
+    "workflow_run_number": 253,
+    "workflow_conclusion": "success",
+    "main_modified": false
+  },
+  "files": [
+    {
+      "path": "AGENTS.md",
+      "action": "UPDATE",
+      "before_blob_sha": "57f0a4b4f8de71888ee62b6bd3af3d7779d23907",
+      "after_blob_sha": "3529885017295352b11e5baf9245deca403ee0d3",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": "README.md",
+      "action": "UPDATE",
+      "before_blob_sha": "64aa7eb6a069418e89da913cd8bad032b85d12a5",
+      "after_blob_sha": "258c015600ea5db2471edb1051516d808f63f86d",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": "13_GitHub持续工作区与参考灵感自由重构协议.md",
+      "action": "UPDATE",
+      "before_blob_sha": "9314871addd4198c931969ea15ff432cad39fac0",
+      "after_blob_sha": "aac4ecf9abd3b8cf5c2fda2c87585beae1059380",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": ".github/workflows/validate.yml",
+      "action": "UPDATE",
+      "before_blob_sha": "e2012237987388505c40a10032ea2748bb9ad72a",
+      "after_blob_sha": "8983fbd8d3159217b68bfb071320d1adc2369f73",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": ".gitignore",
+      "action": "UPDATE",
+      "before_blob_sha": "39bc171b8141c5a976b0d9c3b939dc162ad06a48",
+      "after_blob_sha": "b82c47d67d7b309e86acaa8586d0afc3f433f7c7",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": "SYSTEM_MANIFEST.json",
+      "action": "UPDATE",
+      "before_blob_sha": "d9423328915cb757ef75e62b6ce1185193755808",
+      "after_blob_sha": "3dbe270ae3ed1a5bd527f480cb0d36d78521d510",
+      "rollback": "restore before_blob_sha through a new commit"
+    },
+    {
+      "path": "14_导演执行审计学习总控与模块化变更协议.md",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "fa43e04cf5f57e6ebf5e8d6f053fca72ab8844a3",
+      "rollback": "delete only through a reviewed revert commit"
+    },
+    {
+      "path": "controller/pipeline.json",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "3e9d245f383c3fc5f9948937a07bbbc1b621be49",
+      "rollback": "delete only through a reviewed revert commit"
+    },
+    {
+      "path": "controller/extensions.json",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "7048a4e66fcecc130c7c759cb7e4983795305db9",
+      "rollback": "delete only through a reviewed revert commit"
+    },
+    {
+      "path": "tools/lottery_controller.py",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "6a192605fc2ab81e0859d52e4a035c1f7e0568f1",
+      "rollback": "delete only through a reviewed revert commit"
+    },
+    {
+      "path": "tools/validate_controller_architecture.py",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "09afe1b3c345b0583dc147df54b4050dcf1613c1",
+      "rollback": "delete only through a reviewed revert commit"
+    },
+    {
+      "path": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "59c796fa358b07835c2f1c044cc5c1bd189e596e",
+      "rollback": "preserve as historical evidence even if functionality is reverted"
+    },
+    {
+      "path": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.rollback.json",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "preserve as historical evidence"
+    }
+  ],
+  "required_checks": [
+    "python tools/validate_repository.py",
+    "python tools/validate_controller_architecture.py",
+    "python tools/lottery_controller.py validate",
+    "controller smoke test",
+    "existing PPT director validation",
+    "existing fixed-page materialization and validation"
+  ],
+  "rollback_sequence": [
+    "preserve failing branch, commits and CI logs",
+    "create a new recovery branch from the last verified main commit",
+    "revert the merge or restore listed before_blob_sha versions",
+    "run repository and affected-domain validators",
+    "open a separate recovery PR",
+    "merge without force-push after review"
+  ]
+}

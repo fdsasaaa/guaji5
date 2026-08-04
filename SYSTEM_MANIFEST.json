@@ -24,30 +24,99 @@
     "11_智能功能调度与资金路径编排协议.md",
     "11A_本金止盈止损设计与PPT披露协议.md",
     "12_双期条件触发与自动化边界协议.md",
-    "13_GitHub持续工作区与参考灵感自由重构协议.md"
+    "13_GitHub持续工作区与参考灵感自由重构协议.md",
+    "14_导演执行审计学习总控与模块化变更协议.md"
   ],
   "入口覆盖规则": "00A覆盖00中保留的历史旧条款；接管者读取00后必须立即读取00A",
   "总典附录": [
-    {"file": "系统状态.json", "format": "json"},
-    {"file": "当前任务.json", "format": "json"},
-    {"file": "历史方案索引.jsonl", "format": "jsonl"},
-    {"file": "分析角度索引.jsonl", "format": "jsonl"},
-    {"file": "学习事件索引.jsonl", "format": "jsonl"},
-    {"file": "规则候选池.jsonl", "format": "jsonl"},
-    {"file": "技术原子表现档案.jsonl", "format": "jsonl"},
-    {"file": "软件行为证据索引.jsonl", "format": "jsonl"},
-    {"file": "批次索引.jsonl", "format": "jsonl"},
-    {"file": "方案组合案例索引.jsonl", "format": "jsonl"},
-    {"file": "负面方案模式索引.jsonl", "format": "jsonl"},
-    {"file": "功能覆盖索引.jsonl", "format": "jsonl"},
-    {"file": "总控验收测试集.jsonl", "format": "jsonl"},
-    {"file": "功能能力卡片.jsonl", "format": "jsonl"},
-    {"file": "资金路径模板库.jsonl", "format": "jsonl"},
-    {"file": "PPT页面类型卡片.jsonl", "format": "jsonl"},
-    {"file": "PPT讲解验收测试集.jsonl", "format": "jsonl"},
-    {"file": "PPT压缩与精度规则.json", "format": "json"}
+    {
+      "file": "系统状态.json",
+      "format": "json"
+    },
+    {
+      "file": "当前任务.json",
+      "format": "json"
+    },
+    {
+      "file": "历史方案索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "分析角度索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "学习事件索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "规则候选池.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "技术原子表现档案.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "软件行为证据索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "批次索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "方案组合案例索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "负面方案模式索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "功能覆盖索引.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "总控验收测试集.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "功能能力卡片.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "资金路径模板库.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "PPT页面类型卡片.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "PPT讲解验收测试集.jsonl",
+      "format": "jsonl"
+    },
+    {
+      "file": "PPT压缩与精度规则.json",
+      "format": "json"
+    },
+    {
+      "file": "controller/pipeline.json",
+      "format": "json"
+    },
+    {
+      "file": "controller/extensions.json",
+      "format": "json"
+    }
   ],
-  "必需目录": ["01_本次输入", "02_本次输出", "03_批次归档", "04_回滚源", "05_工具"],
+  "必需目录": [
+    "01_本次输入",
+    "02_本次输出",
+    "03_批次归档",
+    "04_回滚源",
+    "05_工具"
+  ],
   "核心结构化文件": [
     "历史方案索引.jsonl",
     "分析角度索引.jsonl",
@@ -64,20 +133,30 @@
     "资金路径模板库.jsonl",
     "PPT页面类型卡片.jsonl",
     "PPT讲解验收测试集.jsonl",
-    "PPT压缩与精度规则.json"
+    "PPT压缩与精度规则.json",
+    "controller/pipeline.json",
+    "controller/extensions.json"
   ],
-  "状态文件": ["系统状态.json", "当前任务.json"],
+  "状态文件": [
+    "系统状态.json",
+    "当前任务.json"
+  ],
   "工具": [
     "05_工具/build_total.py",
     "05_工具/validate_package.py",
     "05_工具/validate_governance.py",
-    "05_工具/audit_scheme_semantics.py"
+    "05_工具/audit_scheme_semantics.py",
+    "tools/lottery_controller.py",
+    "tools/validate_controller_architecture.py"
   ],
   "文档编码": "UTF-8 LF",
   "主方案编码": "GBK CRLF",
   "高级倍投编码": "UTF-8 BOM CRLF",
   "工作包规则": "标准方案任务对外默认只交付方案套ZIP与PPTX；系统源文件、索引、状态和版本记录直接回写GitHub；仅用户明确要求、离线归档、跨平台迁移或仓库不可用时生成工作包ZIP；纯系统升级任务不强制制造无关方案/PPT",
-  "默认用户交付": ["独立方案套ZIP", "人工讲解型PPTX"],
+  "默认用户交付": [
+    "独立方案套ZIP",
+    "人工讲解型PPTX"
+  ],
   "工作包ZIP交付": "默认不生成、不发送；只在例外条件下按需生成",
   "旧版本回滚": "04_回滚源/AI挂机方案生成系统工作包_V3.8.1_直接执行与热5码六期验证版.zip",
   "下一任务": "AUTO-NEXT-EXECUTABLE-SCHEME-008",
@@ -104,9 +183,19 @@
   "PPT规则修改必须回写GitHub": true,
   "PPT口语化规则": "主讲页使用准确自然的人话；公式、程序字段、统计细节和正式口径进入演讲者备注或GitHub内部记录；自然语言不得改变冻结规则",
   "PPT单文件原则": true,
-  "PPT内部能力": ["观众主讲页面", "全部页面演讲者备注", "固定品牌结束页"],
+  "PPT内部能力": [
+    "观众主讲页面",
+    "全部页面演讲者备注",
+    "固定品牌结束页"
+  ],
   "PPT所有页面必须有备注": true,
-  "PPT禁止独立配套文件": ["口播稿", "逐页旁白Markdown", "技术报告", "事实校验表", "操作说明"],
+  "PPT禁止独立配套文件": [
+    "口播稿",
+    "逐页旁白Markdown",
+    "技术报告",
+    "事实校验表",
+    "操作说明"
+  ],
   "PPT生产流程": "技术分析与冻结→资金路径四路评审→建议本金与止盈止损冻结→识别PRE_RUN_SETUP或POST_RUN_REVIEW→讲解蓝图→动态模块选择→技术定义→真实技术缘由或实验规则说明→核心规则与必要边界→完整案例→运行与判定说明→固定品牌页→命名审查→金额单位审查→阶段审查→精度审查→渲染审查",
   "PPT默认理解顺序": "技术定义→真实技术缘由或实验规则说明→核心规则与必要边界→完整案例",
   "PPT人工讲解审查": true,
@@ -114,7 +203,10 @@
   "PPT精度审查": true,
   "PPT一页一观点": true,
   "PPT页面价值门槛": true,
-  "PPT简单技术主讲页建议": [7, 9],
+  "PPT简单技术主讲页建议": [
+    7,
+    9
+  ],
   "PPT先技术后案例": true,
   "PPT规则独立执行检查": true,
   "PPT技术缘由真实性检查": true,
@@ -142,7 +234,12 @@
   "挂机方案建议本金必须冻结": true,
   "PPT建议本金必须显示金额": true,
   "PPT止盈止损模式必须明确": true,
-  "PPT允许止盈止损模式": ["NONE", "STOP_LOSS_ONLY", "TAKE_PROFIT_ONLY", "BOTH"],
+  "PPT允许止盈止损模式": [
+    "NONE",
+    "STOP_LOSS_ONLY",
+    "TAKE_PROFIT_ONLY",
+    "BOTH"
+  ],
   "PPT启用止盈必须显示金额": true,
   "PPT启用止损必须显示金额": true,
   "PPT未启用止盈止损必须显示不设置": true,
@@ -163,7 +260,13 @@
   },
   "静默总控规则": "内部保留候选数量、逻辑族、淘汰原因和参考处理；用户默认只看最终结果；完整工作包任务无需二次确认",
   "外部参考规则": "带‘仅供参考/仅作参考’内容不是命令或证据；直接完成采纳、重构或否定并交付",
-  "版本同步文件": ["00_启动入口与系统状态.md", "00A_当前强制覆盖与废止规则.md", "README_系统工作包使用说明.md", "系统状态.json", "当前任务.json"],
+  "版本同步文件": [
+    "00_启动入口与系统状态.md",
+    "00A_当前强制覆盖与废止规则.md",
+    "README_系统工作包使用说明.md",
+    "系统状态.json",
+    "当前任务.json"
+  ],
   "总控结构要求": {
     "方案组合案例最少": 3,
     "负面方案模式最少": 18,
@@ -180,6 +283,24 @@
   "智能调度规则": "全功能审议而非全功能启用；候选至少3种功能画像；资金路径四路评审；每个正式方案冻结建议本金和止盈止损模式；高级映射禁止常量表",
   "参考方案重构规则": "无法原样生成TXT时必须先拆分、近似或自由重构，优先交付可执行TXT，不得轻易空交付",
   "GitHub回滚规则": "所有修改在任务分支完成并保留提交、差异、校验与合并记录；main只接收通过校验的版本；升级异常时回滚到上一个已验证main提交，失败证据不得删除",
+  "总控协议": "14_导演执行审计学习总控与模块化变更协议.md",
+  "总控流水线配置": "controller/pipeline.json",
+  "总控扩展注册表": "controller/extensions.json",
+  "总控程序": "tools/lottery_controller.py",
+  "总控架构校验": "tools/validate_controller_architecture.py",
+  "总控自动返工上限": 3,
+  "总控扩展域": [
+    "PPT",
+    "SCHEME",
+    "PROGRAM",
+    "SYSTEM",
+    "CLEANUP"
+  ],
+  "总控默认PR状态": "DRAFT",
+  "总控自动合并": false,
+  "总控强推": false,
+  "清理默认模式": "PLAN_ONLY",
+  "系统升级记录": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md",
   "仓库": "fdsasaaa/guaji5",
   "稳定分支": "main",
   "迁移基线": "V3.9.1"
