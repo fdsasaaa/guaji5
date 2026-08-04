@@ -1,0 +1,11 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "task_id": "SCHEME-B396-FIRST-ORDER-TRANSITION-CURRENT-MAIN",
+  "request": "启动彩票总控：读取 fdsasaaa/guaji5 的 main，自主生成并交付一套合格方案。",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "domains": ["SCHEME", "PPT", "PROGRAM"],
+  "base_branch": "main",
+  "work_branch": "agent/b396-controller-current-main",
+  "confirmation_policy": "DIRECT_EXECUTION_NO_SECOND_CONFIRMATION",
+  "created_at": "2026-08-04T12:30:00+08:00"
+}
