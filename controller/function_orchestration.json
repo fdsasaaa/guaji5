@@ -1,0 +1,57 @@
+{
+  "schema_version": 1,
+  "controller_id": "LOTTERY-FUNCTION-ORCHESTRATION-V1",
+  "status": "ACTIVE",
+  "required_profile_types": [
+    "BASELINE",
+    "STATE",
+    "EXECUTION_OR_FUNDING",
+    "LOW_COVERAGE_PROBE"
+  ],
+  "required_layers": ["A", "B", "C", "D", "E", "F", "G", "H"],
+  "required_funding_kinds": [
+    "FLAT",
+    "LIMITED_LINEAR",
+    "PRESSURE_RELEASE",
+    "ADVANCED_STATE"
+  ],
+  "minimum_candidate_profiles": 4,
+  "minimum_material_more_settings": 2,
+  "baseline_only_max_consecutive": 2,
+  "exploration_window_batches": 3,
+  "ci_block_on_missing_orchestration": true,
+  "unverified_feature_formal_selection_forbidden": true,
+  "advanced_with_new_state_first_use_forbidden": true,
+  "evidence_file_name": "function_orchestration.json",
+  "formal_selection_minimum_evidence": "E3",
+  "probe_max_periods": 30,
+  "required_material_signature_fields": [
+    "number_logic",
+    "trigger",
+    "execution",
+    "funding",
+    "stop",
+    "time_simulation"
+  ],
+  "more_setting_categories": [
+    "MONITORING",
+    "PROFIT_LOSS_JUMP",
+    "PROFIT_LOSS_STOP",
+    "SIMULATION_REAL_SWITCH",
+    "TIME_WINDOW",
+    "CHANGE_RULE",
+    "BET_DIRECTION",
+    "ROTATION_OR_COMBINATION"
+  ],
+  "failure_states": [
+    "ORCHESTRATION_MISSING",
+    "PROFILE_FAMILY_INCOMPLETE",
+    "PROFILE_NOT_MATERIAL",
+    "FUNDING_REVIEW_INCOMPLETE",
+    "MORE_SETTINGS_NOT_MATERIAL",
+    "UNVERIFIED_FEATURE_SELECTED",
+    "BASELINE_ONLY_REPEAT_LIMIT",
+    "COVERAGE_DEBT_UNRESOLVED",
+    "NEW_STATE_AND_ADVANCED_FIRST_USE_CONFLICT"
+  ]
+}
