@@ -1,0 +1,35 @@
+{
+  "eligible": false,
+  "eligibility_reason": "必须根据软件证据、风险和正式/探针边界填写",
+  "scorecard": {
+    "components": {
+      "problem_fit": 0,
+      "software_evidence": 0,
+      "risk_fit": 0,
+      "novelty": 0,
+      "explanation_value": 0,
+      "coverage_value": 0,
+      "exposure_penalty": 0,
+      "unverified_penalty": 0,
+      "complexity_penalty": 0,
+      "logic_confusion_penalty": 0
+    },
+    "notes": {
+      "problem_fit": "",
+      "software_evidence": "",
+      "risk_fit": "",
+      "novelty": "",
+      "explanation_value": "",
+      "coverage_value": "",
+      "exposure_penalty": "",
+      "unverified_penalty": "",
+      "complexity_penalty": "",
+      "logic_confusion_penalty": ""
+    },
+    "total": 0
+  },
+  "selection_override": {
+    "score_override_reason": "",
+    "score_override_evidence_refs": []
+  }
+}
