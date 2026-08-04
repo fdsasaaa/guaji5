@@ -1,0 +1,32 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "VALIDATION",
+  "status": "PRIOR_BUILD_PASS_CURRENT_MAIN_CI_PENDING",
+  "checks": {
+    "input_periods": "200 PASS",
+    "input_range": "202607310181—202607310380 PASS",
+    "frozen_numbers": "百位1 6 2；十位7 3 0；个位6 5 0 PASS",
+    "walk_forward": "134/420=31.90%",
+    "last_audit_segment": "34/120=28.33%",
+    "binomial_p_value_approx": 0.211525,
+    "max_miss_streak": 18,
+    "txt_count": "6 PASS",
+    "txt_encoding": "GBK PASS",
+    "txt_line_endings": "CRLF PASS",
+    "scheme_creator_empty": "PASS",
+    "main_enabled": "3/3 PASS",
+    "control_disabled": "3/3 PASS",
+    "ppt_slides": "10 PASS",
+    "ppt_hidden_slides": "0 PASS",
+    "ppt_notes": "ALL_SLIDES PASS",
+    "number_consistency": "PPT/TXT/EVIDENCE PASS",
+    "outer_zip_items": "3 PASS"
+  },
+  "prior_ci": {"run_id": 30873009860, "run_number": 236, "conclusion": "success"},
+  "current_main_ci": "PENDING",
+  "limitations": [
+    "历史数据为复用样本，不是新的独立样本外",
+    "顶部方案轮投起始顺序和重启续位仍需实际运行记录",
+    "历史命中差异不构成未来优势证据"
+  ]
+}
