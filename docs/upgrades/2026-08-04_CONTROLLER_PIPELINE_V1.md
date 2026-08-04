@@ -1,10 +1,11 @@
 # CONTROLLER-PIPELINE-V1 升级记录
 
 日期：2026-08-04  
-状态：Draft PR #16，GitHub Actions已通过；未合并前不视为 `main` 正式版本  
-分支：`agent/controller-pipeline-rollback-extensibility`  
+状态：已合并并在 `main` 正式启用  
+原升级分支：`agent/controller-pipeline-rollback-extensibility`  
 基线：`main` @ `6df377889c82ec20f7f8de7c5d7797d898b22454`  
-升级类型：SYSTEM + PROGRAM；不生成彩票方案，不修改既有方案含义，不自动合并。
+合并提交：`2dc89ebe01f4d2f1804735140ce55c42ee447a5b`  
+升级类型：SYSTEM + PROGRAM；不生成彩票方案，不修改既有方案含义，不启用自动合并。
 
 ## 一、升级目标
 
@@ -100,13 +101,6 @@ python tools/lottery_controller.py status --run-id CI-SMOKE --run-root "$RUNNER_
 
 ## 七、回滚计划
 
-若PR校验失败：
-
-1. 保留分支、提交和GitHub Actions日志；
-2. 不修改 `main`；
-3. 在当前分支修复或关闭PR；
-4. 无需回滚稳定分支，因为本次未直接写入 `main`。
-
 若合并后出现问题：
 
 1. 以合并前最后一个已验证 `main` 提交为目标；
@@ -122,16 +116,18 @@ python tools/lottery_controller.py status --run-id CI-SMOKE --run-root "$RUNNER_
 - 一句话全自动交付仍依赖接管AI或后续注册的执行处理器完成各阶段产物。
 - 本次没有启用自动合并、自动规则晋级或破坏性文件清理。
 
-## 九、PR与校验结果
+## 九、PR、合并与校验结果
 
-- Draft PR：#16
+- PR：#16
 - PR标题：`系统：建立一句话总控、回滚与模块化扩展框架`
-- 创建时Head：`fe8bdf68ea45d0d18c2c650f00e66991ad73f0f4`
+- 最终Head：`f953a1aaf9ed79cbe2f129128c495c29e826152c`
+- 合并提交：`2dc89ebe01f4d2f1804735140ce55c42ee447a5b`
+- 合并时间：2026-08-04 12:02（Asia/Singapore）
 - GitHub Actions工作流：`Validate system repository`
-- Run ID：`30875695751`
-- Run number：`253`
+- 最终合并前Run ID：`30875759115`
+- Run number：`257`
 - 结果：`success`
 - 自动合并：未启用
-- `main`：未修改
+- `main`：已包含总控协议、状态机、扩展注册表、工具和CI校验
 
-本记录后续若有修复提交，以PR最新Head和最新一次成功CI为最终验收依据。
+`controller/pipeline.json` 的正式状态为 `ACTIVE`，并记录PR #16及其合并提交；架构校验器阻止其回退为候选状态。
