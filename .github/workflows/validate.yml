@@ -51,3 +51,30 @@ jobs:
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
+      - name: Confirm B396 controller evidence exists
+        run: |
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/task.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/preflight.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/rollback_manifest.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/director_decision.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/design_contract.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/execution_manifest.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/validation_report.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/audit_report.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/delivery_manifest.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/learning_record.json
+          test -f controller/runs/RUN-20260804-B396-CURRENT-MAIN/completion.json
+      - name: Build B396 delivery
+        run: python tools/build_b396_delivery.py
+      - name: Validate final B396 PPT fixed pages
+        run: python tools/validate_ppt_fixed_pages.py --final-ppt "dist/前值转移三码_交付/前值转移三码_挂机前讲解.pptx"
+      - name: Upload B396 complete delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: 前值转移三码_完整交付_当前main
+          path: |
+            dist/前值转移三码_交付/前值转移三码_完整交付.zip
+            dist/前值转移三码_交付/前值转移三码_验证记录.json
+            dist/前值转移三码_交付/DELIVERY_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 7
