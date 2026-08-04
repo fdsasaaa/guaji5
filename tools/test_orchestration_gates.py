@@ -38,67 +38,85 @@ def score(evidence_rank: int, total_bias: int = 0, exposure_penalty: int = 2) ->
 
 def build_valid() -> tuple[dict, dict, dict]:
     registry = load("controller/feature_evidence_registry.json")
-    ledger = load("controller/function_coverage_ledger.json")
+    registry_items = {item["feature_id"]: item for item in registry["features"]}
+
+    # 对抗夹具必须与实时中央账本解耦，否则一次正常账本推进就会让
+    # “有效夹具”失效。这里从当前结构复制后固定一组自包含基线。
+    ledger = copy.deepcopy(load("controller/function_coverage_ledger.json"))
+    ledger["sequence"] = 7
+    ledger["last_run_id"] = "SELF-TEST-PREVIOUS"
+    ledger["recent_delivery_modes"] = ["BASELINE_ONLY", "BASELINE_ONLY"]
+    ledger["baseline_only_streak"] = 2
+    ledger["recent_selected_fingerprints"] = ["SELF-OLD-A", "SELF-OLD-B"]
+    ledger["next_due_features"] = ["MONITORING", "FUNDING_ADVANCED_STATE", "SIMULATION_REAL_SWITCH"]
+
     evidence = core.fixture()
     profiles = {item["profile_id"]: item for item in evidence["candidate_profiles"]}
-    profiles["BASE"]["features"] = ["STATIC_NUMBER_LOGIC", "FUNDING_FLAT", "ROTATION_OR_COMBINATION"]
-    profiles["BASE"]["feature_evidence"] = [
-        {"feature_id": "STATIC_NUMBER_LOGIC", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-STATIC-TXT-RUNTIME"]},
-        {"feature_id": "FUNDING_FLAT", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-FLAT-RUNTIME"]},
-        {"feature_id": "ROTATION_OR_COMBINATION", "claimed_level": "E3", "evidence_refs": ["SW-EVID-003", "SW-EVID-004"]},
-    ]
-    profiles["STATE"]["features"] = ["MONITORING"]
-    profiles["STATE"]["feature_evidence"] = [
-        {"feature_id": "MONITORING", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-MONITORING"]}
-    ]
-    profiles["FUND"]["features"] = ["FUNDING_PRESSURE_RELEASE"]
-    profiles["FUND"]["feature_evidence"] = [
-        {"feature_id": "FUNDING_PRESSURE_RELEASE", "claimed_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"]}
-    ]
-    profiles["PROBE"]["features"] = ["SIMULATION_REAL_SWITCH", "FUNDING_ADVANCED_STATE"]
-    profiles["PROBE"]["feature_evidence"] = [
-        {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
-        {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
-    ]
-    profile_ranks = {"BASE": 3, "STATE": 1, "FUND": 2, "PROBE": 1}
+
+    # 让资金画像同时形成高级状态资金候选，关闭该项覆盖债务。
+    funding_layer = profiles["FUND"]["layers"]["E"]
+    funding_layer["candidates"].append("高级状态1,2,1")
+    funding_layer["feature_ids"] = ["FUNDING_PRESSURE_RELEASE", "FUNDING_ADVANCED_STATE"]
+    funding_layer["evidence_level"] = "E2"
+
+    # 注册表上限为E1，夹具不得继续沿用旧E2写法。
+    profiles["STATE"]["layers"]["B"]["evidence_level"] = "E1"
+    profiles["PROBE"]["layers"]["G"]["evidence_level"] = "E1"
+
+    def registered_claim(feature_id: str) -> dict:
+        item = registry_items[feature_id]
+        return {
+            "feature_id": feature_id,
+            "claimed_level": item["max_formal_level"],
+            "evidence_refs": list(item["evidence_refs"]),
+        }
+
+    # 完整声明八层实际绑定的功能，禁止只保留单个“代表性”功能。
     for profile in evidence["candidate_profiles"]:
-        rank = profile_ranks[profile["profile_id"]]
+        features = sorted({
+            feature_id
+            for layer in profile["layers"].values()
+            for feature_id in layer["feature_ids"]
+        })
+        profile["features"] = features
+        profile["feature_evidence"] = [registered_claim(feature_id) for feature_id in features]
+        ranks = [int(claim["claimed_level"][1:]) for claim in profile["feature_evidence"]]
+        minimum_rank = min(ranks)
         profile["eligible"] = profile["decision"] == "SELECTED"
         profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
         profile["hard_blockers"] = []
-        profile["scorecard"] = score(rank, 1 if profile["profile_id"] == "BASE" else 0)
+        profile["scorecard"] = score(minimum_rank, 1 if profile["profile_id"] == "BASE" else 0)
 
-    funding_refs = {
-        "FLAT": ["HISTORICAL-FLAT-RUNTIME"],
-        "LIMITED_LINEAR": ["ORDINARY-SEQUENCE-FORMAT"],
-        "PRESSURE_RELEASE": ["ORDINARY-SEQUENCE-FORMAT"],
-        "ADVANCED_STATE": ["SW-EVID-002", "SW-EVID-009"],
+    funding_feature = {
+        "FLAT": "FUNDING_FLAT",
+        "LIMITED_LINEAR": "FUNDING_LIMITED_LINEAR",
+        "PRESSURE_RELEASE": "FUNDING_PRESSURE_RELEASE",
+        "ADVANCED_STATE": "FUNDING_ADVANCED_STATE",
     }
-    funding_ranks = {"FLAT": 3, "LIMITED_LINEAR": 2, "PRESSURE_RELEASE": 2, "ADVANCED_STATE": 2}
     exposure_penalties = {"FLAT": 1, "ADVANCED_STATE": 2, "PRESSURE_RELEASE": 3, "LIMITED_LINEAR": 4}
     for path in evidence["funding_paths"]:
-        path["software_evidence_level"] = f"E{funding_ranks[path['kind']]}"
-        path["evidence_refs"] = funding_refs[path["kind"]]
+        item = registry_items[funding_feature[path["kind"]]]
+        rank = int(item["max_formal_level"][1:])
+        path["software_evidence_level"] = item["max_formal_level"]
+        path["evidence_refs"] = list(item["evidence_refs"])
         path["eligible"] = path["decision"] == "SELECTED"
         path["eligibility_reason"] = "正式基准可入选" if path["eligible"] else "证据未达E3或未选"
         path["hard_blockers"] = []
         path["scorecard"] = score(
-            funding_ranks[path["kind"]],
+            rank,
             1 if path["kind"] == "FLAT" else 0,
             exposure_penalties[path["kind"]],
         )
 
     for setting in evidence["more_settings_review"]:
-        if setting["category"] == "MONITORING":
-            setting["evidence_refs"] = ["UI-FIELD-MONITORING"]
-            setting["evidence_level"] = "E1"
-        else:
-            setting["evidence_refs"] = ["UI-FIELD-SIMULATION-REAL-SWITCH"]
-            setting["evidence_level"] = "E1"
+        feature_id = setting["category"]
+        item = registry_items[feature_id]
+        setting["evidence_refs"] = list(item["evidence_refs"])
+        setting["evidence_level"] = item["max_formal_level"]
 
-    evidence["coverage_debt"]["due_features"] = ledger["next_due_features"]
-    evidence["recent_delivery_modes"] = ledger["recent_delivery_modes"]
-    evidence["repeat_guard"]["last_three_fingerprints"] = ledger["recent_selected_fingerprints"]
+    evidence["coverage_debt"]["due_features"] = list(ledger["next_due_features"])
+    evidence["recent_delivery_modes"] = list(ledger["recent_delivery_modes"])
+    evidence["repeat_guard"]["last_three_fingerprints"] = list(ledger["recent_selected_fingerprints"])
     fingerprint = evidence["repeat_guard"]["fingerprint"]
     trailing = 0
     for previous in reversed(ledger["recent_selected_fingerprints"]):
@@ -172,7 +190,12 @@ def main() -> int:
             errors.append("未更新中央账本未被拒绝")
 
     inflated = copy.deepcopy(evidence)
-    inflated["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
+    monitoring_claim = next(
+        claim
+        for claim in inflated["candidate_profiles"][1]["feature_evidence"]
+        if claim["feature_id"] == "MONITORING"
+    )
+    monitoring_claim["claimed_level"] = "E3"
     if not gate.validate_registry_and_ledger(inflated, registry, ledger):
         errors.append("监控证据从E1伪造为E3未被拒绝")
 
@@ -200,10 +223,15 @@ def main() -> int:
 
     lower_selected = copy.deepcopy(evidence)
     lower_selected["candidate_profiles"][0]["scorecard"] = score(3, -3)
-    lower_selected["candidate_profiles"][1]["eligible"] = True
-    lower_selected["candidate_profiles"][1]["scorecard"] = score(3, 2)
-    lower_selected["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
-    lower_selected["candidate_profiles"][1]["layers"]["B"]["evidence_level"] = "E3"
+    challenger = lower_selected["candidate_profiles"][1]
+    challenger["eligible"] = True
+    challenger["eligibility_reason"] = "构造评分覆盖对抗样本"
+    for claim in challenger["feature_evidence"]:
+        claim["claimed_level"] = "E3"
+    for layer in challenger["layers"].values():
+        if layer["final_enabled"] is True:
+            layer["evidence_level"] = "E3"
+    challenger["scorecard"] = score(3, 2)
     if not scoring.validate_evidence(lower_selected):
         errors.append("低分画像无证据覆盖仍入选未被拒绝")
 
