@@ -1,9 +1,9 @@
 # CONTROLLER-PIPELINE-V1 升级记录
 
 日期：2026-08-04  
-状态：Draft PR候选，未合并前不视为正式系统版本  
+状态：Draft PR #16，GitHub Actions已通过；未合并前不视为 `main` 正式版本  
 分支：`agent/controller-pipeline-rollback-extensibility`  
-基线：`main`  
+基线：`main` @ `6df377889c82ec20f7f8de7c5d7797d898b22454`  
 升级类型：SYSTEM + PROGRAM；不生成彩票方案，不修改既有方案含义，不自动合并。
 
 ## 一、升级目标
@@ -22,11 +22,13 @@
 - `tools/lottery_controller.py`
 - `tools/validate_controller_architecture.py`
 - `docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md`
+- `docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.rollback.json`
 
 ## 三、修改文件
 
 - `AGENTS.md`：把14号协议、状态机、冻结合同、扩展域、回滚和清理纪律加入AI接管入口。
 - `README.md`：增加一句话口令、总控工具和五类扩展域说明。
+- `SYSTEM_MANIFEST.json`：正式登记14号协议、总控配置、工具、扩展域和回滚策略。
 - `13_GitHub持续工作区与参考灵感自由重构协议.md`：增加写入前回滚清单、模块隔离、非破坏性清理和任务证据要求。
 - `.github/workflows/validate.yml`：增加总控架构校验、配置校验和任务证据包冒烟测试。
 - `.gitignore`：忽略本地 `.runtime/` 运行证据目录，避免临时状态污染正式源。
@@ -82,7 +84,7 @@ INTAKE
 - 新总控运行目录默认是 `.runtime/lottery-controller`，不提交到GitHub。
 - 现有AI仍可按仓库协议执行；总控工具增加证据和状态约束，不负责凭空创造方案逻辑。
 
-## 六、验证计划
+## 六、验证命令
 
 CI执行：
 
@@ -119,3 +121,17 @@ python tools/lottery_controller.py status --run-id CI-SMOKE --run-root "$RUNNER_
 - 当前总控负责治理、证据、状态和回滚，不替代未来的具体方案生成器和PPT构建器。
 - 一句话全自动交付仍依赖接管AI或后续注册的执行处理器完成各阶段产物。
 - 本次没有启用自动合并、自动规则晋级或破坏性文件清理。
+
+## 九、PR与校验结果
+
+- Draft PR：#16
+- PR标题：`系统：建立一句话总控、回滚与模块化扩展框架`
+- 创建时Head：`fe8bdf68ea45d0d18c2c650f00e66991ad73f0f4`
+- GitHub Actions工作流：`Validate system repository`
+- Run ID：`30875695751`
+- Run number：`253`
+- 结果：`success`
+- 自动合并：未启用
+- `main`：未修改
+
+本记录后续若有修复提交，以PR最新Head和最新一次成功CI为最终验收依据。
