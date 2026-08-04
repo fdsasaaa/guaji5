@@ -1,7 +1,9 @@
 {
   "schema_version": 1,
   "controller_id": "LOTTERY-CONTROLLER-V1",
-  "status": "CANDIDATE_UNTIL_MERGED",
+  "status": "ACTIVE",
+  "activated_by_pr": 16,
+  "activated_at_commit": "2dc89ebe01f4d2f1804735140ce55c42ee447a5b",
   "stable_source": "main",
   "branch_required": true,
   "direct_main_write_forbidden": true,
