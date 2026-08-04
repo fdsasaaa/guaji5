@@ -21,6 +21,8 @@ jobs:
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
         run: python tools/lottery_controller.py validate
+      - name: Validate full-function orchestration
+        run: python tools/validate_function_orchestration.py --self-test --scan-runs
       - name: Smoke-test controller task envelope
         run: |
           python tools/lottery_controller.py start \
@@ -51,3 +53,6 @@ jobs:
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
+          test -f controller/function_orchestration.json
+          test -f controller/templates/function_orchestration.template.json
+          test -f tools/validate_function_orchestration.py
