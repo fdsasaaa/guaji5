@@ -17,6 +17,20 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Validate controller architecture
+        run: python tools/validate_controller_architecture.py
+      - name: Validate controller runtime configuration
+        run: python tools/lottery_controller.py validate
+      - name: Smoke-test controller task envelope
+        run: |
+          python tools/lottery_controller.py start \
+            --request "CI controller smoke test" \
+            --domain SYSTEM \
+            --run-id CI-SMOKE \
+            --run-root "$RUNNER_TEMP/lottery-controller"
+          python tools/lottery_controller.py status \
+            --run-id CI-SMOKE \
+            --run-root "$RUNNER_TEMP/lottery-controller"
       - name: Validate PPT director and number provenance rules
         run: python tools/validate_ppt_director_rules.py
       - name: Install PPT dependencies
@@ -34,3 +48,6 @@ jobs:
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
+          test -f 14_导演执行审计学习总控与模块化变更协议.md
+          test -f controller/pipeline.json
+          test -f controller/extensions.json
