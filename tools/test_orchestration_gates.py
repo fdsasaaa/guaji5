@@ -60,7 +60,7 @@ def build_valid() -> tuple[dict, dict, dict]:
         {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
         {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
     ]
-    for index, profile in enumerate(evidence["candidate_profiles"]):
+    for profile in evidence["candidate_profiles"]:
         profile["eligible"] = profile["decision"] == "SELECTED"
         profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "仅比较或探针"
         profile["scorecard"] = score(1 if profile["profile_id"] == "BASE" else 0)
@@ -71,6 +71,8 @@ def build_valid() -> tuple[dict, dict, dict]:
         "ADVANCED_STATE": ["SW-EVID-002", "SW-EVID-009"],
     }
     for path in evidence["funding_paths"]:
+        if path["kind"] in {"LIMITED_LINEAR", "PRESSURE_RELEASE"}:
+            path["software_evidence_level"] = "E2"
         path["evidence_refs"] = funding_refs[path["kind"]]
         path["eligible"] = path["decision"] == "SELECTED"
         path["eligibility_reason"] = "正式基准可入选" if path["eligible"] else "未达E3或未选"
