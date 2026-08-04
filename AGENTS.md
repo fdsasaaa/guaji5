@@ -50,3 +50,10 @@
 46. 新状态功能首次启用时不得同时首次正式启用高级状态资金路径，避免多变量混杂。
 47. 标准方案交付前必须运行 `python tools/validate_function_orchestration.py --evidence controller/runs/<RUN_ID>/function_orchestration.json`；仓库CI必须运行 `python tools/validate_function_orchestration.py --self-test --scan-runs`。
 48. 平倍可以最终入选，但不得因为方便而成为无比较的默认答案；若选择 `1,1,1...`，仍必须保留其他三路的具体设计、暴露计算和淘汰证据。
+49. 所有功能证据等级必须从 `controller/feature_evidence_registry.json` 读取；不得在本次方案中自行把E1或E2写成E3。
+50. 每个新标准方案必须读取并更新 `controller/function_coverage_ledger.json`；不得清空 `next_due_features` 或用“本次无关”逃避到期功能。
+51. 每个画像和资金路径必须使用 `controller/templates/orchestration_scorecard.template.json` 的10维评分；默认选择最高分且正式合格的画像和资金路径，选择低分项必须有证据化覆盖理由。
+52. 标准方案PR必须修改本次 `function_orchestration.json` 和中央覆盖账本；只新增构建器、批次归档或YouTube配置而不提交编排证据时，CI必须失败。
+53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
+54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
+55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
