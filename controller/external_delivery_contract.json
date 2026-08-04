@@ -1,0 +1,34 @@
+{
+  "schema_version": 1,
+  "status": "ACTIVE",
+  "purpose": "用户侧只接收一个完整ZIP，内部严格为方案文件夹、PPT、SEO文本三项。",
+  "external_download_link_count": 1,
+  "root_entry_count": 3,
+  "root_entries": ["scheme_folder", "pptx", "seo_txt"],
+  "nested_scheme_zip_forbidden": true,
+  "scheme_folder": {
+    "internal_explanations_forbidden": true,
+    "records_forbidden": true,
+    "internal_evidence_forbidden": true,
+    "importable_files_only": true,
+    "betting_numbers_required": true,
+    "betting_numbers_visible_in_filename": true,
+    "betting_numbers_visible_in_strategy_field": true
+  },
+  "seo": {
+    "title_count": 1,
+    "tag_count_range": [8, 10],
+    "description_count": 1,
+    "tag_separator": "英文逗号",
+    "forbidden_claims": ["保证盈利", "稳定盈利", "稳赚", "回本"]
+  },
+  "funding": {
+    "autonomous_flat_default_forbidden": true,
+    "flat_allowed_only_with_explicit_isolation_reason": true,
+    "default_controlled_sequence": [1, 1, 2, 3, 2, 1, 1, 1],
+    "default_max_multiplier": 3,
+    "unlimited_martingale_forbidden": true,
+    "selected_sequence_must_match_txt": true,
+    "selected_sequence_must_be_visible_in_ppt": true
+  }
+}
