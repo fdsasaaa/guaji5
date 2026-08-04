@@ -211,6 +211,31 @@ def required_configuration(category: str, config: Any, errors: list[str]) -> Non
             errors.append(f"{category}: material_configuration缺少{key}")
 
 
+def claim_map(profile: dict[str, Any], pid: str, errors: list[str]) -> dict[str, dict[str, Any]]:
+    claims = profile.get("feature_evidence", [])
+    result: dict[str, dict[str, Any]] = {}
+    if not isinstance(claims, list) or not claims:
+        errors.append(f"{pid}: feature_evidence必须为非空数组")
+        return result
+    for claim in claims:
+        if not isinstance(claim, dict):
+            errors.append(f"{pid}: feature_evidence项必须为对象")
+            continue
+        feature_id = str(claim.get("feature_id", "")).strip()
+        if not feature_id:
+            errors.append(f"{pid}: feature_evidence缺少feature_id")
+            continue
+        if feature_id in result:
+            errors.append(f"{pid}: feature_evidence重复{feature_id}")
+        if rank(claim.get("claimed_level")) < 0:
+            errors.append(f"{pid}.{feature_id}: claimed_level无效")
+        refs = claim.get("evidence_refs")
+        if not isinstance(refs, list) or not refs or any(not present(ref) for ref in refs):
+            errors.append(f"{pid}.{feature_id}: evidence_refs必须为非空数组")
+        result[feature_id] = claim
+    return result
+
+
 def validate_evidence(data: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
     errors: list[str] = []
     if data.get("schema_version") != 1:
@@ -255,6 +280,9 @@ def validate_evidence(data: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
         if not present(profile.get("reason")):
             errors.append(f"{pid}: 缺少理由")
 
+        claims = claim_map(profile, pid, errors)
+        all_layer_features: set[str] = set()
+        enabled_features: set[str] = set()
         layers = profile.get("layers", {})
         if not isinstance(layers, dict) or set(layers) != LAYERS:
             errors.append(f"{pid}: 必须完整填写A—H八层")
@@ -263,26 +291,70 @@ def validate_evidence(data: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
                 if not isinstance(layer, dict):
                     errors.append(f"{pid}.{layer_id}: 必须为对象")
                     continue
-                for key in ("relevant", "candidates", "final_enabled", "decision_reason", "evidence_level"):
+                for key in ("relevant", "candidates", "feature_ids", "final_enabled", "decision_reason", "evidence_level"):
                     if key not in layer:
                         errors.append(f"{pid}.{layer_id}: 缺少{key}")
-                if not isinstance(layer.get("relevant"), bool):
+                relevant = layer.get("relevant")
+                final_enabled = layer.get("final_enabled")
+                if not isinstance(relevant, bool):
                     errors.append(f"{pid}.{layer_id}: relevant必须为布尔值")
-                if not isinstance(layer.get("final_enabled"), bool):
+                if not isinstance(final_enabled, bool):
                     errors.append(f"{pid}.{layer_id}: final_enabled必须为布尔值")
                 candidates = layer.get("candidates")
+                feature_ids = layer.get("feature_ids")
                 if not isinstance(candidates, list):
                     errors.append(f"{pid}.{layer_id}: candidates必须为数组")
-                elif layer.get("relevant") is True and (not candidates or any(not present(x) for x in candidates)):
-                    errors.append(f"{pid}.{layer_id}: relevant=true时必须有具体候选")
-                if layer.get("relevant") is False and layer.get("final_enabled") is True:
-                    errors.append(f"{pid}.{layer_id}: 不相关层不得启用")
+                    candidates = []
+                if not isinstance(feature_ids, list):
+                    errors.append(f"{pid}.{layer_id}: feature_ids必须为数组")
+                    feature_ids = []
+                feature_set = {str(value).strip() for value in feature_ids if str(value).strip()}
+                if len(feature_set) != len(feature_ids):
+                    errors.append(f"{pid}.{layer_id}: feature_ids不得为空或重复")
+                all_layer_features.update(feature_set)
+                if relevant is True:
+                    if not candidates or any(not present(value) for value in candidates):
+                        errors.append(f"{pid}.{layer_id}: relevant=true时必须有具体候选")
+                    if not feature_set:
+                        errors.append(f"{pid}.{layer_id}: relevant=true时必须绑定feature_ids")
+                if relevant is False:
+                    if candidates or feature_set:
+                        errors.append(f"{pid}.{layer_id}: relevant=false时candidates和feature_ids必须为空")
+                    if final_enabled is True:
+                        errors.append(f"{pid}.{layer_id}: 不相关层不得启用")
+                if final_enabled is True:
+                    if relevant is not True or not feature_set:
+                        errors.append(f"{pid}.{layer_id}: 启用层必须相关且绑定功能")
+                    enabled_features.update(feature_set)
                 if not present(layer.get("decision_reason")):
                     errors.append(f"{pid}.{layer_id}: 理由不能为空")
-                if rank(layer.get("evidence_level")) < 0:
+                layer_rank = rank(layer.get("evidence_level"))
+                if layer_rank < 0:
                     errors.append(f"{pid}.{layer_id}: 证据等级无效")
-                if profile.get("decision") == "SELECTED" and layer.get("final_enabled") is True and rank(layer.get("evidence_level")) < 3:
-                    errors.append(f"{pid}.{layer_id}: E3以下功能不得正式启用")
+                unknown_claims = feature_set - set(claims)
+                if unknown_claims:
+                    errors.append(f"{pid}.{layer_id}: 缺少功能证据声明{sorted(unknown_claims)}")
+                claimed_ranks = [rank(claims[feature]["claimed_level"]) for feature in feature_set if feature in claims]
+                if claimed_ranks and layer_rank > min(claimed_ranks):
+                    errors.append(f"{pid}.{layer_id}: 层证据等级超过绑定功能最低等级")
+                if profile.get("decision") == "SELECTED" and final_enabled is True:
+                    if layer_rank < 3 or any(value < 3 for value in claimed_ranks):
+                        errors.append(f"{pid}.{layer_id}: E3以下功能不得正式启用")
+
+        declared_features = profile.get("features")
+        if not isinstance(declared_features, list):
+            errors.append(f"{pid}: features必须为数组")
+            declared_set: set[str] = set()
+        else:
+            declared_set = {str(value).strip() for value in declared_features if str(value).strip()}
+            if len(declared_set) != len(declared_features):
+                errors.append(f"{pid}: features不得为空或重复")
+        if declared_set != all_layer_features:
+            errors.append(f"{pid}: features必须等于八层绑定功能并集")
+        if set(claims) != declared_set:
+            errors.append(f"{pid}: feature_evidence必须与features逐项对应")
+        if not enabled_features:
+            errors.append(f"{pid}: 至少一个层必须final_enabled=true")
 
         current_signature = signature(profile)
         if any(not value for value in current_signature):
@@ -449,48 +521,110 @@ def validate_evidence(data: dict[str, Any], cfg: dict[str, Any]) -> list[str]:
 
 
 def fixture() -> dict[str, Any]:
-    def layer(enabled: bool = False, evidence: str = "E3") -> dict[str, Any]:
+    def layer(
+        relevant: bool,
+        candidates: list[str],
+        feature_ids: list[str],
+        enabled: bool,
+        evidence: str,
+        reason: str,
+    ) -> dict[str, Any]:
         return {
-            "relevant": True,
-            "candidates": ["具体候选"],
+            "relevant": relevant,
+            "candidates": candidates,
+            "feature_ids": feature_ids,
             "final_enabled": enabled,
-            "decision_reason": "已完成实质审议",
+            "decision_reason": reason,
             "evidence_level": evidence,
         }
 
-    base_layers = {layer_id: layer(layer_id in "ADEFH") for layer_id in "ABCDEFGH"}
+    def irrelevant(reason: str) -> dict[str, Any]:
+        return layer(False, [], [], False, "E0", reason)
+
+    def claims(items: list[tuple[str, str]]) -> list[dict[str, Any]]:
+        return [
+            {"feature_id": feature_id, "claimed_level": evidence, "evidence_refs": [f"CORE-{feature_id}-{evidence}"]}
+            for feature_id, evidence in items
+        ]
+
+    base_layers = {
+        "A": layer(True, ["静态条件频率"], ["STATIC_NUMBER_LOGIC"], True, "E3", "号码逻辑可运行"),
+        "B": irrelevant("基准画像立即投注，不使用监控"),
+        "C": irrelevant("基准画像不换号"),
+        "D": layer(True, ["顶部轮投"], ["ROTATION_OR_COMBINATION"], True, "E3", "已验证轮投边界"),
+        "E": layer(True, ["平倍"], ["FUNDING_FLAT"], True, "E3", "隔离号码逻辑"),
+        "F": layer(True, ["30期硬停止"], ["RISK_HARD_STOP"], True, "E3", "固定风险边界"),
+        "G": irrelevant("基准画像不限制时间和模拟切换"),
+        "H": layer(True, ["同成本随机基准"], ["RANDOM_BASELINE"], True, "E3", "提供对照"),
+    }
+    state_layers = copy.deepcopy(base_layers)
+    state_layers["B"] = layer(True, ["仅开始监控1期"], ["MONITORING"], True, "E2", "形成监控状态画像")
+    funding_layers = copy.deepcopy(base_layers)
+    funding_layers["E"] = layer(True, ["压力释放1,2,3,2,1,1"], ["FUNDING_PRESSURE_RELEASE"], True, "E2", "比较波动路径")
+    probe_layers = {
+        "A": layer(True, ["静态对照号码"], ["STATIC_NUMBER_LOGIC"], True, "E3", "保持单变量"),
+        "B": irrelevant("探针不增加监控"),
+        "C": irrelevant("探针不换号"),
+        "D": irrelevant("单方案运行"),
+        "E": layer(True, ["平倍"], ["FUNDING_FLAT"], True, "E3", "避免资金混杂"),
+        "F": layer(True, ["12期硬停止"], ["RISK_HARD_STOP"], True, "E3", "限制成本"),
+        "G": layer(True, ["模拟输2次转真实"], ["SIMULATION_REAL_SWITCH"], True, "E2", "测试低覆盖功能"),
+        "H": layer(True, ["独立记录"], ["RANDOM_BASELINE"], True, "E3", "不与主方案混合"),
+    }
 
     def profile(
         pid: str,
         profile_type: str,
         values: list[str],
         decision: str,
-        features: list[str],
+        layers: dict[str, Any],
+        evidence_items: list[tuple[str, str]],
         probe: bool = False,
     ) -> dict[str, Any]:
-        item: dict[str, Any] = {
+        features = sorted({feature for item in layers.values() for feature in item["feature_ids"]})
+        result: dict[str, Any] = {
             "profile_id": pid,
             "profile_type": profile_type,
             "decision": decision,
             "reason": "六维结构有实质差异",
             "features": features,
-            "layers": copy.deepcopy(base_layers),
+            "feature_evidence": claims(evidence_items),
+            "layers": layers,
             "material_signature": dict(zip(SIGNATURE_KEYS, values)),
             "first_use": False,
             "new_state_features": [],
         }
         if probe:
-            item["probe_constraints"] = {"isolated": True, "single_variable": True, "max_periods": 12, "max_cost": 36}
-        return item
+            result["probe_constraints"] = {"isolated": True, "single_variable": True, "max_periods": 12, "max_cost": 36}
+        return result
 
     profiles = [
-        profile("BASE", "BASELINE", ["条件频率", "立即", "轮投", "平倍", "30期硬停止", "不限时"], "SELECTED", ["STATIC_NUMBER_LOGIC"]),
-        profile("STATE", "STATE", ["条件频率", "监控1期", "轮投", "平倍", "亏损停止", "不限时"], "REJECTED", ["MONITORING"]),
-        profile("FUND", "EXECUTION_OR_FUNDING", ["条件频率", "立即", "轮投", "压力释放", "3倍封顶", "不限时"], "REJECTED", ["FUNDING_PRESSURE_RELEASE"]),
-        profile("PROBE", "LOW_COVERAGE_PROBE", ["固定对照", "模拟输2次", "单方案", "平倍", "12期硬停止", "模拟转真实"], "PROBE_ONLY", ["SIMULATION_REAL_SWITCH"], True),
+        profile(
+            "BASE", "BASELINE",
+            ["条件频率", "立即", "轮投", "平倍", "30期硬停止", "不限时"],
+            "SELECTED", base_layers,
+            [("STATIC_NUMBER_LOGIC", "E3"), ("ROTATION_OR_COMBINATION", "E3"), ("FUNDING_FLAT", "E3"), ("RISK_HARD_STOP", "E3"), ("RANDOM_BASELINE", "E3")],
+        ),
+        profile(
+            "STATE", "STATE",
+            ["条件频率", "监控1期", "轮投", "平倍", "30期硬停止", "不限时"],
+            "REJECTED", state_layers,
+            [("STATIC_NUMBER_LOGIC", "E3"), ("MONITORING", "E2"), ("ROTATION_OR_COMBINATION", "E3"), ("FUNDING_FLAT", "E3"), ("RISK_HARD_STOP", "E3"), ("RANDOM_BASELINE", "E3")],
+        ),
+        profile(
+            "FUND", "EXECUTION_OR_FUNDING",
+            ["条件频率", "立即", "轮投", "压力释放", "3倍封顶", "不限时"],
+            "REJECTED", funding_layers,
+            [("STATIC_NUMBER_LOGIC", "E3"), ("ROTATION_OR_COMBINATION", "E3"), ("FUNDING_PRESSURE_RELEASE", "E2"), ("RISK_HARD_STOP", "E3"), ("RANDOM_BASELINE", "E3")],
+        ),
+        profile(
+            "PROBE", "LOW_COVERAGE_PROBE",
+            ["固定对照", "模拟输2次", "单方案", "平倍", "12期硬停止", "模拟转真实"],
+            "PROBE_ONLY", probe_layers,
+            [("STATIC_NUMBER_LOGIC", "E3"), ("FUNDING_FLAT", "E3"), ("RISK_HARD_STOP", "E3"), ("SIMULATION_REAL_SWITCH", "E2"), ("RANDOM_BASELINE", "E3")],
+            True,
+        ),
     ]
-    profiles[1]["layers"]["B"] = layer(True, "E2")
-    profiles[3]["layers"]["G"] = layer(True, "E2")
     selected_fingerprint = "|".join(signature(profiles[0]))
 
     return {
@@ -548,9 +682,21 @@ def self_test(cfg: dict[str, Any]) -> list[str]:
         errors.append("伪多画像未被拒绝")
 
     empty_layer = copy.deepcopy(good)
-    empty_layer["candidate_profiles"][0]["layers"]["B"]["candidates"] = []
+    empty_layer["candidate_profiles"][0]["layers"]["D"]["candidates"] = []
     if not validate_evidence(empty_layer, cfg):
         errors.append("相关层无具体候选未被拒绝")
+
+    hidden_feature = copy.deepcopy(good)
+    hidden_feature["candidate_profiles"][0]["layers"]["B"] = {
+        "relevant": True,
+        "candidates": ["投注监控"],
+        "feature_ids": ["MONITORING"],
+        "final_enabled": True,
+        "decision_reason": "尝试隐藏低证据功能",
+        "evidence_level": "E3",
+    }
+    if not validate_evidence(hidden_feature, cfg):
+        errors.append("层功能未进入feature_evidence仍被允许")
 
     bad_exposure = copy.deepcopy(good)
     bad_exposure["funding_paths"][1]["worst_case_exposure"] = 1
