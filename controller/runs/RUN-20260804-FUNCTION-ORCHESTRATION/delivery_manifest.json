@@ -9,7 +9,9 @@
     "branch": "agent/enforce-full-function-orchestration",
     "pull_request": 19,
     "draft": true,
-    "ci_run_number": 344,
+    "validated_head": "4c8ae350c2391b2060247fc743171aad9d34c9c2",
+    "ci_run_id": 30881063902,
+    "ci_run_number": 360,
     "ci_conclusion": "success",
     "merge": "PENDING_INDEPENDENT_REVIEW"
   },
