@@ -1,0 +1,23 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "LEARNING",
+  "status": "RECORDED_NO_CORE_RULE_PROMOTION",
+  "level": "L1",
+  "facts": [
+    "前值转移条件频率可以映射为运行前冻结的静态定码轮换TXT",
+    "历史分析与软件运行能力必须明确分离",
+    "主方案与随机对照应物理分层且使用相同期数和成本",
+    "31.90%对30.00%的差异不足以宣称优势"
+  ],
+  "coverage": [
+    "ANG-069一阶马尔可夫转移",
+    "ANG-072条件频率",
+    "定码轮换",
+    "方案轮投",
+    "随机出号对照",
+    "平倍资金路径"
+  ],
+  "candidate_rules": [],
+  "formal_rule_promotions": [],
+  "next_evidence": "收集30期主方案和30期随机对照的真实挂机记录后进入POST_RUN_REVIEW"
+}
