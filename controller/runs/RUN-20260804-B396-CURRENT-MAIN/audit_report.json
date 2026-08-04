@@ -1,0 +1,41 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "AUDIT",
+  "status": "PASS_PENDING_CURRENT_MAIN_CI",
+  "semantic_audit": {
+    "software_claim_matches_execution": true,
+    "runtime_dynamic_recalculation_claimed": false,
+    "main_and_control_separated": true,
+    "pre_run_result_claims_absent": true,
+    "engineering_ids_visible_in_ppt": false,
+    "amount_unit": "元",
+    "number_provenance_six_elements": true
+  },
+  "overfit_audit": {
+    "window_scan": false,
+    "parameter_cherry_pick": false,
+    "single_pre_registered_model": true,
+    "historical_data_reuse_disclosed": true,
+    "random_baseline_included": true,
+    "profit_claim": false
+  },
+  "duplicate_audit": {
+    "nearest_recent_scheme": "B394冷热三角快照接力",
+    "material_difference": "B396使用同位置一阶转移条件频率，非冷热遗漏多窗口接力",
+    "result": "DISTINCT_LOGIC_FAMILY"
+  },
+  "risk_audit": {
+    "martingale": false,
+    "cost_cap": "单期3元",
+    "hard_stop": "每阶段30期",
+    "recommended_bankroll": "180元",
+    "unresolved_behavior_disclosed": true
+  },
+  "delivery_audit": {
+    "outer_root_exactly_three_items": true,
+    "ppt_single_file": true,
+    "youtube_reference_included": true,
+    "internal_evidence_excluded_from_user_zip": true
+  },
+  "decision": "DELIVER_AS_FORWARD_EXPERIMENT"
+}
