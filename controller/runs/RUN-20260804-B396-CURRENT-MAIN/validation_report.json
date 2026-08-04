@@ -1,7 +1,7 @@
 {
   "run_id": "RUN-20260804-B396-CURRENT-MAIN",
   "phase": "VALIDATION",
-  "status": "PRIOR_BUILD_PASS_CURRENT_MAIN_CI_PENDING",
+  "status": "PASS_CURRENT_MAIN_CI",
   "checks": {
     "input_periods": "200 PASS",
     "input_range": "202607310181—202607310380 PASS",
@@ -23,7 +23,7 @@
     "outer_zip_items": "3 PASS"
   },
   "prior_ci": {"run_id": 30873009860, "run_number": 236, "conclusion": "success"},
-  "current_main_ci": "PENDING",
+  "current_main_ci": {"run_id": 30878397840, "run_number": 284, "conclusion": "success", "head_sha": "13149998a2add54e847a52e48ef4a7721c91184b"},
   "limitations": [
     "历史数据为复用样本，不是新的独立样本外",
     "顶部方案轮投起始顺序和重启续位仍需实际运行记录",
