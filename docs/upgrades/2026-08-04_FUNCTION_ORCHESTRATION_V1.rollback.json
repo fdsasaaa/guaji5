@@ -1,0 +1,93 @@
+{
+  "schema_version": 1,
+  "upgrade_id": "FUNCTION-ORCHESTRATION-V1",
+  "date": "2026-08-04",
+  "status": "BRANCH_IMPLEMENTATION",
+  "repository": "fdsasaaa/guaji5",
+  "base_branch": "main",
+  "base_commit": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "task_branch": "agent/enforce-full-function-orchestration",
+  "domains": ["SYSTEM", "PROGRAM"],
+  "force_push_allowed": false,
+  "auto_merge_allowed": false,
+  "failed_evidence_must_remain": true,
+  "rollback_target": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "files": [
+    {
+      "path": "controller/function_orchestration.json",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "reviewed revert deletes the file"
+    },
+    {
+      "path": "controller/templates/function_orchestration.template.json",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "reviewed revert deletes the file"
+    },
+    {
+      "path": "tools/validate_function_orchestration.py",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "reviewed revert deletes the file"
+    },
+    {
+      "path": "11_智能功能调度与资金路径编排协议.md",
+      "action": "UPDATE",
+      "before_blob_sha": "e9c2fb90ceaf0b1e4711b44fe9ef06deba136236",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": "controller/pipeline.json",
+      "action": "UPDATE",
+      "before_blob_sha": "2dbd42d48d7e57fc00e59cbdc1abb75d4e47d332",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": "AGENTS.md",
+      "action": "UPDATE",
+      "before_blob_sha": "3529885017295352b11e5baf9245deca403ee0d3",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": ".github/workflows/validate.yml",
+      "action": "UPDATE",
+      "before_blob_sha": "8983fbd8d3159217b68bfb071320d1adc2369f73",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": "tools/validate_controller_architecture.py",
+      "action": "UPDATE",
+      "before_blob_sha": "ba081ca0f70c00a1af559604a2c2ff73f6655148",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": "SYSTEM_MANIFEST.json",
+      "action": "UPDATE",
+      "before_blob_sha": "3dbe270ae3ed1a5bd527f480cb0d36d78521d510",
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "restore exact main blob"
+    },
+    {
+      "path": "docs/upgrades/2026-08-04_FUNCTION_ORCHESTRATION_V1.md",
+      "action": "CREATE",
+      "before_blob_sha": null,
+      "after_blob_sha": "SELF_AFTER_WRITE",
+      "rollback": "preserve as historical evidence even when functionality is reverted"
+    }
+  ],
+  "required_validations": [
+    "python tools/validate_repository.py",
+    "python tools/validate_controller_architecture.py",
+    "python tools/lottery_controller.py validate",
+    "python tools/validate_function_orchestration.py --self-test --scan-runs"
+  ]
+}
