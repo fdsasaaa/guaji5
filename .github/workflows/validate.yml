@@ -60,12 +60,13 @@ jobs:
         run: |
           test ! -f tools/build_b395_delivery.py
           test ! -f youtube_seo/邻位热差迁移.json
-      - name: Confirm source-gate files exist
+      - name: Confirm source-gate and delivery-contract files exist
         run: |
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
           test -f 14_导演执行审计学习总控与模块化变更协议.md
+          test -f 15_单一完整包与投注资金可见性协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
@@ -73,24 +74,31 @@ jobs:
           test -f controller/templates/orchestration_scorecard.template.json
           test -f controller/feature_evidence_registry.json
           test -f controller/function_coverage_ledger.json
+          test -f controller/external_delivery_contract.json
+          test -f controller/runs/RUN-20260804-B397-ZONE-CHAMPION-001/delivery_execution_contract.json
           test -f tools/validate_function_orchestration.py
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
           test -f tools/test_orchestration_gates.py
-      - name: Build B397 zone champion delivery
+          test -f tools/validate_external_delivery.py
+      - name: Build B397 zone champion delivery v2
         run: python tools/build_b397_delivery.py
       - name: Validate B397 final PPT fixed pages
         run: python tools/validate_ppt_fixed_pages.py --final-ppt "dist/三区冠军三码_交付/三区冠军三码_挂机前讲解.pptx"
-      - name: Verify B397 complete delivery
+      - name: Validate single three-item external delivery
         run: |
-          test -f "dist/三区冠军三码_交付/三区冠军三码_方案套.zip"
-          test -f "dist/三区冠军三码_交付/三区冠军三码_挂机前讲解.pptx"
+          python tools/validate_external_delivery.py \
+            --delivery-zip "dist/三区冠军三码_交付/三区冠军三码_完整交付.zip" \
+            --execution-contract "controller/runs/RUN-20260804-B397-ZONE-CHAMPION-001/delivery_execution_contract.json"
+      - name: Verify B397 final delivery only
+        run: |
           test -f "dist/三区冠军三码_交付/三区冠军三码_完整交付.zip"
           test -f "dist/三区冠军三码_交付/DELIVERY_MANIFEST.json"
-      - name: Upload B397 delivery
+          test -f "dist/三区冠军三码_交付/三区冠军三码_验证记录.json"
+      - name: Upload only B397 final complete package
         uses: actions/upload-artifact@v4
         with:
-          name: B397_zone_champion_delivery
-          path: dist/三区冠军三码_交付/**
+          name: B397_zone_champion_final_package
+          path: dist/三区冠军三码_交付/三区冠军三码_完整交付.zip
           if-no-files-found: error
           retention-days: 7
