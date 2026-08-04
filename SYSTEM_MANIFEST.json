@@ -49,7 +49,9 @@
     {"file": "PPT压缩与精度规则.json", "format": "json"},
     {"file": "controller/pipeline.json", "format": "json"},
     {"file": "controller/extensions.json", "format": "json"},
-    {"file": "controller/function_orchestration.json", "format": "json"}
+    {"file": "controller/function_orchestration.json", "format": "json"},
+    {"file": "controller/feature_evidence_registry.json", "format": "json"},
+    {"file": "controller/function_coverage_ledger.json", "format": "json"}
   ],
   "必需目录": ["01_本次输入", "02_本次输出", "03_批次归档", "04_回滚源", "05_工具"],
   "核心结构化文件": [
@@ -71,7 +73,9 @@
     "PPT压缩与精度规则.json",
     "controller/pipeline.json",
     "controller/extensions.json",
-    "controller/function_orchestration.json"
+    "controller/function_orchestration.json",
+    "controller/feature_evidence_registry.json",
+    "controller/function_coverage_ledger.json"
   ],
   "状态文件": ["系统状态.json", "当前任务.json"],
   "工具": [
@@ -81,7 +85,9 @@
     "05_工具/audit_scheme_semantics.py",
     "tools/lottery_controller.py",
     "tools/validate_controller_architecture.py",
-    "tools/validate_function_orchestration.py"
+    "tools/validate_function_orchestration.py",
+    "tools/validate_scheme_orchestration_gate.py",
+    "tools/validate_orchestration_scoring.py"
   ],
   "文档编码": "UTF-8 LF",
   "主方案编码": "GBK CRLF",
@@ -183,11 +189,15 @@
     "更多设置实质候选最少": 2,
     "资金路径种类最少": 4,
     "连续纯平倍最多": 2,
-    "低覆盖探索窗口最多": 3
+    "低覆盖探索窗口最多": 3,
+    "中央证据上限校验": true,
+    "中央覆盖账本更新": true,
+    "候选评分字段数": 10,
+    "最高合格评分默认入选": true
   },
   "确认策略": "DIRECT_EXECUTION_NO_SECOND_CONFIRMATION",
   "本次构建类型": "SYSTEM_UPGRADE_ONLY",
-  "智能调度规则": "每个标准任务强制四类实质功能画像、逐画像A—H八层、平倍/有限普通/压力释放/高级状态四路具体量化、至少两类更多设置具体候选、E3门控、连续纯平倍限制、重复惩罚和功能覆盖债务；通过机器校验后才能冻结合同",
+  "智能调度规则": "每个标准任务强制四类实质功能画像、逐画像A—H八层、平倍/有限普通/压力释放/高级状态四路具体量化、至少两类更多设置具体候选、中央证据等级上限、10维透明评分、最高合格评分选择、E3门控、连续纯平倍限制、重复惩罚和中央功能覆盖债务；通过机器校验后才能冻结合同",
   "参考方案重构规则": "无法原样生成TXT时必须先拆分、近似或自由重构，优先交付可执行TXT，不得轻易空交付",
   "GitHub回滚规则": "所有修改在任务分支完成并保留提交、差异、校验与合并记录；main只接收通过校验的版本；升级异常时回滚到上一个已验证main提交，失败证据不得删除",
   "总控协议": "14_导演执行审计学习总控与模块化变更协议.md",
@@ -197,7 +207,12 @@
   "总控架构校验": "tools/validate_controller_architecture.py",
   "功能编排配置": "controller/function_orchestration.json",
   "功能编排模板": "controller/templates/function_orchestration.template.json",
+  "功能编排评分模板": "controller/templates/orchestration_scorecard.template.json",
+  "功能证据注册表": "controller/feature_evidence_registry.json",
+  "功能覆盖账本": "controller/function_coverage_ledger.json",
   "功能编排校验": "tools/validate_function_orchestration.py",
+  "功能编排评分校验": "tools/validate_orchestration_scoring.py",
+  "方案PR编排闸门": "tools/validate_scheme_orchestration_gate.py",
   "功能编排证据文件": "function_orchestration.json",
   "功能编排合同冻结前必须通过": true,
   "总控自动返工上限": 3,
