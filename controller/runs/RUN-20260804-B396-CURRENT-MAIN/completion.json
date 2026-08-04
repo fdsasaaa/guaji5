@@ -1,11 +1,11 @@
 {
   "run_id": "RUN-20260804-B396-CURRENT-MAIN",
   "phase": "COMPLETED",
-  "status": "DELIVERY_COMPLETE_REPOSITORY_INTEGRATION_PENDING_CI",
+  "status": "DELIVERY_COMPLETE_CURRENT_MAIN_CI_PASS",
   "user_delivery": "READY",
   "repository_branch": "agent/b396-controller-current-main",
-  "draft_pr": "PENDING_CREATION",
-  "current_main_ci": "PENDING",
+  "draft_pr": 18,
+  "current_main_ci": {"run_id": 30878397840, "run_number": 284, "conclusion": "success"},
   "merge": "NOT_REQUESTED_NOT_AUTOMATIC",
   "result_boundary": "本次只完成挂机前方案设计与交付，不代表该规则具有盈利或预测优势。",
   "next_action": "用户实际运行主方案30期和随机对照30期后，按记录进入POST_RUN_REVIEW。"
