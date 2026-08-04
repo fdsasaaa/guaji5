@@ -36,6 +36,7 @@ MORE_SETTING_REGISTRY = {
     "ROTATION_OR_COMBINATION": "ROTATION_OR_COMBINATION",
 }
 OUTCOMES = {"CANDIDATE", "PROBE_ONLY", "SELECTED", "BLOCKED"}
+DELIVERY_MODES = {"BASELINE_ONLY", "BASELINE_PLUS_EXPERIMENT", "EXPERIMENT_ONLY"}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -178,6 +179,20 @@ def validate_registry(
     return errors
 
 
+def baseline_streak(modes: list[Any]) -> int:
+    count = 0
+    for mode in reversed(modes):
+        if mode == "BASELINE_ONLY":
+            count += 1
+        else:
+            break
+    return count
+
+
+def expected_window(history: list[Any], current: Any, limit: int) -> list[Any]:
+    return (history + [current])[-limit:]
+
+
 def validate_ledger_transition(
     evidence: dict[str, Any],
     base_ledger: dict[str, Any],
@@ -187,6 +202,19 @@ def validate_ledger_transition(
     evidence_due = evidence.get("coverage_debt", {}).get("due_features", [])
     if evidence_due != due:
         errors.append(f"coverage_debt.due_features必须等于基线中央账本: expected={due}, actual={evidence_due}")
+
+    base_modes = base_ledger.get("recent_delivery_modes", [])
+    evidence_modes = evidence.get("recent_delivery_modes", [])
+    if evidence_modes != base_modes:
+        errors.append("recent_delivery_modes必须原样读取基线中央账本")
+    if base_ledger.get("baseline_only_streak") != baseline_streak(base_modes):
+        errors.append("基线中央账本baseline_only_streak与recent_delivery_modes不一致")
+
+    base_fingerprints = base_ledger.get("recent_selected_fingerprints", [])
+    repeat = evidence.get("repeat_guard", {})
+    if not isinstance(repeat, dict) or repeat.get("last_three_fingerprints") != base_fingerprints:
+        errors.append("repeat_guard.last_three_fingerprints必须原样读取基线中央账本")
+
     update = evidence.get("ledger_update", {})
     if not isinstance(update, dict):
         return errors + ["ledger_update必须为对象"]
@@ -244,6 +272,11 @@ def validate_run(
         if not (run_dir / required).exists():
             errors.append(f"{required}缺失")
     evidence = load(evidence_path)
+    directory_run_id = run_dir.name
+    if evidence.get("run_id") != directory_run_id:
+        errors.append("function_orchestration.run_id必须等于运行目录名")
+    if task.get("run_id") != directory_run_id:
+        errors.append("task.run_id必须等于运行目录名")
     errors += core.validate_evidence(evidence, config)
     errors += validate_registry(evidence, registry)
     if base_ledger is not None:
@@ -269,8 +302,15 @@ def validate_branch_ledger(
 
     evidence = load(evidence_paths[0])
     update = evidence.get("ledger_update", {})
+    selection = evidence.get("selection", {})
+    repeat = evidence.get("repeat_guard", {})
     run_id = evidence.get("run_id")
     base_sequence = base_ledger.get("sequence")
+    window = base_ledger.get("selection_window", 3)
+    if not isinstance(window, int) or window < 1:
+        errors.append("中央账本selection_window必须为正整数")
+        window = 3
+
     if not isinstance(base_sequence, int) or branch_ledger.get("sequence") != base_sequence + 1:
         errors.append("中央功能覆盖账本sequence必须相对基线加1")
     if branch_ledger.get("sequence") != update.get("to_sequence"):
@@ -279,6 +319,21 @@ def validate_branch_ledger(
         errors.append("分支账本next_due_features与证据ledger_update不一致")
     if branch_ledger.get("last_run_id") != run_id:
         errors.append("分支账本last_run_id与本次run_id不一致")
+
+    current_mode = selection.get("delivery_mode")
+    if current_mode not in DELIVERY_MODES:
+        errors.append("本次delivery_mode无效")
+    expected_modes = expected_window(base_ledger.get("recent_delivery_modes", []), current_mode, window)
+    if branch_ledger.get("recent_delivery_modes") != expected_modes:
+        errors.append("分支账本recent_delivery_modes未按窗口追加本次模式")
+    expected_streak = baseline_streak(expected_modes)
+    if branch_ledger.get("baseline_only_streak") != expected_streak:
+        errors.append("分支账本baseline_only_streak未正确更新")
+
+    current_fingerprint = repeat.get("fingerprint")
+    expected_fingerprints = expected_window(base_ledger.get("recent_selected_fingerprints", []), current_fingerprint, window)
+    if branch_ledger.get("recent_selected_fingerprints") != expected_fingerprints:
+        errors.append("分支账本recent_selected_fingerprints未按窗口追加本次指纹")
 
     branch_features = branch_ledger.get("features", {})
     if not isinstance(branch_features, dict):
@@ -331,8 +386,8 @@ def main() -> int:
     branch_ledger = load(ROOT / "controller" / "function_coverage_ledger.json")
     errors: list[str] = []
 
-    # Historical runs are immutable evidence. Validate their internal semantics and
-    # registry claims only; never reinterpret an old run against a later ledger state.
+    # Historical runs are immutable evidence. Validate internal semantics and
+    # registry claims only; never reinterpret an old run against a later ledger.
     for task_path in sorted((ROOT / "controller" / "runs").glob("*/task.json")):
         run_errors = validate_run(task_path.parent, config, registry, None)
         errors += [f"{task_path.parent.relative_to(ROOT)}: {error}" for error in run_errors]
@@ -362,6 +417,9 @@ def main() -> int:
         if not path.exists():
             errors.append(f"变更证据不存在: {path.relative_to(ROOT)}")
             continue
+        task_relative = f"{path.parent.relative_to(ROOT).as_posix()}/task.json"
+        if task_relative not in changed:
+            errors.append(f"新方案编排证据必须同时新增或更新本次task.json: {task_relative}")
         run_errors = validate_run(path.parent, config, registry, base_ledger)
         errors += [f"{path.parent.relative_to(ROOT)}: {error}" for error in run_errors]
 
