@@ -18,16 +18,16 @@ def load(path: str) -> dict:
     return json.loads((ROOT / path).read_text(encoding="utf-8"))
 
 
-def score(total_bias: int = 0) -> dict:
+def score(evidence_rank: int, total_bias: int = 0, exposure_penalty: int = 2) -> dict:
     components = {
         "problem_fit": 8 + total_bias,
-        "software_evidence": 6,
+        "software_evidence": min(10, max(0, evidence_rank * 2)),
         "risk_fit": 7,
         "novelty": 5,
         "explanation_value": 7,
         "coverage_value": 5,
-        "exposure_penalty": 2,
-        "unverified_penalty": 2,
+        "exposure_penalty": exposure_penalty,
+        "unverified_penalty": max(0, (3 - evidence_rank) * 2),
         "complexity_penalty": 2,
         "logic_confusion_penalty": 1,
     }
@@ -60,23 +60,34 @@ def build_valid() -> tuple[dict, dict, dict]:
         {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
         {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
     ]
+    profile_ranks = {"BASE": 3, "STATE": 1, "FUND": 2, "PROBE": 1}
     for profile in evidence["candidate_profiles"]:
+        rank = profile_ranks[profile["profile_id"]]
         profile["eligible"] = profile["decision"] == "SELECTED"
-        profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "仅比较或探针"
-        profile["scorecard"] = score(1 if profile["profile_id"] == "BASE" else 0)
+        profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
+        profile["hard_blockers"] = []
+        profile["scorecard"] = score(rank, 1 if profile["profile_id"] == "BASE" else 0)
+
     funding_refs = {
         "FLAT": ["HISTORICAL-FLAT-RUNTIME"],
         "LIMITED_LINEAR": ["ORDINARY-SEQUENCE-FORMAT"],
         "PRESSURE_RELEASE": ["ORDINARY-SEQUENCE-FORMAT"],
         "ADVANCED_STATE": ["SW-EVID-002", "SW-EVID-009"],
     }
+    funding_ranks = {"FLAT": 3, "LIMITED_LINEAR": 2, "PRESSURE_RELEASE": 2, "ADVANCED_STATE": 2}
+    exposure_penalties = {"FLAT": 1, "ADVANCED_STATE": 2, "PRESSURE_RELEASE": 3, "LIMITED_LINEAR": 4}
     for path in evidence["funding_paths"]:
-        if path["kind"] in {"LIMITED_LINEAR", "PRESSURE_RELEASE"}:
-            path["software_evidence_level"] = "E2"
+        path["software_evidence_level"] = f"E{funding_ranks[path['kind']]}"
         path["evidence_refs"] = funding_refs[path["kind"]]
         path["eligible"] = path["decision"] == "SELECTED"
-        path["eligibility_reason"] = "正式基准可入选" if path["eligible"] else "未达E3或未选"
-        path["scorecard"] = score(1 if path["kind"] == "FLAT" else 0)
+        path["eligibility_reason"] = "正式基准可入选" if path["eligible"] else "证据未达E3或未选"
+        path["hard_blockers"] = []
+        path["scorecard"] = score(
+            funding_ranks[path["kind"]],
+            1 if path["kind"] == "FLAT" else 0,
+            exposure_penalties[path["kind"]],
+        )
+
     for setting in evidence["more_settings_review"]:
         if setting["category"] == "MONITORING":
             setting["evidence_refs"] = ["UI-FIELD-MONITORING"]
@@ -84,7 +95,18 @@ def build_valid() -> tuple[dict, dict, dict]:
         else:
             setting["evidence_refs"] = ["UI-FIELD-SIMULATION-REAL-SWITCH"]
             setting["evidence_level"] = "E1"
+
     evidence["coverage_debt"]["due_features"] = ledger["next_due_features"]
+    evidence["recent_delivery_modes"] = ledger["recent_delivery_modes"]
+    evidence["repeat_guard"]["last_three_fingerprints"] = ledger["recent_selected_fingerprints"]
+    fingerprint = evidence["repeat_guard"]["fingerprint"]
+    trailing = 0
+    for previous in reversed(ledger["recent_selected_fingerprints"]):
+        if previous == fingerprint:
+            trailing += 1
+        else:
+            break
+    evidence["repeat_guard"]["repeat_count"] = trailing
     evidence["ledger_update"] = {
         "from_sequence": ledger["sequence"],
         "to_sequence": ledger["sequence"] + 1,
@@ -98,9 +120,16 @@ def build_valid() -> tuple[dict, dict, dict]:
 
 def advanced_ledger(base: dict, evidence: dict) -> dict:
     branch = copy.deepcopy(base)
-    branch["sequence"] = evidence["ledger_update"]["to_sequence"]
+    update = evidence["ledger_update"]
+    branch["sequence"] = update["to_sequence"]
     branch["last_run_id"] = evidence["run_id"]
-    branch["next_due_features"] = evidence["ledger_update"]["next_due_features"]
+    branch["next_due_features"] = update["next_due_features"]
+    window = branch["selection_window"]
+    mode = evidence["selection"]["delivery_mode"]
+    branch["recent_delivery_modes"] = (base["recent_delivery_modes"] + [mode])[-window:]
+    branch["baseline_only_streak"] = 0 if mode != "BASELINE_ONLY" else base["baseline_only_streak"] + 1
+    fingerprint = evidence["repeat_guard"]["fingerprint"]
+    branch["recent_selected_fingerprints"] = (base["recent_selected_fingerprints"] + [fingerprint])[-window:]
     for feature in base["next_due_features"]:
         entry = branch["features"][feature]
         entry["last_material_candidate_run"] = evidence["run_id"]
@@ -152,6 +181,12 @@ def main() -> int:
     if not gate.validate_registry_and_ledger(hidden_debt, registry, ledger):
         errors.append("清空中央到期功能未被拒绝")
 
+    hidden_history = copy.deepcopy(evidence)
+    hidden_history["recent_delivery_modes"] = []
+    hidden_history["repeat_guard"]["last_three_fingerprints"] = []
+    if not gate.validate_registry_and_ledger(hidden_history, registry, ledger):
+        errors.append("清空中央最近模式与指纹未被拒绝")
+
     future_ledger = advanced_ledger(ledger, evidence)
     if gate.validate_registry(evidence, registry):
         errors.append("历史证据在未来账本环境下不应失效")
@@ -164,11 +199,25 @@ def main() -> int:
         errors.append("缺少画像评分未被拒绝")
 
     lower_selected = copy.deepcopy(evidence)
-    lower_selected["candidate_profiles"][0]["scorecard"] = score(-3)
+    lower_selected["candidate_profiles"][0]["scorecard"] = score(3, -3)
     lower_selected["candidate_profiles"][1]["eligible"] = True
-    lower_selected["candidate_profiles"][1]["scorecard"] = score(2)
+    lower_selected["candidate_profiles"][1]["scorecard"] = score(3, 2)
+    lower_selected["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
+    lower_selected["candidate_profiles"][1]["layers"]["B"]["evidence_level"] = "E3"
     if not scoring.validate_evidence(lower_selected):
         errors.append("低分画像无证据覆盖仍入选未被拒绝")
+
+    hidden_eligible = copy.deepcopy(evidence)
+    hidden_eligible["candidate_profiles"][0]["eligible"] = False
+    hidden_eligible["candidate_profiles"][0]["hard_blockers"] = []
+    if not scoring.validate_evidence(hidden_eligible):
+        errors.append("达到E3的画像被无证据标记不合格未被拒绝")
+
+    inflated_score = copy.deepcopy(evidence)
+    inflated_score["candidate_profiles"][1]["scorecard"]["components"]["software_evidence"] = 8
+    inflated_score["candidate_profiles"][1]["scorecard"]["total"] += 6
+    if not scoring.validate_evidence(inflated_score):
+        errors.append("低证据画像夸大software_evidence评分未被拒绝")
 
     if errors:
         print("ORCHESTRATION_GATE_TESTS_FAILED")
