@@ -1,0 +1,30 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "PREFLIGHT",
+  "status": "ACTIVE_PENDING_CI",
+  "base_branch": "main",
+  "base_commit": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "rollback_target": "3c8757d89b8963be1f166d8cbbc0dd2f91907dc8",
+  "domains": ["SCHEME", "PPT", "PROGRAM"],
+  "planned_files": [
+    {"path": "tools/build_b396_delivery.py", "before_sha": null, "action": "CREATE"},
+    {"path": "youtube_seo/前值转移三码.json", "before_sha": null, "action": "CREATE"},
+    {"path": "03_批次归档/BATCH-B396-FIRST-ORDER-TRANSITION-001.json", "before_sha": null, "action": "CREATE"},
+    {"path": ".github/workflows/validate.yml", "before_blob_sha": "8983fbd8d3159217b68bfb071320d1adc2369f73", "action": "UPDATE"},
+    {"path": "当前任务.json", "before_blob_sha": "1c04439fae7bfbd0870fbd8044e5f89ea568c45c", "action": "UPDATE"},
+    {"path": "SYSTEM_STATE.json", "before_blob_sha": "e92ec38677c982ef7ca71237f2ed78f4dea5748e", "action": "UPDATE"},
+    {"path": "controller/runs/RUN-20260804-B396-CURRENT-MAIN/", "before_sha": null, "action": "CREATE_EVIDENCE_PACKAGE"}
+  ],
+  "required_checks": [
+    "python tools/validate_repository.py",
+    "python tools/validate_controller_architecture.py",
+    "python tools/lottery_controller.py validate",
+    "python tools/validate_ppt_director_rules.py",
+    "python tools/build_b396_delivery.py",
+    "python tools/validate_ppt_fixed_pages.py --final-ppt dist/前值转移三码_交付/前值转移三码_挂机前讲解.pptx"
+  ],
+  "delete_allowed": false,
+  "migration": false,
+  "rollback_order": ["关闭新PR", "保留失败证据", "不修改main", "必要时从基线新建恢复分支"],
+  "after_state": "PENDING_CI_AND_PR"
+}
