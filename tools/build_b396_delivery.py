@@ -105,6 +105,9 @@ def build_package(g,issue,data_range):
 def counts(g,n,limit=5,multiline=False):
  items=[f"{i}. {x['数字']}（{x['次数']}次）" for i,x in enumerate(g[n]['后继计数排序'][:limit],1)]
  return '\n'.join(items) if multiline else '  '.join(items)
+def paired_counts(g,n):
+ items=[f"{x['数字']}（{x['次数']}次）" for x in g[n]['后继计数排序']]
+ return '\n'.join('  >  '.join(items[i:i+2]) for i in range(0,len(items),2))
 def build_ppt(g,issue):
  cover=ROOT/'assets'/'ppt'/'fixed_pages'/'首页背景图谱.png'; end=ROOT/'assets'/'ppt'/'fixed_pages'/'固定最后一页_画面.png'; prs=base.fixed.new_prs()
  s=base.fixed.add_cover(prs,cover); base.fixed.add_text(s,Inches(.82),Inches(1.02),Inches(8.8),Inches(.7),PROJECT,34,base.COLORS['white'],True); base.fixed.add_text(s,Inches(.84),Inches(1.84),Inches(9.4),Inches(.38),'上一位数字之后，下一位最常跟谁？',17,base.COLORS['gold'],True); base.fixed.add_text(s,Inches(.84),Inches(5.88),Inches(9.6),Inches(.34),'挂机前规则说明｜结果等待实际运行',14,base.COLORS['white']); base.fixed.set_notes(s,'本期研究同一位置的一阶转移频次，只讲号码来源和运行规则。')
@@ -116,7 +119,7 @@ def build_ppt(g,issue):
  for i,n in enumerate(['百位','十位','个位']):
   x=g[n]; body=f"最新前值：{x['最新前值']}\n历史转移样本：{x['前值样本次数']}次\n排序前三：\n{counts(g,n,3,True)}\n\n冻结号码：{' '.join(map(str,x['冻结号码']))}"; base.card(s,Inches(.72+i*4.05),Inches(1.78),Inches(3.82),Inches(4.35),n,body,ac[n],19,16)
  base.fixed.add_text(s,Inches(.88),Inches(6.3),Inches(11.4),Inches(.28),f'数据截止：{issue}｜三组数字与TXT一致',15,base.COLORS['gray'],True,PP_ALIGN.CENTER); base.fixed.set_notes(s,'读出前值、样本次数、按并列规则确定的排名和冻结号码。')
- ex=max(['百位','十位','个位'],key=lambda n:g[n]['前值样本次数']); x=g[ex]; s=base.body_slide(prs,f'以{ex}为例，完整复算一次','完整案例'); base.card(s,Inches(.78),Inches(1.82),Inches(3.55),Inches(3.9),'先找前值',f"截止期{ex}是{x['最新前值']}。\n历史中作为前值共{x['前值样本次数']}次。",'gold',18,19); base.card(s,Inches(4.58),Inches(1.82),Inches(3.55),Inches(3.9),'再数下一期',f'完整排序：\n{counts(g,ex,10)}','blue',18,16); base.card(s,Inches(8.38),Inches(1.82),Inches(3.55),Inches(3.9),'最后冻结',f"取前三：\n\n{' '.join(map(str,x['冻结号码']))}\n\n连续{PERIODS}期不改码。",'green',18,21); base.fixed.set_notes(s,'完整展示一个位置的复算过程，包括并列处理后的排序。')
+ ex=max(['百位','十位','个位'],key=lambda n:g[n]['前值样本次数']); x=g[ex]; s=base.body_slide(prs,f'以{ex}为例，完整复算一次','完整案例'); base.card(s,Inches(.78),Inches(1.82),Inches(3.55),Inches(3.9),'先找前值',f"截止期{ex}是{x['最新前值']}。\n历史中作为前值共{x['前值样本次数']}次。",'gold',18,19); base.card(s,Inches(4.58),Inches(1.82),Inches(3.55),Inches(3.9),'再数下一期',f'完整排序：\n{paired_counts(g,ex)}','blue',18,16); base.card(s,Inches(8.38),Inches(1.82),Inches(3.55),Inches(3.9),'最后冻结',f"取前三：\n\n{' '.join(map(str,x['冻结号码']))}\n\n连续{PERIODS}期不改码。",'green',18,21); base.fixed.set_notes(s,'完整展示一个位置的复算过程，包括并列处理后的排序。')
  s=base.body_slide(prs,'主方案怎样运行','执行规则')
  for i,n in enumerate(['百位','十位','个位']):base.card(s,Inches(.82+i*4.08),Inches(1.95),Inches(3.52),Inches(2.02),f'{i+1}  {n}',f"冻结：{' '.join(map(str,g[n]['冻结号码']))}",ac[n],18,22)
  base.card(s,Inches(.82),Inches(4.35),Inches(11.2),Inches(1.42),'软件设置',f'导入三份主方案 → 手工开启顶部“方案轮投” → 每期一个位置 → 连续{PERIODS}期停止。','gold',17,18); base.fixed.set_notes(s,'软件只轮流执行静态定码。')
