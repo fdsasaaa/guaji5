@@ -3,6 +3,7 @@ from __future__ import annotations
 
 import ast
 import json
+import re
 import sys
 from pathlib import Path
 
@@ -40,18 +41,47 @@ required = [
     "tools/lottery_controller.py",
     "tools/validate_controller_architecture.py",
     "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md",
+    "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.rollback.json",
 ]
 for item in required:
     if not (ROOT / item).exists():
         err(f"缺少总控升级文件: {item}")
 
+manifest = load_json("SYSTEM_MANIFEST.json")
 pipeline = load_json("controller/pipeline.json")
 extensions = load_json("controller/extensions.json")
+rollback_record = load_json("docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.rollback.json")
 protocol = read("14_导演执行审计学习总控与模块化变更协议.md")
 agents = read("AGENTS.md")
 readme = read("README.md")
 workflow = read(".github/workflows/validate.yml")
 controller = read("tools/lottery_controller.py")
+
+if "14_导演执行审计学习总控与模块化变更协议.md" not in manifest.get("模块", []):
+    err("SYSTEM_MANIFEST未登记14号协议")
+for item in ["controller/pipeline.json", "controller/extensions.json"]:
+    if item not in manifest.get("核心结构化文件", []):
+        err(f"SYSTEM_MANIFEST未登记核心结构化文件: {item}")
+for item in ["tools/lottery_controller.py", "tools/validate_controller_architecture.py"]:
+    if item not in manifest.get("工具", []):
+        err(f"SYSTEM_MANIFEST未登记工具: {item}")
+manifest_expect = {
+    "总控协议": "14_导演执行审计学习总控与模块化变更协议.md",
+    "总控流水线配置": "controller/pipeline.json",
+    "总控扩展注册表": "controller/extensions.json",
+    "总控程序": "tools/lottery_controller.py",
+    "总控架构校验": "tools/validate_controller_architecture.py",
+    "总控自动返工上限": 3,
+    "总控默认PR状态": "DRAFT",
+    "总控自动合并": False,
+    "总控强推": False,
+    "清理默认模式": "PLAN_ONLY",
+}
+for key, expected in manifest_expect.items():
+    if manifest.get(key) != expected:
+        err(f"SYSTEM_MANIFEST.{key}错误: {manifest.get(key)!r}")
+if manifest.get("总控扩展域") != ["PPT", "SCHEME", "PROGRAM", "SYSTEM", "CLEANUP"]:
+    err("SYSTEM_MANIFEST.总控扩展域错误")
 
 phases = pipeline.get("phases", [])
 phase_ids = [item.get("id") for item in phases]
@@ -152,6 +182,23 @@ for phrase in [
 ]:
     if phrase not in controller:
         err(f"lottery_controller.py缺少能力: {phrase}")
+
+base_commit = rollback_record.get("base_commit", "")
+if not re.fullmatch(r"[0-9a-f]{40}", base_commit):
+    err("机器回滚清单缺少有效base_commit")
+if rollback_record.get("force_push_allowed") is not False:
+    err("机器回滚清单未禁止强推")
+if rollback_record.get("auto_merge_allowed") is not False:
+    err("机器回滚清单未禁止自动合并")
+recorded_paths = {item.get("path") for item in rollback_record.get("files", [])}
+for item in required:
+    if item not in recorded_paths and not item.endswith(".rollback.json"):
+        err(f"机器回滚清单未登记: {item}")
+for item in rollback_record.get("files", []):
+    if item.get("action") == "UPDATE" and not item.get("before_blob_sha"):
+        err(f"更新文件缺少before_blob_sha: {item.get('path')}")
+    if not item.get("rollback"):
+        err(f"文件缺少回滚动作: {item.get('path')}")
 
 if errors:
     print("CONTROLLER_ARCHITECTURE_INVALID")
