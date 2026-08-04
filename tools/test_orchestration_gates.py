@@ -4,6 +4,7 @@ from __future__ import annotations
 import copy
 import json
 import sys
+import tempfile
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -36,7 +37,6 @@ def score(total_bias: int = 0) -> dict:
 
 
 def build_valid() -> tuple[dict, dict, dict]:
-    config = load("controller/function_orchestration.json")
     registry = load("controller/feature_evidence_registry.json")
     ledger = load("controller/function_coverage_ledger.json")
     evidence = core.fixture()
@@ -96,6 +96,18 @@ def build_valid() -> tuple[dict, dict, dict]:
     return evidence, registry, ledger
 
 
+def advanced_ledger(base: dict, evidence: dict) -> dict:
+    branch = copy.deepcopy(base)
+    branch["sequence"] = evidence["ledger_update"]["to_sequence"]
+    branch["last_run_id"] = evidence["run_id"]
+    branch["next_due_features"] = evidence["ledger_update"]["next_due_features"]
+    for feature in base["next_due_features"]:
+        entry = branch["features"][feature]
+        entry["last_material_candidate_run"] = evidence["run_id"]
+        entry["consecutive_not_material"] = 0
+    return branch
+
+
 def main() -> int:
     evidence, registry, ledger = build_valid()
     errors: list[str] = []
@@ -104,10 +116,31 @@ def main() -> int:
         errors.append("有效综合夹具未通过核心校验: " + " | ".join(core_errors))
     gate_errors = gate.validate_registry_and_ledger(evidence, registry, ledger)
     if gate_errors:
-        errors.append("有效综合夹具未通过证据/账本校验: " + " | ".join(gate_errors))
+        errors.append("有效综合夹具未通过证据/基线账本校验: " + " | ".join(gate_errors))
     score_errors = scoring.validate_evidence(evidence)
     if score_errors:
         errors.append("有效综合夹具未通过评分校验: " + " | ".join(score_errors))
+
+    with tempfile.TemporaryDirectory() as temp_dir:
+        evidence_path = Path(temp_dir) / "function_orchestration.json"
+        evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+        branch_ledger = advanced_ledger(ledger, evidence)
+        branch_errors = gate.validate_branch_ledger(
+            ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
+            [evidence_path],
+            ledger,
+            branch_ledger,
+        )
+        if branch_errors:
+            errors.append("有效账本迁移被错误拒绝: " + " | ".join(branch_errors))
+        stale_errors = gate.validate_branch_ledger(
+            ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
+            [evidence_path],
+            ledger,
+            ledger,
+        )
+        if not stale_errors:
+            errors.append("未更新中央账本未被拒绝")
 
     inflated = copy.deepcopy(evidence)
     inflated["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
@@ -118,6 +151,12 @@ def main() -> int:
     hidden_debt["coverage_debt"]["due_features"] = []
     if not gate.validate_registry_and_ledger(hidden_debt, registry, ledger):
         errors.append("清空中央到期功能未被拒绝")
+
+    future_ledger = advanced_ledger(ledger, evidence)
+    if gate.validate_registry(evidence, registry):
+        errors.append("历史证据在未来账本环境下不应失效")
+    if not gate.validate_ledger_transition(evidence, future_ledger):
+        errors.append("旧证据错误地通过了未来账本迁移校验")
 
     missing_score = copy.deepcopy(evidence)
     del missing_score["candidate_profiles"][0]["scorecard"]
