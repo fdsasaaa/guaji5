@@ -2,7 +2,7 @@
   "schema_version": 1,
   "upgrade_id": "CONTROLLER-PIPELINE-V1",
   "date": "2026-08-04",
-  "status": "DRAFT_PR_CANDIDATE",
+  "status": "DRAFT_PR_VALIDATED",
   "repository": "fdsasaaa/guaji5",
   "base_branch": "main",
   "base_commit": "6df377889c82ec20f7f8de7c5d7797d898b22454",
@@ -11,6 +11,17 @@
   "force_push_allowed": false,
   "auto_merge_allowed": false,
   "failed_evidence_must_remain": true,
+  "pr": {
+    "number": 16,
+    "draft": true,
+    "base": "main",
+    "head": "agent/controller-pipeline-rollback-extensibility",
+    "initial_validated_head": "fe8bdf68ea45d0d18c2c650f00e66991ad73f0f4",
+    "workflow_run_id": 30875695751,
+    "workflow_run_number": 253,
+    "workflow_conclusion": "success",
+    "main_modified": false
+  },
   "files": [
     {
       "path": "AGENTS.md",
@@ -93,7 +104,7 @@
       "path": "docs/upgrades/2026-08-04_CONTROLLER_PIPELINE_V1.md",
       "action": "CREATE",
       "before_blob_sha": null,
-      "after_blob_sha": "1a9f6f826bc1fbf4c08499d8031ee50e892d05b0",
+      "after_blob_sha": "59c796fa358b07835c2f1c044cc5c1bd189e596e",
       "rollback": "preserve as historical evidence even if functionality is reverted"
     },
     {
