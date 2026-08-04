@@ -34,3 +34,17 @@ jobs:
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
+      - name: Build B396 delivery
+        run: python tools/build_b396_delivery.py
+      - name: Validate final B396 PPT fixed pages
+        run: python tools/validate_ppt_fixed_pages.py --final-ppt "dist/前值转移三码_交付/前值转移三码_挂机前讲解.pptx"
+      - name: Upload B396 complete delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: 前值转移三码_完整交付
+          path: |
+            dist/前值转移三码_交付/前值转移三码_完整交付.zip
+            dist/前值转移三码_交付/前值转移三码_验证记录.json
+            dist/前值转移三码_交付/DELIVERY_MANIFEST.json
+          if-no-files-found: error
+          retention-days: 7
