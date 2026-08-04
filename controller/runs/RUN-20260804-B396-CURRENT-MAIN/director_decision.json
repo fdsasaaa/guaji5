@@ -1,0 +1,33 @@
+{
+  "run_id": "RUN-20260804-B396-CURRENT-MAIN",
+  "phase": "DIRECTOR",
+  "status": "SELECTED",
+  "candidate_profiles": [
+    {
+      "profile": "一阶前值转移三码",
+      "angles": ["ANG-069", "ANG-072"],
+      "software_mapping": "三份静态定位胆定码轮换+顶部方案轮投",
+      "strengths": ["号码来源可逐步复算", "单一模型无窗口扫描", "可设置同成本随机对照"],
+      "risks": ["历史优势弱", "200期为复用数据", "运行中不动态更新"]
+    },
+    {
+      "profile": "冷热遗漏多窗口接力",
+      "angles": ["冷热", "遗漏"],
+      "decision": "REJECT",
+      "reason": "与近期B394逻辑族过近，且多窗口会增加参数自由度"
+    },
+    {
+      "profile": "高级倍投触发型方案",
+      "angles": ["资金路径", "连挂触发"],
+      "decision": "REJECT",
+      "reason": "当前研究问题首先应验证选号规则，倍投会把选号与资金风险混在一起"
+    }
+  ],
+  "selected_profile": "一阶前值转移三码",
+  "selection_reason": "在真实号码来源、软件可执行、复杂度、历史去重和可证伪性之间最平衡",
+  "adversarial_review": {
+    "main_objection": "31.90%对30.00%的差异可能只是噪声",
+    "response": "不宣称优势；采用固定30期主方案与30期随机对照前向比较",
+    "result": "PASS_AS_EXPERIMENT_NOT_AS_PROFIT_CLAIM"
+  }
+}
