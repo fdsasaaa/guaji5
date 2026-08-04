@@ -68,7 +68,7 @@ for phrase in ['PRE_RUN_SETUP','POST_RUN_REVIEW','PPT_ENGINEERING_ID_VISIBLE','P
  if phrase not in proto: fail(f'05A缺少关键规则: {phrase}')
 for phrase in ['号码来源强制闸门','历史数据中出现了什么现象','具体号码或状态怎样计算出来','先随意选定号码','PPT_NUMBER_SOURCE_MISSING','PPT_ANALYSIS_EXECUTION_MISMATCH']:
  if phrase not in proto: fail(f'05A缺少号码来源规则: {phrase}')
-for phrase in ['号码来源与技术缘由最高优先级闸门','02A_彩票开奖历史分析体系与方案路由.md','PPT技术来源验收测试集.jsonl','禁止先随意找几组数字']:
+for phrase in ['号码来源与技术缘由最高优先级闸门','02A_彩票开奖历史分析体系与方案路由.md','PPT技术来源验收测试集.jsonl','随意找几组数字后再补']:
  if phrase not in override: fail(f'00A缺少号码来源覆盖规则: {phrase}')
 for phrase in ['号码来源六要素','分析角度正式源','不能先随意确定一组数字','内部号码证据包','PPT_STORY_BACKFILLED_AFTER_NUMBERS']:
  if phrase not in source_proto: fail(f'05D缺少关键规则: {phrase}')
