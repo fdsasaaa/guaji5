@@ -1,0 +1,73 @@
+{
+  "schema_version": 1,
+  "run_id": "REPLACE_RUN_ID",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "DIRECTOR_COMPLETE",
+  "candidate_profiles": [
+    {
+      "profile_id": "BASELINE",
+      "profile_type": "BASELINE",
+      "name": "基准画像",
+      "decision": "REJECTED",
+      "reason": "必须填写",
+      "features": [],
+      "layers": {
+        "A": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "B": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "C": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "E": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "F": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "G": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": [], "final_enabled": false, "decision_reason": "", "evidence_level": "E0"}
+      },
+      "material_signature": {
+        "number_logic": "",
+        "trigger": "",
+        "execution": "",
+        "funding": "",
+        "stop": "",
+        "time_simulation": ""
+      },
+      "first_use": false,
+      "new_state_features": []
+    }
+  ],
+  "funding_paths": [
+    {
+      "path_id": "FLAT",
+      "kind": "FLAT",
+      "sequence": [1, 1, 1],
+      "max_multiplier": 1,
+      "total_multiplier": 3,
+      "worst_case_exposure": 0,
+      "reset_rule": "",
+      "cap_rule": "",
+      "software_evidence_level": "E0",
+      "decision": "REJECTED",
+      "reason": ""
+    }
+  ],
+  "more_settings_review": [],
+  "repeat_guard": {
+    "fingerprint": "",
+    "last_three_fingerprints": [],
+    "repeat_count": 0,
+    "penalty_applied": false,
+    "selected_same_fingerprint": false,
+    "override_reason": ""
+  },
+  "coverage_debt": {
+    "due_features": [],
+    "blocked_features": [],
+    "all_exploration_blocked": false
+  },
+  "selection": {
+    "selected_profile_id": "",
+    "selected_funding_path_id": "",
+    "companion_probe_profile_id": null,
+    "delivery_mode": "BASELINE_ONLY",
+    "reason": ""
+  },
+  "recent_delivery_modes": []
+}
