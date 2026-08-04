@@ -77,3 +77,20 @@ jobs:
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
           test -f tools/test_orchestration_gates.py
+      - name: Build B397 zone champion delivery
+        run: python tools/build_b397_delivery.py
+      - name: Validate B397 final PPT fixed pages
+        run: python tools/validate_ppt_fixed_pages.py --final-ppt "dist/三区冠军三码_交付/三区冠军三码_挂机前讲解.pptx"
+      - name: Verify B397 complete delivery
+        run: |
+          test -f "dist/三区冠军三码_交付/三区冠军三码_方案套.zip"
+          test -f "dist/三区冠军三码_交付/三区冠军三码_挂机前讲解.pptx"
+          test -f "dist/三区冠军三码_交付/三区冠军三码_完整交付.zip"
+          test -f "dist/三区冠军三码_交付/DELIVERY_MANIFEST.json"
+      - name: Upload B397 delivery
+        uses: actions/upload-artifact@v4
+        with:
+          name: B397_zone_champion_delivery
+          path: dist/三区冠军三码_交付/**
+          if-no-files-found: error
+          retention-days: 7
