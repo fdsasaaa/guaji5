@@ -1,0 +1,146 @@
+{
+  "schema_version": 1,
+  "run_id": "REPLACE_RUN_ID",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "DIRECTOR_COMPLETE",
+  "assumptions": {
+    "bankroll": 5000.0,
+    "bankroll_source": "DEFAULT_5000",
+    "minimum_stake": 0.1,
+    "currency": "CNY",
+    "bets_per_period": 1,
+    "base_period_cost": 0.1,
+    "payout_model": {
+      "gross_return_per_base_period_hit": 0.0,
+      "net_profit_per_base_period_hit": 0.0,
+      "calculation": "REPLACE_WITH_EXPLICIT_FORMULA",
+      "evidence_refs": []
+    },
+    "software_execution": {
+      "path_mode": "REPLACE_WITH_FLAT_LINEAR_OR_ADVANCED",
+      "minimum_unit_supported": 0.1,
+      "maximum_multiplier_supported": 0.0,
+      "evidence_level": "E0",
+      "evidence_refs": []
+    }
+  },
+  "data_maturity": {
+    "draw_count": 200,
+    "tier": "QUICK_EXPERIMENT",
+    "claim_ceiling": "QUICK_EXPERIMENT_ONLY",
+    "history_role": "快速筛选与流程验证，不证明长期安全",
+    "long_term_safe_claim": false
+  },
+  "scheme_economics": {
+    "theoretical_hit_rate": 0.0,
+    "theoretical_hit_rate_source": "REPLACE_WITH_COMBINATORIC_OR_RULE_SOURCE",
+    "historical_hit_rate": 0.0,
+    "expected_value_per_base_period": 0.0,
+    "negative_expectation_disclaimer": "倍投只改变盈亏分布，不改变彩票底层期望；本证据只量化生存期、回撤和资金断裂风险。"
+  },
+  "candidate_paths": [
+    {
+      "path_id": "FLAT",
+      "kind": "FLAT",
+      "decision": "REJECTED",
+      "period_stakes": [0.1, 0.1, 0.1],
+      "algorithm": "恒定投入",
+      "declared_stop_period": 50,
+      "max_single_period_stake": 0.1,
+      "total_outlay_at_stop": 5.0,
+      "bankroll_break_period": null,
+      "reset_rule": "命中或停止后回到基础投入",
+      "cap_rule": "单期不超过冻结上限",
+      "software_evidence_level": "E0",
+      "software_evidence_refs": [],
+      "reason": "REPLACE"
+    },
+    {
+      "path_id": "LIMITED_LINEAR",
+      "kind": "LIMITED_LINEAR",
+      "decision": "REJECTED",
+      "period_stakes": [0.1, 0.1, 0.2],
+      "algorithm": "分段有限递增",
+      "declared_stop_period": 50,
+      "max_single_period_stake": 0.2,
+      "total_outlay_at_stop": 0.4,
+      "bankroll_break_period": null,
+      "reset_rule": "命中后按冻结规则复位",
+      "cap_rule": "达到上限后停止或降压，不无限加注",
+      "software_evidence_level": "E0",
+      "software_evidence_refs": [],
+      "reason": "REPLACE"
+    },
+    {
+      "path_id": "PRESSURE_RELEASE",
+      "kind": "PRESSURE_RELEASE",
+      "decision": "REJECTED",
+      "period_stakes": [0.1, 0.2, 0.3, 0.2, 0.1],
+      "algorithm": "先升压后主动降压",
+      "declared_stop_period": 50,
+      "max_single_period_stake": 0.3,
+      "total_outlay_at_stop": 0.9,
+      "bankroll_break_period": null,
+      "reset_rule": "完成一个压力波后回到低压区",
+      "cap_rule": "压力峰值受冻结上限约束",
+      "software_evidence_level": "E0",
+      "software_evidence_refs": [],
+      "reason": "REPLACE"
+    },
+    {
+      "path_id": "ADVANCED_STATE",
+      "kind": "ADVANCED_STATE",
+      "decision": "SELECTED",
+      "period_stakes": [0.1, 0.1, 0.2, 0.2, 0.3],
+      "algorithm": "按连挂、命中、累计亏损和剩余本金切换状态",
+      "declared_stop_period": 50,
+      "max_single_period_stake": 0.3,
+      "total_outlay_at_stop": 0.9,
+      "bankroll_break_period": null,
+      "reset_rule": "命中后进入恢复或基础状态，按冻结状态机执行",
+      "cap_rule": "达到单期、累计投入或回撤任一上限立即停止",
+      "software_evidence_level": "E3",
+      "software_evidence_refs": ["REPLACE_WITH_SOFTWARE_EVIDENCE"],
+      "reason": "REPLACE"
+    }
+  ],
+  "loss_streak_stress": [
+    {"losses": 10, "cumulative_outlay": 0.0, "remaining_bankroll": 5000.0, "next_period_stake": 0.1, "hit_net_after_streak": 0.0, "recovery_complete": false, "survives": true},
+    {"losses": 20, "cumulative_outlay": 0.0, "remaining_bankroll": 5000.0, "next_period_stake": 0.1, "hit_net_after_streak": 0.0, "recovery_complete": false, "survives": true},
+    {"losses": 30, "cumulative_outlay": 0.0, "remaining_bankroll": 5000.0, "next_period_stake": 0.1, "hit_net_after_streak": 0.0, "recovery_complete": false, "survives": true},
+    {"losses": 40, "cumulative_outlay": 0.0, "remaining_bankroll": 5000.0, "next_period_stake": 0.1, "hit_net_after_streak": 0.0, "recovery_complete": false, "survives": true},
+    {"losses": 50, "cumulative_outlay": 0.0, "remaining_bankroll": 5000.0, "next_period_stake": 0.1, "hit_net_after_streak": 0.0, "recovery_complete": false, "survives": true}
+  ],
+  "probabilistic_stress": {
+    "model": "BERNOULLI_OR_EMPIRICAL_BOOTSTRAP",
+    "simulation_trials": 10000,
+    "sequence_length": 1000,
+    "seed": 20260805,
+    "ruin_probability": 0.0,
+    "probability_drawdown_10pct": 0.0,
+    "probability_drawdown_20pct": 0.0,
+    "median_max_drawdown": 0.0,
+    "p95_max_drawdown": 0.0,
+    "assumptions": "REPLACE",
+    "result_interpretation": "只用于压力测试，不证明未来盈利。"
+  },
+  "historical_validation": {
+    "draw_count": 200,
+    "split_method": "SMALL_SAMPLE_NO_STRONG_SPLIT",
+    "training_range": "REPLACE",
+    "validation_range": "REPLACE",
+    "sealed_oos_range": null,
+    "rolling_windows": [],
+    "historical_max_loss_streak": 0,
+    "limitations": "样本量不足，只能作为快速实验和流程验证。"
+  },
+  "selection": {
+    "selected_path_id": "ADVANCED_STATE",
+    "selected_profile_id": "REPLACE_PROFILE_ID",
+    "declared_stop_period": 50,
+    "max_allowed_drawdown": 0.0,
+    "max_allowed_single_period_stake": 0.0,
+    "decision_reason": "REPLACE",
+    "claim": "本方案仅通过冻结条件下的资金生存与压力测试，不把结果解释为未来收益保证。"
+  }
+}
