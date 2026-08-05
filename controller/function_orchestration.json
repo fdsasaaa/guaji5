@@ -5,6 +5,14 @@
   "evidence_registry": "controller/feature_evidence_registry.json",
   "coverage_ledger": "controller/function_coverage_ledger.json",
   "pr_gate": "tools/validate_scheme_orchestration_gate.py",
+  "bankroll_stress": {
+    "config": "controller/bankroll_stress.json",
+    "template": "controller/templates/bankroll_stress.template.json",
+    "validator": "tools/validate_bankroll_stress.py",
+    "gate_tests": "tools/test_bankroll_stress_gates.py",
+    "required_evidence": "bankroll_stress.json",
+    "must_pass_before_contract_freeze": true
+  },
   "required_profile_types": [
     "BASELINE",
     "STATE",
@@ -61,6 +69,16 @@
     "NEW_STATE_AND_ADVANCED_FIRST_USE_CONFLICT",
     "EVIDENCE_LEVEL_EXCEEDS_REGISTRY",
     "SCHEME_PR_EVIDENCE_MISSING",
-    "COVERAGE_LEDGER_NOT_UPDATED"
+    "COVERAGE_LEDGER_NOT_UPDATED",
+    "BANKROLL_STRESS_MISSING",
+    "BANKROLL_ASSUMPTIONS_INVALID",
+    "DATA_MATURITY_MISMATCH",
+    "FUNDING_CANDIDATES_INCOMPLETE",
+    "LOSS_STREAK_STRESS_INCOMPLETE",
+    "RECOVERY_MATH_UNPROVEN",
+    "SIMULATION_INCOMPLETE",
+    "HISTORICAL_VALIDATION_OVERCLAIM",
+    "SELECTED_PATH_EXCEEDS_BANKROLL",
+    "SOFTWARE_EXECUTION_UNPROVEN"
   ]
 }
