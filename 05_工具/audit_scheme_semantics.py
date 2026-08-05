@@ -168,7 +168,15 @@ def iter_targets(path):
 
 def changed_targets(base_ref):
     proc = subprocess.run(
-        ["git", "diff", "--name-only", "--diff-filter=ACMR", f"{base_ref}...HEAD"],
+        [
+            "git",
+            "-c",
+            "core.quotepath=false",
+            "diff",
+            "--name-only",
+            "--diff-filter=ACMR",
+            f"{base_ref}...HEAD",
+        ],
         cwd=ROOT,
         check=True,
         capture_output=True,
