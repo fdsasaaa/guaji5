@@ -19,6 +19,8 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Test number-group format guard
+        run: python 05_工具/test_number_group_format_guard.py
       - name: Validate controller architecture
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
