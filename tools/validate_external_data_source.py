@@ -28,8 +28,10 @@ required = [
     "data_sources/base.py",
     "data_sources/hxffc.py",
     "data_sources/hxffc/.gitignore",
+    "tools/controller_data_source_gate.py",
     "tools/sync_external_draws.py",
     "tools/test_hxffc_data_source.py",
+    "tools/test_controller_data_source_gate.py",
     "docs/data_sources/哈希分分彩外部数据调用说明.md",
     "docs/upgrades/2026-08-05_HXFFC_EXTERNAL_DATA_SOURCE_V1.md",
     "docs/upgrades/2026-08-05_HXFFC_EXTERNAL_DATA_SOURCE_V1.rollback.json",
@@ -76,18 +78,27 @@ pipeline_source = pipeline.get("data_sources", {})
 for key, expected in {
     "registry": "controller/data_sources.json",
     "sync_tool": "tools/sync_external_draws.py",
+    "controller_gate": "tools/controller_data_source_gate.py",
     "validator": "tools/validate_external_data_source.py",
+    "required_evidence": "data_source_snapshot.json",
+    "conditional_evidence": True,
     "failure_state": "EXTERNAL_DATA_SOURCE_FAILED",
     "must_pass_before_director": True,
+    "cache_is_primary_source": False,
+    "source_repository_write_forbidden": True,
 }.items():
     if pipeline_source.get(key) != expected:
         err(f"pipeline.data_sources.{key}错误")
+if "hxffc" not in pipeline_source.get("required_for_sources", []):
+    err("pipeline未把hxffc列为强制外部数据源")
 preflight = next(
     (item for item in pipeline.get("phases", []) if item.get("id") == "PREFLIGHT"),
     {},
 )
-if "data_source_snapshot.json" not in preflight.get("required_outputs", []):
-    err("PREFLIGHT未强制输出data_source_snapshot.json")
+if "preflight.json" not in preflight.get("required_outputs", []):
+    err("PREFLIGHT缺少preflight.json")
+if "data_source_snapshot.json" in preflight.get("required_outputs", []):
+    err("外部数据证据被错误设为所有彩票的全局必需输出")
 if pipeline.get("failure_routes", {}).get("EXTERNAL_DATA_SOURCE_FAILED") != "PREFLIGHT":
     err("外部数据源失败未路由回PREFLIGHT")
 
@@ -143,6 +154,7 @@ workflow_path = ROOT / ".github/workflows/validate.yml"
 workflow = workflow_path.read_text(encoding="utf-8") if workflow_path.exists() else ""
 for phrase in (
     "python tools/test_hxffc_data_source.py",
+    "python tools/test_controller_data_source_gate.py",
     "python tools/validate_external_data_source.py",
     "controller/data_sources.json",
 ):
@@ -163,6 +175,25 @@ for phrase in (
 ):
     if phrase not in adapter:
         err(f"哈希分分彩适配器缺少能力: {phrase}")
+
+controller = (ROOT / "tools/lottery_controller.py").read_text(encoding="utf-8")
+gate = (ROOT / "tools/controller_data_source_gate.py").read_text(encoding="utf-8")
+for phrase in (
+    "cmd_sync_data",
+    "--data-source",
+    "data_gate.validate_task_snapshot",
+    "EXTERNAL_DATA_SOURCE_FAILED",
+):
+    if phrase not in controller:
+        err(f"总控未接入外部数据闸门: {phrase}")
+for phrase in (
+    "sync_task_source",
+    "validate_task_snapshot",
+    "formal_generation_allowed",
+    "sha256_file(history_path)",
+):
+    if phrase not in gate:
+        err(f"总控数据源闸门缺少能力: {phrase}")
 
 for legacy_builder in (
     ROOT / "tools/build_current_delivery.py",
