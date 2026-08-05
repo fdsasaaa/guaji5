@@ -14,11 +14,13 @@
   "data_sources": {
     "registry": "controller/data_sources.json",
     "sync_tool": "tools/sync_external_draws.py",
+    "controller_gate": "tools/controller_data_source_gate.py",
     "validator": "tools/validate_external_data_source.py",
     "required_for_sources": [
       "hxffc"
     ],
     "required_evidence": "data_source_snapshot.json",
+    "conditional_evidence": true,
     "failure_state": "EXTERNAL_DATA_SOURCE_FAILED",
     "must_pass_before_director": true,
     "cache_is_primary_source": false,
@@ -53,11 +55,10 @@
     },
     {
       "id": "PREFLIGHT",
-      "role": "读取main、校验版本、同步并验证外部数据源、冻结只读输入快照、检查功能覆盖债务与仓库健康状态",
+      "role": "读取main、校验版本；声明hxffc时同步并验证外部数据源、冻结只读输入快照；其他彩票不强制创建哈希数据证据",
       "required_outputs": [
         "preflight.json",
-        "rollback_manifest.json",
-        "data_source_snapshot.json"
+        "rollback_manifest.json"
       ]
     },
     {
@@ -70,14 +71,14 @@
     },
     {
       "id": "CONTRACT_FROZEN",
-      "role": "仅在数据源与功能编排、证据上限、评分和覆盖账本机器校验通过后冻结合同",
+      "role": "仅在适用数据源与功能编排、证据上限、评分和覆盖账本机器校验通过后冻结合同",
       "required_outputs": [
         "design_contract.json"
       ]
     },
     {
       "id": "EXECUTION",
-      "role": "按冻结合同和只读数据快照生成方案源、TXT、行为探针、回测输入和PPT蓝图",
+      "role": "按冻结合同和适用的只读数据快照生成方案源、TXT、行为探针、回测输入和PPT蓝图",
       "required_outputs": [
         "execution_manifest.json"
       ]
