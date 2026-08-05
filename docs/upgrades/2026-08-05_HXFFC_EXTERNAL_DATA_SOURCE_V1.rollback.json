@@ -1,0 +1,14 @@
+{
+  "upgrade_id": "2026-08-05_HXFFC_EXTERNAL_DATA_SOURCE_V1",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "branch": "feature/hxffc-external-data-source-20260805",
+  "force_push_allowed": false,
+  "auto_merge_allowed": false,
+  "source_repository_write_allowed": false,
+  "rollback_order": [
+    "restore controller/pipeline.json and workflow",
+    "restore removed fixed input only for historical rollback, not formal use",
+    "remove adapter/config/docs/tests added by this upgrade"
+  ],
+  "files": []
+}
