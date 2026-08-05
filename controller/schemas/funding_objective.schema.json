@@ -1,0 +1,53 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "controller/schemas/funding_objective.schema.json",
+  "title": "Lottery funding objective evidence",
+  "type": "object",
+  "required": [
+    "schema_version",
+    "run_id",
+    "objective_type",
+    "economic_model",
+    "execution"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "run_id": {
+      "type": "string",
+      "minLength": 1
+    },
+    "objective_type": {
+      "enum": [
+        "DURABLE",
+        "RECOVERY_PROFIT",
+        "AUTO_COMPARE"
+      ]
+    },
+    "economic_model": {
+      "type": "object",
+      "required": [
+        "capital_base",
+        "capital_usage_limit",
+        "minimum_unit",
+        "cost_at_1x",
+        "gross_payout_on_hit_at_1x",
+        "rebate_at_1x",
+        "theoretical_hit_rate",
+        "target_profit",
+        "maximum_single_bet",
+        "maximum_multiplier"
+      ]
+    },
+    "execution": {
+      "type": "object",
+      "required": [
+        "engine",
+        "path_style",
+        "selection_reason"
+      ]
+    }
+  },
+  "additionalProperties": true
+}

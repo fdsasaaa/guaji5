@@ -25,6 +25,14 @@ jobs:
         run: python tools/lottery_controller.py validate
       - name: Validate full-function orchestration
         run: python tools/validate_function_orchestration.py --self-test --scan-runs
+      - name: Validate funding path authenticity
+        run: python tools/validate_funding_path_integrity.py --self-test
+      - name: Validate funding objective definitions
+        run: |
+          python tools/validate_funding_objective.py --config controller/funding_objectives.json
+          python tools/validate_funding_objective.py --self-test
+          python tools/test_resolve_funding_objective.py
+          python tools/validate_funding_objective.py --evidence docs/runs/2026-08-05_FUNDING_OBJECTIVE_UPGRADE_RECORD.json
       - name: Validate orchestration scoring
         run: python tools/validate_orchestration_scoring.py --scan-runs
       - name: Adversarial-test orchestration gates
@@ -65,15 +73,28 @@ jobs:
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
+          test -f 11B_资金路径真实性与压力验证协议.md
+          test -f 12_方案资金目标分类与自适应路径协议.md
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
+          test -f controller/funding_objectives.json
+          test -f controller/schemas/funding_objective.schema.json
+          test -f controller/templates/funding_objective.template.json
           test -f controller/templates/function_orchestration.template.json
           test -f controller/templates/orchestration_scorecard.template.json
           test -f controller/feature_evidence_registry.json
           test -f controller/function_coverage_ledger.json
+          test -f docs/prompts/挂机总控_资金目标口述.md
+          test -f docs/runs/2026-08-05_FUNDING_OBJECTIVE_UPGRADE_RECORD.json
+          test -f tools/resolve_funding_objective.py
+          test -f tools/test_resolve_funding_objective.py
+          test -f tools/validate_funding_objective.py
+          test -f tools/test_funding_objective.py
           test -f tools/validate_function_orchestration.py
+          test -f tools/validate_funding_path_integrity.py
+          test -f tools/test_funding_path_integrity.py
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
           test -f tools/test_orchestration_gates.py

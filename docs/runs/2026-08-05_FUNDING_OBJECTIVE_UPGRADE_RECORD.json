@@ -1,0 +1,46 @@
+{
+  "schema_version": 1,
+  "run_id": "FUNDING-OBJECTIVE-UPGRADE-20260805",
+  "objective_type": "RECOVERY_PROFIT",
+  "economic_model": {
+    "capital_base": 5000.0,
+    "capital_usage_limit": 0.2,
+    "minimum_unit": 0.1,
+    "cost_at_1x": 1.0,
+    "gross_payout_on_hit_at_1x": 10.0,
+    "rebate_at_1x": 0.0,
+    "theoretical_hit_rate": 0.1,
+    "target_profit": 0.1,
+    "maximum_single_bet": 500.0,
+    "maximum_multiplier": 500.0
+  },
+  "execution": {
+    "engine": "STRAIGHT",
+    "path_style": "FRONT_SLOW_BACK_FAST",
+    "selection_reason": "示例证明平倍前置、阶梯递进等非固定模板可由高奖经济结构逐档复算"
+  },
+  "recovery_policy": {
+    "requested_depth": 13,
+    "computed_valid_depth": 13,
+    "depth_status": "FULFILLED",
+    "first_hit_rule": "EVERY_VALID_STAGE_NET_PROFIT",
+    "all_miss_total_loss": 35.0,
+    "probability_at_least_one_hit": 0.7458134171670999
+  },
+  "recovery_stages": [
+    {"stage": 1, "multiplier": 1, "cumulative_loss_before": 0.0, "investment": 1.0, "gross_payout_if_hit": 10.0, "rebate": 0.0, "net_if_hit": 9.0, "cumulative_loss_after_miss": 1.0, "remaining_capital_after_miss": 4999.0, "executable": true},
+    {"stage": 2, "multiplier": 1, "cumulative_loss_before": 1.0, "investment": 1.0, "gross_payout_if_hit": 10.0, "rebate": 0.0, "net_if_hit": 8.0, "cumulative_loss_after_miss": 2.0, "remaining_capital_after_miss": 4998.0, "executable": true},
+    {"stage": 3, "multiplier": 1, "cumulative_loss_before": 2.0, "investment": 1.0, "gross_payout_if_hit": 10.0, "rebate": 0.0, "net_if_hit": 7.0, "cumulative_loss_after_miss": 3.0, "remaining_capital_after_miss": 4997.0, "executable": true},
+    {"stage": 4, "multiplier": 1, "cumulative_loss_before": 3.0, "investment": 1.0, "gross_payout_if_hit": 10.0, "rebate": 0.0, "net_if_hit": 6.0, "cumulative_loss_after_miss": 4.0, "remaining_capital_after_miss": 4996.0, "executable": true},
+    {"stage": 5, "multiplier": 1, "cumulative_loss_before": 4.0, "investment": 1.0, "gross_payout_if_hit": 10.0, "rebate": 0.0, "net_if_hit": 5.0, "cumulative_loss_after_miss": 5.0, "remaining_capital_after_miss": 4995.0, "executable": true},
+    {"stage": 6, "multiplier": 2, "cumulative_loss_before": 5.0, "investment": 2.0, "gross_payout_if_hit": 20.0, "rebate": 0.0, "net_if_hit": 13.0, "cumulative_loss_after_miss": 7.0, "remaining_capital_after_miss": 4993.0, "executable": true},
+    {"stage": 7, "multiplier": 2, "cumulative_loss_before": 7.0, "investment": 2.0, "gross_payout_if_hit": 20.0, "rebate": 0.0, "net_if_hit": 11.0, "cumulative_loss_after_miss": 9.0, "remaining_capital_after_miss": 4991.0, "executable": true},
+    {"stage": 8, "multiplier": 2, "cumulative_loss_before": 9.0, "investment": 2.0, "gross_payout_if_hit": 20.0, "rebate": 0.0, "net_if_hit": 9.0, "cumulative_loss_after_miss": 11.0, "remaining_capital_after_miss": 4989.0, "executable": true},
+    {"stage": 9, "multiplier": 3, "cumulative_loss_before": 11.0, "investment": 3.0, "gross_payout_if_hit": 30.0, "rebate": 0.0, "net_if_hit": 16.0, "cumulative_loss_after_miss": 14.0, "remaining_capital_after_miss": 4986.0, "executable": true},
+    {"stage": 10, "multiplier": 3, "cumulative_loss_before": 14.0, "investment": 3.0, "gross_payout_if_hit": 30.0, "rebate": 0.0, "net_if_hit": 13.0, "cumulative_loss_after_miss": 17.0, "remaining_capital_after_miss": 4983.0, "executable": true},
+    {"stage": 11, "multiplier": 5, "cumulative_loss_before": 17.0, "investment": 5.0, "gross_payout_if_hit": 50.0, "rebate": 0.0, "net_if_hit": 28.0, "cumulative_loss_after_miss": 22.0, "remaining_capital_after_miss": 4978.0, "executable": true},
+    {"stage": 12, "multiplier": 6, "cumulative_loss_before": 22.0, "investment": 6.0, "gross_payout_if_hit": 60.0, "rebate": 0.0, "net_if_hit": 32.0, "cumulative_loss_after_miss": 28.0, "remaining_capital_after_miss": 4972.0, "executable": true},
+    {"stage": 13, "multiplier": 7, "cumulative_loss_before": 28.0, "investment": 7.0, "gross_payout_if_hit": 70.0, "rebate": 0.0, "net_if_hit": 35.0, "cumulative_loss_after_miss": 35.0, "remaining_capital_after_miss": 4965.0, "executable": true}
+  ],
+  "claims": ["仅作为资金目标校验器可执行样例，不代表任何真实彩种长期盈利"]
+}

@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "run_id": "<RUN_ID>",
+  "objective_type": "<DURABLE|RECOVERY_PROFIT|AUTO_COMPARE>",
+  "economic_model": {
+    "capital_base": 5000.0,
+    "capital_usage_limit": 0.2,
+    "minimum_unit": 0.1,
+    "cost_at_1x": 0.0,
+    "gross_payout_on_hit_at_1x": 0.0,
+    "rebate_at_1x": 0.0,
+    "theoretical_hit_rate": 0.0,
+    "target_profit": 0.1,
+    "maximum_single_bet": 0.0,
+    "maximum_multiplier": 0.0
+  },
+  "execution": {
+    "engine": "<STRAIGHT|ADVANCED>",
+    "path_style": "<FLAT|FLAT_THEN_STEP|STEP|GEOMETRIC|FRONT_SLOW_BACK_FAST|RISE_FALL|STATE_CYCLE|MIXED>",
+    "selection_reason": ""
+  },
+  "durable_policy": {
+    "maximum_multiplier": 0.0,
+    "tail_policy": "<HOLD_LAST_1X|STOP|COOL_DOWN>",
+    "loss_checkpoints": [10, 20, 30, 40, 50],
+    "positive_expectation_source": "NONE",
+    "positive_expectation_evidence": "",
+    "profit_evidence_level": "NOT_ESTABLISHED"
+  },
+  "recovery_policy": {
+    "requested_depth": 0,
+    "computed_valid_depth": 0,
+    "depth_status": "<FULFILLED|CAPPED_BY_CONSTRAINTS>",
+    "first_hit_rule": "EVERY_VALID_STAGE_NET_PROFIT",
+    "all_miss_total_loss": 0.0,
+    "probability_at_least_one_hit": 0.0
+  },
+  "recovery_stages": []
+}
