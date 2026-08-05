@@ -24,13 +24,23 @@
     "post-stop zero stake",
     "bankroll evidence cross-check",
     "controller and CI integration",
-    "default prompt and takeover rule upgrade"
+    "default prompt and takeover rule upgrade",
+    "architecture wiring lock"
   ],
   "local_validation": {
     "python tools/validate_funding_sequence_structure.py --self-test": "PASS",
     "python tools/test_funding_sequence_structure_gates.py": "PASS",
     "python_syntax": "PASS",
     "json_syntax": "PASS"
+  },
+  "github_actions": {
+    "workflow_run_id": 30977842792,
+    "job_id": 92215622216,
+    "conclusion": "PASS",
+    "business_validation_steps": 22,
+    "funding_sequence_architecture": "PASS",
+    "funding_sequence_effective_length": "PASS",
+    "funding_sequence_adversarial_tests": "PASS"
   },
   "adversarial_cases": [
     "12-step block expanded five times rejected",
@@ -41,5 +51,5 @@
     "incorrect second-cycle cumulative outlay rejected"
   ],
   "rollback": "Delete newly added sequence-structure files and restore updated controller, workflow, prompt, README and AGENTS files to their pre-change blob SHAs. No direct main write or force push.",
-  "ci_status": "PENDING_PR_CI"
+  "ci_status": "PASS"
 }
