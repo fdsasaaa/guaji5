@@ -1,0 +1,45 @@
+{
+  "schema_version": 1,
+  "controller_id": "LOTTERY-BANKROLL-STRESS-V1",
+  "status": "ACTIVE",
+  "evidence_file_name": "bankroll_stress.json",
+  "required_for_task_types": ["STANDARD_SCHEME_TASK"],
+  "default_bankroll": 5000.0,
+  "default_minimum_stake": 0.1,
+  "currency": "CNY",
+  "required_path_kinds": ["FLAT", "LIMITED_LINEAR", "PRESSURE_RELEASE", "ADVANCED_STATE"],
+  "required_loss_streak_checkpoints": [10, 20, 30, 40, 50],
+  "minimum_random_trials": 10000,
+  "data_maturity_tiers": [
+    {"tier": "QUICK_EXPERIMENT", "min_draws": 1, "max_draws": 999, "claim_ceiling": "QUICK_EXPERIMENT_ONLY"},
+    {"tier": "DEVELOPING_SAMPLE", "min_draws": 1000, "max_draws": 4999, "claim_ceiling": "DEVELOPMENT_EVIDENCE_ONLY"},
+    {"tier": "RESEARCH_SAMPLE", "min_draws": 5000, "max_draws": 9999, "claim_ceiling": "RESEARCH_EVIDENCE_NOT_LONG_TERM_PROOF"},
+    {"tier": "LARGE_SAMPLE", "min_draws": 10000, "max_draws": null, "claim_ceiling": "LARGE_SAMPLE_WITH_SEALED_OOS_REQUIRED"}
+  ],
+  "requirements": {
+    "theoretical_probability_required": true,
+    "deterministic_streak_stress_required": true,
+    "random_simulation_required": true,
+    "historical_validation_required": true,
+    "sample_split_required_when_draws_gte": 1000,
+    "rolling_validation_required_when_draws_gte": 5000,
+    "sealed_oos_required_when_draws_gte": 10000,
+    "long_term_safety_claim_forbidden_when_draws_lt": 10000,
+    "selected_path_must_survive_declared_stop": true,
+    "recovery_claim_requires_explicit_payout_math": true,
+    "negative_expectation_disclaimer_required": true,
+    "software_executable_evidence_required": true
+  },
+  "failure_states": [
+    "BANKROLL_STRESS_MISSING",
+    "BANKROLL_ASSUMPTIONS_INVALID",
+    "DATA_MATURITY_MISMATCH",
+    "FUNDING_CANDIDATES_INCOMPLETE",
+    "LOSS_STREAK_STRESS_INCOMPLETE",
+    "RECOVERY_MATH_UNPROVEN",
+    "SIMULATION_INCOMPLETE",
+    "HISTORICAL_VALIDATION_OVERCLAIM",
+    "SELECTED_PATH_EXCEEDS_BANKROLL",
+    "SOFTWARE_EXECUTION_UNPROVEN"
+  ]
+}

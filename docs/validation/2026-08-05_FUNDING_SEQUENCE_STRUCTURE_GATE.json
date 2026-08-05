@@ -1,0 +1,55 @@
+{
+  "task_id": "SYSTEM-FUNDING-SEQUENCE-STRUCTURE-011",
+  "task_type": "SYSTEM_UPGRADE_ONLY",
+  "repository": "fdsasaaa/guaji5",
+  "base_branch": "main",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "parent_pr": 24,
+  "working_branch": "agent/long-horizon-bankroll-orchestration-20260805",
+  "date": "2026-08-05",
+  "problem": "A short staking block repeated several times was being presented as a long independent design.",
+  "user_example": {
+    "input_length": 60,
+    "minimum_repeat_period": 12,
+    "effective_design_length": 12,
+    "execution_horizon": 60,
+    "correct_disclosure": "12期循环路径×5轮"
+  },
+  "scope": [
+    "minimum exact repeat-period detection",
+    "FINITE versus CYCLIC path classification",
+    "canonical single-cycle storage",
+    "effective versus claimed design length",
+    "cross-cycle cumulative loss and recovery",
+    "post-stop zero stake",
+    "bankroll evidence cross-check",
+    "controller and CI integration",
+    "default prompt and takeover rule upgrade",
+    "architecture wiring lock"
+  ],
+  "local_validation": {
+    "python tools/validate_funding_sequence_structure.py --self-test": "PASS",
+    "python tools/test_funding_sequence_structure_gates.py": "PASS",
+    "python_syntax": "PASS",
+    "json_syntax": "PASS"
+  },
+  "github_actions": {
+    "workflow_run_id": 30977842792,
+    "job_id": 92215622216,
+    "conclusion": "PASS",
+    "business_validation_steps": 22,
+    "funding_sequence_architecture": "PASS",
+    "funding_sequence_effective_length": "PASS",
+    "funding_sequence_adversarial_tests": "PASS"
+  },
+  "adversarial_cases": [
+    "12-step block expanded five times rejected",
+    "50-period independent claim for a five-step cycle rejected",
+    "missing cross-cycle checkpoints rejected",
+    "expanded bankroll period_stakes rejected",
+    "post-stop stake rejected",
+    "incorrect second-cycle cumulative outlay rejected"
+  ],
+  "rollback": "Delete newly added sequence-structure files and restore updated controller, workflow, prompt, README and AGENTS files to their pre-change blob SHAs. No direct main write or force push.",
+  "ci_status": "PASS"
+}

@@ -10,7 +10,7 @@ GitHub仓库是系统唯一正式源。以后通常只需要发送一句任务�
 启动彩票总控：读取 fdsasaaa/guaji5 的 main，按本次要求直接生成并交付合格方案套。
 ```
 
-没有额外要求时：
+没有额外要求时，推荐使用仓库内 `15_默认方案任务口述.md` 的完整口述。简化入口仍可使用：
 
 ```text
 启动彩票总控：读取 fdsasaaa/guaji5 的 main，自主生成并交付一套合格方案。
@@ -28,10 +28,15 @@ GitHub仓库是系统唯一正式源。以后通常只需要发送一句任务�
 4. `00_启动入口与系统状态.md`
 5. `10_静默方案总控与外部参考吸收协议.md`
 6. `11_智能功能调度与资金路径编排协议.md`
-7. `13_GitHub持续工作区与参考灵感自由重构协议.md`
-8. `14_导演执行审计学习总控与模块化变更协议.md`
-9. `controller/pipeline.json`
-10. `controller/extensions.json`
+7. `11B_长生存资金管理与数据成熟度协议.md`
+8. `11B_A_资金路径有效长度与循环披露补充协议.md`
+9. `13_GitHub持续工作区与参考灵感自由重构协议.md`
+10. `14_导演执行审计学习总控与模块化变更协议.md`
+11. `15_默认方案任务口述.md`
+12. `controller/pipeline.json`
+13. `controller/extensions.json`
+14. `controller/bankroll_stress.json`
+15. `controller/funding_sequence_structure.json`
 
 ## 总控工具
 
@@ -48,9 +53,37 @@ python tools/lottery_controller.py start --request "本次任务要求" --domain
 python tools/validate_repository.py
 python tools/validate_controller_architecture.py
 python tools/lottery_controller.py validate
+python tools/validate_function_orchestration.py --self-test --scan-runs
+python tools/validate_bankroll_stress.py --self-test --scan-runs
+python tools/test_bankroll_stress_gates.py
+python tools/validate_funding_sequence_structure.py --self-test --scan-runs
+python tools/test_funding_sequence_structure_gates.py
 ```
 
 只有所有相关校验通过的任务分支才允许进入评审。默认创建Draft PR，不自动合并。
+
+## 长生存资金管理
+
+标准方案不再把倍投当作最后追加的一张倍数表。导演必须按具体玩法联合设计并比较：
+
+- 平投；
+- 有限直线倍投；
+- 压力释放路径；
+- 高级状态资金路径。
+
+用户未指定时默认按5000元本金、最低有效投注0.1元设计，并检查连续挂10、20、30、40、50期的累计投入、剩余本金、下一期投入和命中回收。每次还必须完成理论概率、至少10000条随机路径压力模拟和历史验证。
+
+当前约200期历史数据只属于快速实验层。系统可以据此完成流程、号码来源、方案执行和初步回测验证，但不得据此声称长期安全或稳定收益。数据达到1000、5000、10000和30000期时，触发更高等级的分区、滚动验证、封存样本外和重新校准。
+
+## 有效长度与循环披露
+
+资金序列的输入长度不等于独立设计长度。系统必须计算最小重复周期，并把三类长度分开：
+
+- `effective_design_length`：有效独立长度；
+- `execution_horizon`：计划运行到停止的总期数；
+- `minimum_repeat_period`：能够完整还原序列的最短重复块。
+
+例如，12步序列复制5次后仍然只是“12期循环路径×5轮”，不能称为60期独立设计。循环路径只允许保存一轮最短规范序列，并逐轮核算从第一期开始的累计亏损与命中回收；达到停止期后必须停止追加投入。
 
 ## 可扩展变更域
 
@@ -70,5 +103,7 @@ python tools/lottery_controller.py validate
 - 无法原样编码时优先重构为可执行TXT。
 - 高级功能必须有真实语义，禁止用常量映射伪装。
 - 倍投必须经过多路径比较，不能机械默认直线平倍。
+- 序列写得长不等于设计得深；重复短块必须按循环披露。
+- 能追几十期不等于安全；必须量化回撤、跨轮回收和资金断裂概率。
 - ZIP和PPT是构建产物，源文件才是长期记忆。
 - `main`只保存已验证稳定版本；升级失败保留完整证据并通过新提交回滚，禁止强推覆盖历史。

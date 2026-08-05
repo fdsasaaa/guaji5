@@ -1,0 +1,45 @@
+{
+  "task_id": "SYSTEM-BANKROLL-LONGEVITY-010",
+  "task_type": "SYSTEM_UPGRADE_ONLY",
+  "repository": "fdsasaaa/guaji5",
+  "base_branch": "main",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "working_branch": "agent/long-horizon-bankroll-orchestration-20260805",
+  "date": "2026-08-05",
+  "scope": [
+    "long-horizon bankroll design protocol",
+    "5000 CNY default bankroll and 0.1 CNY minimum stake",
+    "10/20/30/40/50 loss-streak stress",
+    "recovery math",
+    "10000-path probabilistic stress",
+    "data maturity tiers",
+    "controller and CI integration",
+    "default user prompt upgrade",
+    "repair of the pre-existing orchestration adversarial fixture so it matches the strict central evidence registry"
+  ],
+  "local_validation": {
+    "python tools/validate_bankroll_stress.py --self-test": "PASS",
+    "python tools/test_bankroll_stress_gates.py": "PASS"
+  },
+  "github_actions": {
+    "workflow_run_id": 30975188974,
+    "job_id": 92207625362,
+    "conclusion": "PASS",
+    "passed_steps": 19
+  },
+  "adversarial_cases": [
+    "minimum stake below 0.1 rejected",
+    "missing funding path family rejected",
+    "missing 50-loss checkpoint rejected",
+    "simulation below 10000 trials rejected",
+    "long-term claim with 200 draws rejected",
+    "profit guarantee wording rejected",
+    "selected path below E3 software evidence rejected",
+    "selected path exceeding bankroll rejected",
+    "false survival arithmetic rejected",
+    "10000+ draws without sealed OOS rejected"
+  ],
+  "current_data_limit": "Current roughly 200-draw data remains QUICK_EXPERIMENT; it can test the pipeline but cannot prove long-term safety.",
+  "rollback": "Delete newly added files and restore updated files to base commit; no direct main write or force push.",
+  "ci_status": "PASS"
+}

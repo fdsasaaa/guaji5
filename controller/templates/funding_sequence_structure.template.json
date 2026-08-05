@@ -1,0 +1,64 @@
+{
+  "schema_version": 1,
+  "run_id": "REPLACE_RUN_ID",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "DIRECTOR_COMPLETE",
+  "bankroll_stress_ref": "bankroll_stress.json",
+  "paths": [
+    {
+      "path_id": "FLAT",
+      "sequence_mode": "CYCLIC",
+      "canonical_sequence": [0.1],
+      "minimum_repeat_period": 1,
+      "effective_design_length": 1,
+      "claimed_design_length": 1,
+      "execution_horizon": 50,
+      "declared_stop_period": 50,
+      "cycle_limit": 50,
+      "design_claim": "1期循环路径×50轮",
+      "cross_cycle_checkpoints": []
+    },
+    {
+      "path_id": "LIMITED_LINEAR",
+      "sequence_mode": "FINITE",
+      "canonical_sequence": [0.1, 0.1, 0.2],
+      "minimum_repeat_period": 3,
+      "effective_design_length": 3,
+      "claimed_design_length": 3,
+      "execution_horizon": 3,
+      "declared_stop_period": 3,
+      "cycle_limit": null,
+      "design_claim": "3期独立路径",
+      "cross_cycle_checkpoints": null
+    },
+    {
+      "path_id": "PRESSURE_RELEASE",
+      "sequence_mode": "CYCLIC",
+      "canonical_sequence": [0.1, 0.2, 0.3, 0.2, 0.1],
+      "minimum_repeat_period": 5,
+      "effective_design_length": 5,
+      "claimed_design_length": 5,
+      "execution_horizon": 50,
+      "declared_stop_period": 50,
+      "cycle_limit": 10,
+      "design_claim": "5期循环路径×10轮",
+      "cross_cycle_checkpoints": []
+    },
+    {
+      "path_id": "ADVANCED_STATE",
+      "sequence_mode": "FINITE",
+      "canonical_sequence": [0.1, 0.1, 0.2, 0.2, 0.3],
+      "minimum_repeat_period": 5,
+      "effective_design_length": 5,
+      "claimed_design_length": 5,
+      "execution_horizon": 5,
+      "declared_stop_period": 5,
+      "cycle_limit": null,
+      "design_claim": "5期独立路径",
+      "cross_cycle_checkpoints": null
+    }
+  ],
+  "selection": {
+    "selected_path_id": "ADVANCED_STATE"
+  }
+}
