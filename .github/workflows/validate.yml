@@ -29,6 +29,10 @@ jobs:
         run: python tools/validate_bankroll_stress.py --self-test --scan-runs
       - name: Adversarial-test bankroll gates
         run: python tools/test_bankroll_stress_gates.py
+      - name: Validate funding sequence effective length
+        run: python tools/validate_funding_sequence_structure.py --self-test --scan-runs
+      - name: Adversarial-test funding sequence structure
+        run: python tools/test_funding_sequence_structure_gates.py
       - name: Validate orchestration scoring
         run: python tools/validate_orchestration_scoring.py --scan-runs
       - name: Adversarial-test orchestration gates
@@ -70,20 +74,25 @@ jobs:
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
           test -f 11B_长生存资金管理与数据成熟度协议.md
+          test -f 11B_A_资金路径有效长度与循环披露补充协议.md
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f 15_默认方案任务口述.md
           test -f controller/pipeline.json
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
           test -f controller/bankroll_stress.json
+          test -f controller/funding_sequence_structure.json
           test -f controller/templates/function_orchestration.template.json
           test -f controller/templates/orchestration_scorecard.template.json
           test -f controller/templates/bankroll_stress.template.json
+          test -f controller/templates/funding_sequence_structure.template.json
           test -f controller/feature_evidence_registry.json
           test -f controller/function_coverage_ledger.json
           test -f tools/validate_function_orchestration.py
           test -f tools/validate_bankroll_stress.py
           test -f tools/test_bankroll_stress_gates.py
+          test -f tools/validate_funding_sequence_structure.py
+          test -f tools/test_funding_sequence_structure_gates.py
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
           test -f tools/test_orchestration_gates.py
