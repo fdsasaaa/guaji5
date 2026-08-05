@@ -1,0 +1,30 @@
+{
+  "schema_version": "1.0",
+  "status": "MANDATORY",
+  "direct_single_group_fields": [
+    "定码轮换内容",
+    "开某投某内容",
+    "定位胆内容",
+    "定位胆号码",
+    "定位复式内容",
+    "第一位复式内容",
+    "第二位复式内容",
+    "第三位复式内容",
+    "排除码内容"
+  ],
+  "forbidden_group_delimiters": [";", "；"],
+  "structural_semicolon_whitelist": [
+    "高级定码轮换内容",
+    "组合方案出号内容",
+    "组合方案轮投内容",
+    "GJBTScheme/高级倍投主配置.txt",
+    "GUI顶层多方案引用"
+  ],
+  "multi_group_resolution": "每个投注号码组必须拆成一个独立方案TXT；需要三组时生成三个方案，再由组合方案出号、组合方案轮投或GUI顶部方案轮投进行编排",
+  "invalid_example": "定码轮换内容=8 6 3;7 2 9;4 0 1",
+  "valid_examples": [
+    "方案863: 定码轮换内容=8 6 3",
+    "方案729: 定码轮换内容=7 2 9",
+    "方案401: 定码轮换内容=4 0 1"
+  ]
+}
