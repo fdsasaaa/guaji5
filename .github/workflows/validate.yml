@@ -19,6 +19,16 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Validate scheme field semantics
+        env:
+          PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
+        run: |
+          python -X utf8 05_工具/audit_scheme_semantics.py --self-test
+          if [ -n "$PR_BASE_SHA" ]; then
+            python -X utf8 05_工具/audit_scheme_semantics.py --changed-since "$PR_BASE_SHA"
+          elif git rev-parse HEAD^ >/dev/null 2>&1; then
+            python -X utf8 05_工具/audit_scheme_semantics.py --changed-since HEAD^
+          fi
       - name: Validate controller architecture
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
@@ -65,6 +75,8 @@ jobs:
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
+          test -f scheme_field_delimiter_policy.json
+          test -f betting_monitor_policy.json
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f controller/pipeline.json
           test -f controller/extensions.json

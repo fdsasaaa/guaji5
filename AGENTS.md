@@ -57,3 +57,5 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
+56. 生成任何投注监控字段前必须读取 `betting_monitor_policy.json`；启用格式只能是 `投注监控=True-<非空01序列>`，其中0代表挂、1代表中，例如0011表示挂挂中中后开始投注。
+57. 投注监控序列禁止出现2—9、空格、逗号、分号、中文“挂/中”、开奖号码、期数或倍数；启用时必须同时提供合法的 `投注监控模式=0/1`，并通过 `05_工具/audit_scheme_semantics.py --self-test` 与交付语义审计。

@@ -1,0 +1,32 @@
+{
+  "schema_version": "1.0",
+  "status": "MANDATORY",
+  "monitor_field": "投注监控",
+  "mode_field": "投注监控模式",
+  "enabled_prefix": "True-",
+  "disabled_values": ["False", "False-"],
+  "allowed_symbols": ["0", "1"],
+  "allowed_modes": ["0", "1"],
+  "disabled_mode": "0",
+  "symbol_meaning": {
+    "0": "挂",
+    "1": "中"
+  },
+  "sequence_semantics": "从左到右表示连续历史结果状态；完整匹配后开始投注",
+  "example": {
+    "value": "True-0011",
+    "meaning": "挂、挂、中、中之后开始投注"
+  },
+  "forbidden": [
+    "2-9",
+    "空格",
+    "逗号",
+    "分号",
+    "中文挂中字符",
+    "开奖号码",
+    "期数",
+    "倍数",
+    "空序列"
+  ],
+  "generator_rule": "不得自行创造监控编码；启用时只生成True-加非空01序列，并同时生成投注监控模式=0或1"
+}
