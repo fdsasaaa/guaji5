@@ -7,7 +7,8 @@ import sys
 import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
-DEFAULT_POLICY = ROOT / "scheme_field_delimiter_policy.json"
+DEFAULT_DELIMITER_POLICY = ROOT / "scheme_field_delimiter_policy.json"
+DEFAULT_MONITOR_POLICY = ROOT / "betting_monitor_policy.json"
 
 
 def decode(data):
@@ -36,19 +37,43 @@ def valid_group(group):
     )
 
 
-def load_policy(path=DEFAULT_POLICY):
+def load_json_policy(path, required, label):
     with Path(path).open("r", encoding="utf-8") as fh:
         policy = json.load(fh)
-    required = {
-        "direct_single_group_fields",
-        "forbidden_group_delimiters",
-        "structural_semicolon_whitelist",
-        "multi_group_resolution",
-    }
     missing = sorted(required - set(policy))
     if missing:
-        raise ValueError(f"分隔符策略缺少字段: {', '.join(missing)}")
+        raise ValueError(f"{label}缺少字段: {', '.join(missing)}")
     return policy
+
+
+def load_delimiter_policy(path=DEFAULT_DELIMITER_POLICY):
+    return load_json_policy(
+        path,
+        {
+            "direct_single_group_fields",
+            "forbidden_group_delimiters",
+            "structural_semicolon_whitelist",
+            "multi_group_resolution",
+        },
+        "分隔符策略",
+    )
+
+
+def load_monitor_policy(path=DEFAULT_MONITOR_POLICY):
+    return load_json_policy(
+        path,
+        {
+            "monitor_field",
+            "mode_field",
+            "enabled_prefix",
+            "disabled_values",
+            "allowed_symbols",
+            "allowed_modes",
+            "disabled_mode",
+            "symbol_meaning",
+        },
+        "投注监控策略",
+    )
 
 
 def is_scheme(lines):
@@ -71,8 +96,56 @@ def check_direct_number_delimiters(fields, policy, errors):
         )
 
 
-def audit_bytes(data, label, policy=None):
-    policy = policy or load_policy()
+def check_betting_monitor(fields, policy, errors):
+    monitor_field = policy["monitor_field"]
+    mode_field = policy["mode_field"]
+    value = fields.get(monitor_field)
+    if value is None:
+        return
+
+    mode = fields.get(mode_field)
+    disabled_values = set(policy["disabled_values"])
+    allowed_modes = {str(x) for x in policy["allowed_modes"]}
+    disabled_mode = str(policy["disabled_mode"])
+
+    if value in disabled_values:
+        if mode is not None and mode != disabled_mode:
+            errors.append(
+                f"{monitor_field}关闭时{mode_field}必须为{disabled_mode}，当前为{mode}"
+            )
+        return
+
+    prefix = policy["enabled_prefix"]
+    if not value.startswith(prefix):
+        errors.append(
+            f"{monitor_field}格式非法；关闭仅允许{sorted(disabled_values)}，"
+            f"启用必须使用{prefix}<01序列>。错误值: {value}"
+        )
+        return
+
+    sequence = value[len(prefix):]
+    if not sequence:
+        errors.append(f"{monitor_field}启用后必须提供非空01序列")
+    else:
+        allowed_symbols = {str(x) for x in policy["allowed_symbols"]}
+        invalid_symbols = sorted(set(sequence) - allowed_symbols)
+        if invalid_symbols:
+            errors.append(
+                f"{monitor_field}序列只能包含0和1；"
+                f"0代表{policy['symbol_meaning']['0']}，"
+                f"1代表{policy['symbol_meaning']['1']}。"
+                f"非法字符: {''.join(invalid_symbols)}，错误值: {value}"
+            )
+
+    if mode is None:
+        errors.append(f"{monitor_field}启用时缺少{mode_field}")
+    elif mode not in allowed_modes:
+        errors.append(f"{mode_field}只能是{sorted(allowed_modes)}，当前为{mode}")
+
+
+def audit_bytes(data, label, delimiter_policy=None, monitor_policy=None):
+    delimiter_policy = delimiter_policy or load_delimiter_policy()
+    monitor_policy = monitor_policy or load_monitor_policy()
     text, enc = decode(data)
     lines, fields = parse_fields(text)
     errors = []
@@ -90,7 +163,8 @@ def audit_bytes(data, label, policy=None):
         result["skipped"] = "not_a_scheme_txt"
         return result
 
-    check_direct_number_delimiters(fields, policy, errors)
+    check_direct_number_delimiters(fields, delimiter_policy, errors)
+    check_betting_monitor(fields, monitor_policy, errors)
 
     if strategy == "高级开某投某":
         pos = (
@@ -189,7 +263,7 @@ def changed_targets(base_ref):
             yield path
 
 
-def run_self_test(policy):
+def run_self_test(delimiter_policy, monitor_policy):
     fixtures = [
         (
             "valid_single_group",
@@ -216,10 +290,65 @@ def run_self_test(policy):
             "True\n高级定码轮换\n高级定码轮换内容=1|0 2|1|1;2|3 4|1|1;\n倍投计划=1,2,3\n",
             False,
         ),
+        (
+            "valid_monitor_disabled",
+            "True\n定码轮换\n投注监控=False-\n投注监控模式=0\n倍投计划=1,2,3\n",
+            False,
+        ),
+        (
+            "valid_monitor_0011",
+            "True\n定码轮换\n投注监控=True-0011\n投注监控模式=0\n倍投计划=1,2,3\n",
+            False,
+        ),
+        (
+            "valid_monitor_start_only",
+            "True\n定码轮换\n投注监控=True-101010\n投注监控模式=1\n倍投计划=1,2,3\n",
+            False,
+        ),
+        (
+            "invalid_monitor_digit_2",
+            "True\n定码轮换\n投注监控=True-0012\n投注监控模式=0\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_text",
+            "True\n定码轮换\n投注监控=True-挂挂中中\n投注监控模式=0\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_spaces",
+            "True\n定码轮换\n投注监控=True-0 0 1 1\n投注监控模式=0\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_empty",
+            "True\n定码轮换\n投注监控=True-\n投注监控模式=0\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_disabled_with_sequence",
+            "True\n定码轮换\n投注监控=False-0011\n投注监控模式=0\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_mode",
+            "True\n定码轮换\n投注监控=True-0011\n投注监控模式=2\n倍投计划=1,2,3\n",
+            True,
+        ),
+        (
+            "invalid_monitor_missing_mode",
+            "True\n定码轮换\n投注监控=True-0011\n倍投计划=1,2,3\n",
+            True,
+        ),
     ]
     failures = []
     for name, text, should_fail in fixtures:
-        result = audit_bytes(text.encode("gbk"), f"self-test::{name}", policy)
+        result = audit_bytes(
+            text.encode("gbk"),
+            f"self-test::{name}",
+            delimiter_policy,
+            monitor_policy,
+        )
         failed = bool(result["errors"])
         if failed != should_fail:
             failures.append(
@@ -236,11 +365,15 @@ def main():
     parser.add_argument("--json", action="store_true")
     parser.add_argument("--self-test", action="store_true")
     parser.add_argument("--changed-since")
-    parser.add_argument("--policy", default=str(DEFAULT_POLICY))
+    parser.add_argument("--delimiter-policy", default=str(DEFAULT_DELIMITER_POLICY))
+    parser.add_argument("--monitor-policy", default=str(DEFAULT_MONITOR_POLICY))
     args = parser.parse_args()
 
-    policy = load_policy(args.policy)
-    self_test_count = run_self_test(policy) if args.self_test else 0
+    delimiter_policy = load_delimiter_policy(args.delimiter_policy)
+    monitor_policy = load_monitor_policy(args.monitor_policy)
+    self_test_count = (
+        run_self_test(delimiter_policy, monitor_policy) if args.self_test else 0
+    )
     targets = [Path(raw) for raw in args.paths]
     if args.changed_since:
         targets.extend(changed_targets(args.changed_since))
@@ -253,7 +386,7 @@ def main():
             continue
         seen.add(resolved)
         for label, data in iter_targets(path):
-            results.append(audit_bytes(data, label, policy))
+            results.append(audit_bytes(data, label, delimiter_policy, monitor_policy))
 
     if args.json:
         print(
