@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "controller_id": "LOTTERY-FUNDING-OBJECTIVES-V1",
+  "status": "ACTIVE",
+  "default_when_unspecified": "AUTO_COMPARE",
+  "objective_types": {
+    "DURABLE": {
+      "display_name": "耐久型",
+      "goal": "低暴露、抗连续不中、尾部可控；不要求单次命中回收全部亏损",
+      "explicit_terms": ["耐久型", "抗造", "耐连续不中", "低回撤", "长期运行", "尾仓", "降压"],
+      "required_sections": ["economic_model", "execution", "durable_policy"],
+      "forbidden_claim_without_edge": ["长期盈利", "稳定盈利", "稳赚", "保证盈利"]
+    },
+    "RECOVERY_PROFIT": {
+      "display_name": "回利型",
+      "goal": "在计算出的有效档位内，任意档首次命中均覆盖此前净亏损、当期成本和抽水，并留下目标微利",
+      "explicit_terms": ["回利型", "连本带利", "中一次回本", "中一期盈利", "任意一档回利", "全程回利"],
+      "required_sections": ["economic_model", "execution", "recovery_policy", "recovery_stages"],
+      "allowed_path_styles": ["FLAT_THEN_STEP", "STEP", "GEOMETRIC", "FRONT_SLOW_BACK_FAST", "RISE_FALL", "STATE_CYCLE", "MIXED"]
+    },
+    "AUTO_COMPARE": {
+      "display_name": "自动比较",
+      "goal": "当用户未明确资金目标时，同时生成耐久型和回利型候选并按约束选择",
+      "required_candidates": ["DURABLE", "RECOVERY_PROFIT"]
+    }
+  },
+  "execution_engines": ["STRAIGHT", "ADVANCED"],
+  "path_styles": ["FLAT", "FLAT_THEN_STEP", "STEP", "GEOMETRIC", "FRONT_SLOW_BACK_FAST", "RISE_FALL", "STATE_CYCLE", "MIXED"],
+  "tail_policies": ["HOLD_LAST_1X", "STOP", "COOL_DOWN"],
+  "profit_evidence_levels": ["NOT_ESTABLISHED", "EDGE_CANDIDATE", "OUT_OF_SAMPLE_VERIFIED"],
+  "tolerance": 0.000001
+}
