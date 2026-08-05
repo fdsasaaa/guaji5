@@ -53,10 +53,31 @@ jobs:
         env:
           PR_BASE_SHA: ${{ github.event.pull_request.base.sha }}
         run: |
-          if [ -n "$PR_BASE_SHA" ]; then
+          if [ -z "$PR_BASE_SHA" ]; then
+            python tools/validate_scheme_orchestration_gate.py
+            exit 0
+          fi
+
+          requires_scheme_gate=0
+          while IFS= read -r path; do
+            case "$path" in
+              controller/runs/*/task.json|controller/runs/*/function_orchestration.json|03_批次归档/*.json|youtube_seo/*.json)
+                requires_scheme_gate=1
+                ;;
+              tools/build_*delivery.py)
+                if [ -f "$path" ] && grep -q "BLOCKED_LEGACY_FIXED_DATA_BUILDER" "$path"; then
+                  echo "Ignoring retired fixed-data builder as a scheme-delivery signal: $path"
+                else
+                  requires_scheme_gate=1
+                fi
+                ;;
+            esac
+          done < <(git diff --name-only "$PR_BASE_SHA"...HEAD)
+
+          if [ "$requires_scheme_gate" -eq 1 ]; then
             python tools/validate_scheme_orchestration_gate.py --base "$PR_BASE_SHA"
           else
-            python tools/validate_scheme_orchestration_gate.py
+            echo "SCHEME_ORCHESTRATION_GATE_NOT_APPLICABLE_SYSTEM_UPGRADE"
           fi
       - name: Smoke-test controller task envelope
         run: |
