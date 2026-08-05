@@ -76,10 +76,22 @@ def build_valid() -> tuple[dict, dict, dict]:
     central = registry_map(registry)
     evidence = core.fixture()
 
-    profile_ranks: dict[str, int] = {}
+    # The central ledger currently requires an advanced-state material candidate.
+    # Represent it in the funding profile's E layer instead of fabricating a
+    # feature claim that is not bound to any layer.
+    funding_profile = next(item for item in evidence["candidate_profiles"] if item["profile_id"] == "FUND")
+    funding_profile["layers"]["E"]["candidates"] = ["高级状态资金路径"]
+    funding_profile["layers"]["E"]["feature_ids"] = ["FUNDING_ADVANCED_STATE"]
+    funding_profile["layers"]["E"]["evidence_level"] = "E2"
+    funding_profile["material_signature"]["funding"] = "高级状态"
+    funding_profile["features"] = sorted({
+        feature
+        for layer in funding_profile["layers"].values()
+        for feature in layer.get("feature_ids", [])
+    })
+
     for profile in evidence["candidate_profiles"]:
         profile_rank = apply_registry_to_profile(profile, central)
-        profile_ranks[profile["profile_id"]] = profile_rank
         profile["eligible"] = profile["decision"] == "SELECTED"
         profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
         profile["hard_blockers"] = []
