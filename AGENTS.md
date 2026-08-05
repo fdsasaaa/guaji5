@@ -57,7 +57,7 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
-56. 标准方案任务还必须读取 `11B_长生存资金管理与数据成熟度协议.md`、`controller/bankroll_stress.json` 和 `controller/templates/bankroll_stress.template.json`。
+56. 标准方案任务还必须读取 `11B_长生存资金管理与数据成熟度协议.md`、`11B_A_资金路径有效长度与循环披露补充协议.md`、`controller/bankroll_stress.json`、`controller/funding_sequence_structure.json` 及其模板。
 57. 用户未指定时，资金压力默认按5000元本金、最低有效投注0.1元计算；用户指定其他本金时必须标记 `USER_SPECIFIED`，不得使用低于软件最低有效投注的虚构金额。
 58. 每个标准方案任务必须在运行证据目录生成 `bankroll_stress.json`；缺失或未通过机器校验时不得冻结设计合同、生成正式TXT或PPT。
 59. 资金管理必须根据具体玩法的理论命中率、实际注数、单期成本、赔率或返点和软件能力重新设计；禁止跨玩法复制同一倍数表后只改名称。
@@ -70,3 +70,10 @@
 66. 仓库CI必须运行 `python tools/validate_bankroll_stress.py --self-test --scan-runs` 与 `python tools/test_bankroll_stress_gates.py`。
 67. 资金压力证据属于GitHub内部运行记录，不增加对外交付文件；外部仍保持可导入方案文件夹、人工讲解型PPT和YouTube发布参考的原有完整交付ZIP结构。
 68. 用户未提出具体方案时，读取 `15_默认方案任务口述.md` 作为默认目标；该口述不得覆盖软件格式、证据等级、风险闸门或正式协议。
+69. 每个标准方案任务必须在运行证据目录生成 `funding_sequence_structure.json`，并与同目录 `bankroll_stress.json` 逐项交叉校验；缺失时不得冻结设计合同。
+70. 每条资金路径必须计算最小重复周期、有效独立长度和总运行期数；不得以输入数字总数代替有效独立长度。
+71. `CYCLIC` 路径只能保存一轮最短规范序列，循环轮数和停止期单独记录；发现短序列重复展开时必须失败。
+72. `FINITE` 路径的声明停止期不得超过有效独立长度；超过时不得用“后续自动循环”补足。
+73. 循环路径必须逐轮从第一期累计投入与未回收亏损，第二轮以后不得重新归零计算回本。
+74. 达到声明停止期后，所有后续压力检查的下一期投入必须为0，累计投入保持不变，不得假设停止后还有命中用于回收。
+75. 仓库CI必须运行 `python tools/validate_funding_sequence_structure.py --self-test --scan-runs` 与 `python tools/test_funding_sequence_structure_gates.py`；`EXPANDED_REPEAT_BLOCK`、`PATH_LENGTH_CLAIM_OVERSTATED`、`CROSS_CYCLE_STRESS_INCOMPLETE` 或 `POST_STOP_STAKE_DETECTED` 必须退回导演阶段。
