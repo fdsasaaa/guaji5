@@ -19,6 +19,26 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Test Hash FFC external data source
+        run: python tools/test_hxffc_data_source.py
+      - name: Validate external data source architecture
+        run: python tools/validate_external_data_source.py
+      - name: Probe live fixed Hash FFC source
+        env:
+          HXFCCAIJI_READ_TOKEN: ${{ secrets.HXFCCAIJI_READ_TOKEN }}
+          HXFFC_DATA_TOKEN: ${{ secrets.HXFFC_DATA_TOKEN }}
+        run: |
+          if [ -n "$HXFCCAIJI_READ_TOKEN$HXFFC_DATA_TOKEN" ]; then
+            python tools/sync_external_draws.py \
+              --task-id CI-LIVE-HXFFC \
+              --cache-root "$RUNNER_TEMP/hxffc-cache" \
+              --run-dir "$RUNNER_TEMP/hxffc-run" \
+              --allow-same-latest \
+              --report "$RUNNER_TEMP/hxffc-live-report.json"
+            cat "$RUNNER_TEMP/hxffc-live-report.json"
+          else
+            echo "LIVE_HXFFC_SKIPPED_PRIVATE_READ_SECRET_MISSING"
+          fi
       - name: Validate controller architecture
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
@@ -73,6 +93,12 @@ jobs:
           test -f controller/templates/orchestration_scorecard.template.json
           test -f controller/feature_evidence_registry.json
           test -f controller/function_coverage_ledger.json
+          test -f controller/data_sources.json
+          test -f data_sources/hxffc.py
+          test -f tools/sync_external_draws.py
+          test -f tools/test_hxffc_data_source.py
+          test -f tools/validate_external_data_source.py
+          test ! -f "01_本次输入/哈希分分彩_20260731_0181至0380.txt"
           test -f tools/validate_function_orchestration.py
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
