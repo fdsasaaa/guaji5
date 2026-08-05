@@ -13,6 +13,14 @@
     "required_evidence": "bankroll_stress.json",
     "must_pass_before_contract_freeze": true
   },
+  "funding_sequence_structure": {
+    "config": "controller/funding_sequence_structure.json",
+    "template": "controller/templates/funding_sequence_structure.template.json",
+    "validator": "tools/validate_funding_sequence_structure.py",
+    "gate_tests": "tools/test_funding_sequence_structure_gates.py",
+    "required_evidence": "funding_sequence_structure.json",
+    "must_pass_before_contract_freeze": true
+  },
   "required_profile_types": [
     "BASELINE",
     "STATE",
@@ -79,6 +87,14 @@
     "SIMULATION_INCOMPLETE",
     "HISTORICAL_VALIDATION_OVERCLAIM",
     "SELECTED_PATH_EXCEEDS_BANKROLL",
-    "SOFTWARE_EXECUTION_UNPROVEN"
+    "SOFTWARE_EXECUTION_UNPROVEN",
+    "FUNDING_SEQUENCE_STRUCTURE_MISSING",
+    "EXPANDED_REPEAT_BLOCK",
+    "EFFECTIVE_DESIGN_LENGTH_MISMATCH",
+    "PATH_LENGTH_CLAIM_OVERSTATED",
+    "CYCLE_DISCLOSURE_INVALID",
+    "CROSS_CYCLE_STRESS_INCOMPLETE",
+    "BANKROLL_SEQUENCE_MISMATCH",
+    "POST_STOP_STAKE_DETECTED"
   ]
 }
