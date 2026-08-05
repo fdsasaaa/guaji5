@@ -2,13 +2,47 @@
   "upgrade_id": "2026-08-05_HXFFC_EXTERNAL_DATA_SOURCE_V1",
   "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
   "branch": "feature/hxffc-external-data-source-20260805",
+  "draft_pr": 23,
   "force_push_allowed": false,
   "auto_merge_allowed": false,
   "source_repository_write_allowed": false,
   "rollback_order": [
-    "restore controller/pipeline.json and workflow",
-    "restore removed fixed input only for historical rollback, not formal use",
-    "remove adapter/config/docs/tests added by this upgrade"
+    "保留当前失败分支、CI日志和固定链接验证记录",
+    "恢复controller/pipeline.json、tools/lottery_controller.py和.github/workflows/validate.yml",
+    "恢复旧固定输入仅作为历史回滚证据，不得重新作为正式主数据源",
+    "恢复两个旧构建器仅用于复盘，不得绕过外部数据闸门",
+    "删除本升级新增的数据适配器、配置、文档和测试",
+    "运行仓库全量校验并通过独立revert PR恢复"
   ],
-  "files": []
+  "changed_paths": [
+    ".github/workflows/validate.yml",
+    "01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+    "controller/data_sources.json",
+    "controller/pipeline.json",
+    "data_sources/__init__.py",
+    "data_sources/base.py",
+    "data_sources/hxffc.py",
+    "data_sources/hxffc/.gitignore",
+    "docs/data_sources/哈希分分彩外部数据调用说明.md",
+    "docs/upgrades/2026-08-05_HXFFC_EXTERNAL_DATA_SOURCE_V1.md",
+    "docs/validation/2026-08-05_HXFFC_FIXED_LINK_VALIDATION.json",
+    "tools/build_b394_delivery.py",
+    "tools/build_current_delivery.py",
+    "tools/controller_data_source_gate.py",
+    "tools/lottery_controller.py",
+    "tools/sync_external_draws.py",
+    "tools/test_controller_data_source_gate.py",
+    "tools/test_hxffc_data_source.py",
+    "tools/test_orchestration_gates.py",
+    "tools/validate_external_data_source.py"
+  ],
+  "validation_evidence": {
+    "latest_successful_ci_run": 30973051250,
+    "adapter_tests": 14,
+    "controller_gate_tests": 6,
+    "repository_validation": "PASS",
+    "controller_validation": "PASS",
+    "external_source_architecture": "PASS",
+    "live_fixed_link": "BLOCKED_PRIVATE_READ_SECRET_MISSING"
+  }
 }
