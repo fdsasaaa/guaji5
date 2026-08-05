@@ -124,7 +124,7 @@ for phrase in [
     "funding_sequence_structure.json",
     "最小重复周期",
     "CYCLIC",
-    "跨轮",
+    "逐轮",
     "POST_STOP_STAKE_DETECTED",
 ]:
     if phrase not in agents:
