@@ -46,6 +46,13 @@ def build_valid() -> tuple[dict, dict, dict]:
     evidence = core.fixture()
     registry_by_id = {item["feature_id"]: item for item in registry["features"]}
 
+    probe_profile = next(
+        item for item in evidence["candidate_profiles"] if item["profile_id"] == "PROBE"
+    )
+    probe_profile["layers"]["E"]["candidates"].append("高级状态资金路径隔离候选")
+    probe_profile["layers"]["E"]["feature_ids"].append("FUNDING_ADVANCED_STATE")
+    probe_profile["layers"]["E"]["decision_reason"] = "覆盖平倍基准与高级状态资金候选"
+
     profile_ranks: dict[str, int] = {}
     for profile in evidence["candidate_profiles"]:
         features = sorted(
