@@ -21,21 +21,36 @@ jobs:
         run: python tools/validate_repository.py
       - name: Test Hash FFC external data source
         run: python tools/test_hxffc_data_source.py
+      - name: Test controller external-data gate
+        run: python tools/test_controller_data_source_gate.py
       - name: Validate external data source architecture
         run: python tools/validate_external_data_source.py
-      - name: Probe live fixed Hash FFC source
+      - name: Probe live fixed Hash FFC source through controller
         env:
           HXFCCAIJI_READ_TOKEN: ${{ secrets.HXFCCAIJI_READ_TOKEN }}
           HXFFC_DATA_TOKEN: ${{ secrets.HXFFC_DATA_TOKEN }}
         run: |
           if [ -n "$HXFCCAIJI_READ_TOKEN$HXFFC_DATA_TOKEN" ]; then
-            python tools/sync_external_draws.py \
-              --task-id CI-LIVE-HXFFC \
+            python tools/lottery_controller.py start \
+              --request "CI live Hash FFC fixed-source validation" \
+              --data-source hxffc \
+              --domain SYSTEM \
+              --run-id CI-LIVE-HXFFC \
+              --run-root "$RUNNER_TEMP/hxffc-controller"
+            python tools/lottery_controller.py sync-data \
+              --run-id CI-LIVE-HXFFC \
+              --run-root "$RUNNER_TEMP/hxffc-controller" \
               --cache-root "$RUNNER_TEMP/hxffc-cache" \
-              --run-dir "$RUNNER_TEMP/hxffc-run" \
-              --allow-same-latest \
-              --report "$RUNNER_TEMP/hxffc-live-report.json"
-            cat "$RUNNER_TEMP/hxffc-live-report.json"
+              --allow-same-latest
+            python tools/lottery_controller.py advance \
+              --run-id CI-LIVE-HXFFC \
+              --to PREFLIGHT \
+              --run-root "$RUNNER_TEMP/hxffc-controller"
+            python tools/lottery_controller.py advance \
+              --run-id CI-LIVE-HXFFC \
+              --to DIRECTOR \
+              --run-root "$RUNNER_TEMP/hxffc-controller"
+            cat "$RUNNER_TEMP/hxffc-controller/CI-LIVE-HXFFC/data_source_snapshot.json"
           else
             echo "LIVE_HXFFC_SKIPPED_PRIVATE_READ_SECRET_MISSING"
           fi
@@ -86,6 +101,9 @@ jobs:
             --domain SYSTEM \
             --run-id CI-SMOKE \
             --run-root "$RUNNER_TEMP/lottery-controller"
+          python tools/lottery_controller.py sync-data \
+            --run-id CI-SMOKE \
+            --run-root "$RUNNER_TEMP/lottery-controller"
           python tools/lottery_controller.py status \
             --run-id CI-SMOKE \
             --run-root "$RUNNER_TEMP/lottery-controller"
@@ -116,8 +134,10 @@ jobs:
           test -f controller/function_coverage_ledger.json
           test -f controller/data_sources.json
           test -f data_sources/hxffc.py
+          test -f tools/controller_data_source_gate.py
           test -f tools/sync_external_draws.py
           test -f tools/test_hxffc_data_source.py
+          test -f tools/test_controller_data_source_gate.py
           test -f tools/validate_external_data_source.py
           test ! -f "01_本次输入/哈希分分彩_20260731_0181至0380.txt"
           test -f tools/validate_function_orchestration.py
