@@ -5,6 +5,12 @@
   "evidence_registry": "controller/feature_evidence_registry.json",
   "coverage_ledger": "controller/function_coverage_ledger.json",
   "pr_gate": "tools/validate_scheme_orchestration_gate.py",
+  "funding_integrity_validator": "tools/validate_funding_path_integrity.py",
+  "funding_integrity_evidence_file_name": "funding_path_integrity.json",
+  "funding_integrity_required_checkpoints": [10, 20, 30, 40, 50],
+  "minimum_random_paths": 10000,
+  "reject_periodic_pressure_release": true,
+  "advanced_state_requires_structured_transitions": true,
   "required_profile_types": [
     "BASELINE",
     "STATE",
@@ -61,6 +67,11 @@
     "NEW_STATE_AND_ADVANCED_FIRST_USE_CONFLICT",
     "EVIDENCE_LEVEL_EXCEEDS_REGISTRY",
     "SCHEME_PR_EVIDENCE_MISSING",
-    "COVERAGE_LEDGER_NOT_UPDATED"
+    "COVERAGE_LEDGER_NOT_UPDATED",
+    "PERIODIC_FUNDING_PATTERN",
+    "ADVANCED_STATE_TRANSITION_INVALID",
+    "FUNDING_STRESS_CHECKPOINTS_INCOMPLETE",
+    "RANDOM_SIMULATION_TOO_SMALL",
+    "IMMATURE_DATA_CLAIM_VIOLATION"
   ]
 }
