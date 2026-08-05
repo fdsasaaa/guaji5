@@ -14,11 +14,18 @@
     "10000-path probabilistic stress",
     "data maturity tiers",
     "controller and CI integration",
-    "default user prompt upgrade"
+    "default user prompt upgrade",
+    "repair of the pre-existing orchestration adversarial fixture so it matches the strict central evidence registry"
   ],
   "local_validation": {
     "python tools/validate_bankroll_stress.py --self-test": "PASS",
     "python tools/test_bankroll_stress_gates.py": "PASS"
+  },
+  "github_actions": {
+    "workflow_run_id": 30975188974,
+    "job_id": 92207625362,
+    "conclusion": "PASS",
+    "passed_steps": 19
   },
   "adversarial_cases": [
     "minimum stake below 0.1 rejected",
@@ -34,5 +41,5 @@
   ],
   "current_data_limit": "Current roughly 200-draw data remains QUICK_EXPERIMENT; it can test the pipeline but cannot prove long-term safety.",
   "rollback": "Delete newly added files and restore updated files to base commit; no direct main write or force push.",
-  "ci_status": "PENDING_PR_CI"
+  "ci_status": "PASS"
 }
