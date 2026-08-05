@@ -21,6 +21,8 @@ jobs:
         run: python tools/validate_repository.py
       - name: Validate controller architecture
         run: python tools/validate_controller_architecture.py
+      - name: Validate funding sequence architecture
+        run: python tools/validate_funding_sequence_architecture.py
       - name: Validate controller runtime configuration
         run: python tools/lottery_controller.py validate
       - name: Validate full-function orchestration
@@ -91,6 +93,7 @@ jobs:
           test -f tools/validate_function_orchestration.py
           test -f tools/validate_bankroll_stress.py
           test -f tools/test_bankroll_stress_gates.py
+          test -f tools/validate_funding_sequence_architecture.py
           test -f tools/validate_funding_sequence_structure.py
           test -f tools/test_funding_sequence_structure_gates.py
           test -f tools/validate_scheme_orchestration_gate.py
