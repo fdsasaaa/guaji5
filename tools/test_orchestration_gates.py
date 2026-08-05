@@ -36,37 +36,55 @@ def score(evidence_rank: int, total_bias: int = 0, exposure_penalty: int = 2) ->
     return {"components": components, "notes": notes, "total": total}
 
 
+def evidence_rank(level: str) -> int:
+    return int(str(level).removeprefix("E"))
+
+
 def build_valid() -> tuple[dict, dict, dict]:
     registry = load("controller/feature_evidence_registry.json")
     ledger = load("controller/function_coverage_ledger.json")
     evidence = core.fixture()
-    profiles = {item["profile_id"]: item for item in evidence["candidate_profiles"]}
-    profiles["BASE"]["features"] = ["STATIC_NUMBER_LOGIC", "FUNDING_FLAT", "ROTATION_OR_COMBINATION"]
-    profiles["BASE"]["feature_evidence"] = [
-        {"feature_id": "STATIC_NUMBER_LOGIC", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-STATIC-TXT-RUNTIME"]},
-        {"feature_id": "FUNDING_FLAT", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-FLAT-RUNTIME"]},
-        {"feature_id": "ROTATION_OR_COMBINATION", "claimed_level": "E3", "evidence_refs": ["SW-EVID-003", "SW-EVID-004"]},
-    ]
-    profiles["STATE"]["features"] = ["MONITORING"]
-    profiles["STATE"]["feature_evidence"] = [
-        {"feature_id": "MONITORING", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-MONITORING"]}
-    ]
-    profiles["FUND"]["features"] = ["FUNDING_PRESSURE_RELEASE"]
-    profiles["FUND"]["feature_evidence"] = [
-        {"feature_id": "FUNDING_PRESSURE_RELEASE", "claimed_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"]}
-    ]
-    profiles["PROBE"]["features"] = ["SIMULATION_REAL_SWITCH", "FUNDING_ADVANCED_STATE"]
-    profiles["PROBE"]["feature_evidence"] = [
-        {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
-        {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
-    ]
-    profile_ranks = {"BASE": 3, "STATE": 1, "FUND": 2, "PROBE": 1}
+    registry_by_id = {item["feature_id"]: item for item in registry["features"]}
+
+    profile_ranks: dict[str, int] = {}
     for profile in evidence["candidate_profiles"]:
-        rank = profile_ranks[profile["profile_id"]]
+        features = sorted(
+            {
+                feature_id
+                for layer in profile["layers"].values()
+                for feature_id in layer["feature_ids"]
+            }
+        )
+        profile["features"] = features
+        profile["feature_evidence"] = [
+            {
+                "feature_id": feature_id,
+                "claimed_level": registry_by_id[feature_id]["max_formal_level"],
+                "evidence_refs": registry_by_id[feature_id]["evidence_refs"],
+            }
+            for feature_id in features
+        ]
+        for layer in profile["layers"].values():
+            feature_ids = layer["feature_ids"]
+            if feature_ids:
+                layer_rank = min(
+                    evidence_rank(registry_by_id[feature_id]["max_formal_level"])
+                    for feature_id in feature_ids
+                )
+                layer["evidence_level"] = f"E{layer_rank}"
+        rank = min(
+            evidence_rank(registry_by_id[feature_id]["max_formal_level"])
+            for feature_id in features
+        )
+        profile_ranks[profile["profile_id"]] = rank
         profile["eligible"] = profile["decision"] == "SELECTED"
-        profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
+        profile["eligibility_reason"] = (
+            "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
+        )
         profile["hard_blockers"] = []
-        profile["scorecard"] = score(rank, 1 if profile["profile_id"] == "BASE" else 0)
+        profile["scorecard"] = score(
+            rank, 1 if profile["profile_id"] == "BASE" else 0
+        )
 
     funding_refs = {
         "FLAT": ["HISTORICAL-FLAT-RUNTIME"],
@@ -74,13 +92,25 @@ def build_valid() -> tuple[dict, dict, dict]:
         "PRESSURE_RELEASE": ["ORDINARY-SEQUENCE-FORMAT"],
         "ADVANCED_STATE": ["SW-EVID-002", "SW-EVID-009"],
     }
-    funding_ranks = {"FLAT": 3, "LIMITED_LINEAR": 2, "PRESSURE_RELEASE": 2, "ADVANCED_STATE": 2}
-    exposure_penalties = {"FLAT": 1, "ADVANCED_STATE": 2, "PRESSURE_RELEASE": 3, "LIMITED_LINEAR": 4}
+    funding_ranks = {
+        "FLAT": 3,
+        "LIMITED_LINEAR": 2,
+        "PRESSURE_RELEASE": 2,
+        "ADVANCED_STATE": 2,
+    }
+    exposure_penalties = {
+        "FLAT": 1,
+        "ADVANCED_STATE": 2,
+        "PRESSURE_RELEASE": 3,
+        "LIMITED_LINEAR": 4,
+    }
     for path in evidence["funding_paths"]:
         path["software_evidence_level"] = f"E{funding_ranks[path['kind']]}"
         path["evidence_refs"] = funding_refs[path["kind"]]
         path["eligible"] = path["decision"] == "SELECTED"
-        path["eligibility_reason"] = "正式基准可入选" if path["eligible"] else "证据未达E3或未选"
+        path["eligibility_reason"] = (
+            "正式基准可入选" if path["eligible"] else "证据未达E3或未选"
+        )
         path["hard_blockers"] = []
         path["scorecard"] = score(
             funding_ranks[path["kind"]],
@@ -98,7 +128,9 @@ def build_valid() -> tuple[dict, dict, dict]:
 
     evidence["coverage_debt"]["due_features"] = ledger["next_due_features"]
     evidence["recent_delivery_modes"] = ledger["recent_delivery_modes"]
-    evidence["repeat_guard"]["last_three_fingerprints"] = ledger["recent_selected_fingerprints"]
+    evidence["repeat_guard"]["last_three_fingerprints"] = ledger[
+        "recent_selected_fingerprints"
+    ]
     fingerprint = evidence["repeat_guard"]["fingerprint"]
     trailing = 0
     for previous in reversed(ledger["recent_selected_fingerprints"]):
@@ -110,8 +142,15 @@ def build_valid() -> tuple[dict, dict, dict]:
     evidence["ledger_update"] = {
         "from_sequence": ledger["sequence"],
         "to_sequence": ledger["sequence"] + 1,
-        "outcomes": {feature: {"outcome": "CANDIDATE", "evidence_ref": "SELF-TEST"} for feature in ledger["next_due_features"]},
-        "next_due_features": ["PROFIT_LOSS_JUMP", "PROFIT_LOSS_STOP", "TIME_WINDOW"],
+        "outcomes": {
+            feature: {"outcome": "CANDIDATE", "evidence_ref": "SELF-TEST"}
+            for feature in ledger["next_due_features"]
+        },
+        "next_due_features": [
+            "PROFIT_LOSS_JUMP",
+            "PROFIT_LOSS_STOP",
+            "TIME_WINDOW",
+        ],
     }
     evidence["selection"]["score_override_reason"] = ""
     evidence["selection"]["score_override_evidence_refs"] = []
@@ -127,9 +166,13 @@ def advanced_ledger(base: dict, evidence: dict) -> dict:
     window = branch["selection_window"]
     mode = evidence["selection"]["delivery_mode"]
     branch["recent_delivery_modes"] = (base["recent_delivery_modes"] + [mode])[-window:]
-    branch["baseline_only_streak"] = 0 if mode != "BASELINE_ONLY" else base["baseline_only_streak"] + 1
+    branch["baseline_only_streak"] = (
+        0 if mode != "BASELINE_ONLY" else base["baseline_only_streak"] + 1
+    )
     fingerprint = evidence["repeat_guard"]["fingerprint"]
-    branch["recent_selected_fingerprints"] = (base["recent_selected_fingerprints"] + [fingerprint])[-window:]
+    branch["recent_selected_fingerprints"] = (
+        base["recent_selected_fingerprints"] + [fingerprint]
+    )[-window:]
     for feature in base["next_due_features"]:
         entry = branch["features"][feature]
         entry["last_material_candidate_run"] = evidence["run_id"]
@@ -140,7 +183,9 @@ def advanced_ledger(base: dict, evidence: dict) -> dict:
 def main() -> int:
     evidence, registry, ledger = build_valid()
     errors: list[str] = []
-    core_errors = core.validate_evidence(evidence, load("controller/function_orchestration.json"))
+    core_errors = core.validate_evidence(
+        evidence, load("controller/function_orchestration.json")
+    )
     if core_errors:
         errors.append("有效综合夹具未通过核心校验: " + " | ".join(core_errors))
     gate_errors = gate.validate_registry_and_ledger(evidence, registry, ledger)
@@ -152,10 +197,15 @@ def main() -> int:
 
     with tempfile.TemporaryDirectory() as temp_dir:
         evidence_path = Path(temp_dir) / "function_orchestration.json"
-        evidence_path.write_text(json.dumps(evidence, ensure_ascii=False), encoding="utf-8")
+        evidence_path.write_text(
+            json.dumps(evidence, ensure_ascii=False), encoding="utf-8"
+        )
         branch_ledger = advanced_ledger(ledger, evidence)
         branch_errors = gate.validate_branch_ledger(
-            ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
+            [
+                "controller/function_coverage_ledger.json",
+                "controller/runs/SELF-TEST/function_orchestration.json",
+            ],
             [evidence_path],
             ledger,
             branch_ledger,
@@ -163,7 +213,10 @@ def main() -> int:
         if branch_errors:
             errors.append("有效账本迁移被错误拒绝: " + " | ".join(branch_errors))
         stale_errors = gate.validate_branch_ledger(
-            ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
+            [
+                "controller/function_coverage_ledger.json",
+                "controller/runs/SELF-TEST/function_orchestration.json",
+            ],
             [evidence_path],
             ledger,
             ledger,
@@ -172,7 +225,12 @@ def main() -> int:
             errors.append("未更新中央账本未被拒绝")
 
     inflated = copy.deepcopy(evidence)
-    inflated["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
+    monitoring_claim = next(
+        claim
+        for claim in inflated["candidate_profiles"][1]["feature_evidence"]
+        if claim["feature_id"] == "MONITORING"
+    )
+    monitoring_claim["claimed_level"] = "E3"
     if not gate.validate_registry_and_ledger(inflated, registry, ledger):
         errors.append("监控证据从E1伪造为E3未被拒绝")
 
@@ -200,10 +258,14 @@ def main() -> int:
 
     lower_selected = copy.deepcopy(evidence)
     lower_selected["candidate_profiles"][0]["scorecard"] = score(3, -3)
-    lower_selected["candidate_profiles"][1]["eligible"] = True
-    lower_selected["candidate_profiles"][1]["scorecard"] = score(3, 2)
-    lower_selected["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
-    lower_selected["candidate_profiles"][1]["layers"]["B"]["evidence_level"] = "E3"
+    state_profile = lower_selected["candidate_profiles"][1]
+    state_profile["eligible"] = True
+    state_profile["scorecard"] = score(3, 2)
+    for claim in state_profile["feature_evidence"]:
+        claim["claimed_level"] = "E3"
+    for layer in state_profile["layers"].values():
+        if layer["feature_ids"]:
+            layer["evidence_level"] = "E3"
     if not scoring.validate_evidence(lower_selected):
         errors.append("低分画像无证据覆盖仍入选未被拒绝")
 
@@ -214,7 +276,9 @@ def main() -> int:
         errors.append("达到E3的画像被无证据标记不合格未被拒绝")
 
     inflated_score = copy.deepcopy(evidence)
-    inflated_score["candidate_profiles"][1]["scorecard"]["components"]["software_evidence"] = 8
+    inflated_score["candidate_profiles"][1]["scorecard"]["components"][
+        "software_evidence"
+    ] = 8
     inflated_score["candidate_profiles"][1]["scorecard"]["total"] += 6
     if not scoring.validate_evidence(inflated_score):
         errors.append("低证据画像夸大software_evidence评分未被拒绝")
