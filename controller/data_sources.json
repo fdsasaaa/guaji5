@@ -1,0 +1,39 @@
+{
+  "schema_version": 1,
+  "status": "ACTIVE",
+  "formal_source_policy": "EXTERNAL_FIRST_NO_STALE_FALLBACK",
+  "sources": {
+    "hxffc": {
+      "name": "哈希分分彩",
+      "adapter": "data_sources.hxffc.HashFFCSource",
+      "repository": "fdsasaaa/haxiffccaiji",
+      "fixed_url": "https://github.com/fdsasaaa/haxiffccaiji/releases/download/data-latest/hxffc_history.txt",
+      "format": {
+        "encoding": "UTF-8",
+        "delimiter": "\\t",
+        "required_columns": [
+          "issue",
+          "code",
+          "draw_time",
+          "source"
+        ],
+        "ignore_prefixes": [
+          "#"
+        ]
+      },
+      "formal_gate_required": true,
+      "minimum_records": 100,
+      "max_age_minutes": 360,
+      "require_newer_than_previous_success": true,
+      "snapshot_retention": 5,
+      "cache_role": "DISASTER_RECOVERY_AND_TRACE_ONLY",
+      "token_env_names": [
+        "HXFCCAIJI_READ_TOKEN",
+        "HXFFC_DATA_TOKEN"
+      ],
+      "write_access_to_source_repository": false,
+      "source_field_available_to_analysis": false,
+      "failure_state": "EXTERNAL_DATA_SOURCE_FAILED"
+    }
+  }
+}

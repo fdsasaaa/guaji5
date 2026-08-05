@@ -2,7 +2,8 @@
 """Governed state machine for the lottery scheme generation system.
 
 This tool does not invent scheme logic. It creates and validates the evidence
-envelope that AI directors and build tools must follow.
+envelope that AI directors and build tools must follow. Hash FFC tasks must
+pass the external read-only data-source gate before entering DIRECTOR.
 """
 from __future__ import annotations
 
@@ -20,6 +21,9 @@ PIPELINE_PATH = ROOT / "controller" / "pipeline.json"
 EXTENSIONS_PATH = ROOT / "controller" / "extensions.json"
 DEFAULT_RUN_ROOT = ROOT / ".runtime" / "lottery-controller"
 
+sys.path.insert(0, str(ROOT / "tools"))
+import controller_data_source_gate as data_gate  # noqa: E402
+
 
 class ControllerError(RuntimeError):
     pass
@@ -29,13 +33,22 @@ def now_iso() -> str:
     return datetime.now(timezone.utc).astimezone().isoformat(timespec="seconds")
 
 
+def display_path(path: Path) -> str:
+    try:
+        return str(path.relative_to(ROOT))
+    except ValueError:
+        return str(path)
+
+
 def load_json(path: Path) -> dict[str, Any]:
     try:
         return json.loads(path.read_text(encoding="utf-8"))
     except FileNotFoundError as exc:
-        raise ControllerError(f"缺少文件: {path.relative_to(ROOT)}") from exc
+        raise ControllerError(f"缺少文件: {display_path(path)}") from exc
     except json.JSONDecodeError as exc:
-        raise ControllerError(f"JSON错误: {path.relative_to(ROOT)}:{exc.lineno}:{exc.colno}") from exc
+        raise ControllerError(
+            f"JSON错误: {display_path(path)}:{exc.lineno}:{exc.colno}"
+        ) from exc
 
 
 def write_json(path: Path, data: Any) -> None:
@@ -78,9 +91,19 @@ def validate_configs() -> list[str]:
     ids = [item.get("id") for item in phases]
     if not ids or len(ids) != len(set(ids)):
         errors.append("pipeline.phases为空或存在重复id")
-    for required in ("INTAKE", "PREFLIGHT", "DIRECTOR", "CONTRACT_FROZEN",
-                     "EXECUTION", "VALIDATION", "AUDIT", "REWORK",
-                     "DELIVERY", "LEARNING", "COMPLETED"):
+    for required in (
+        "INTAKE",
+        "PREFLIGHT",
+        "DIRECTOR",
+        "CONTRACT_FROZEN",
+        "EXECUTION",
+        "VALIDATION",
+        "AUDIT",
+        "REWORK",
+        "DELIVERY",
+        "LEARNING",
+        "COMPLETED",
+    ):
         if required not in ids:
             errors.append(f"pipeline缺少阶段: {required}")
     transitions = pipeline.get("transitions", {})
@@ -97,10 +120,12 @@ def validate_configs() -> list[str]:
     if not isinstance(max_rework, int) or not 1 <= max_rework <= 3:
         errors.append("max_rework_rounds必须为1至3")
     rollback = pipeline.get("rollback", {})
-    for key in ("base_commit_required_before_write",
-                "changed_files_hash_required",
-                "failed_version_evidence_must_remain",
-                "force_push_forbidden"):
+    for key in (
+        "base_commit_required_before_write",
+        "changed_files_hash_required",
+        "failed_version_evidence_must_remain",
+        "force_push_forbidden",
+    ):
         if rollback.get(key) is not True:
             errors.append(f"rollback.{key}未启用")
     cleanup = pipeline.get("cleanup", {})
@@ -108,6 +133,27 @@ def validate_configs() -> list[str]:
         errors.append("清理策略未禁止直接删除")
     if cleanup.get("quarantine_first") is not True:
         errors.append("清理策略未启用先隔离")
+
+    source_gate = pipeline.get("data_sources", {})
+    if source_gate.get("registry") != "controller/data_sources.json":
+        errors.append("pipeline未登记外部数据源注册表")
+    if source_gate.get("must_pass_before_director") is not True:
+        errors.append("外部数据源未设置为DIRECTOR前硬闸门")
+    if source_gate.get("cache_is_primary_source") is not False:
+        errors.append("外部数据缓存不得成为主数据源")
+    if source_gate.get("source_repository_write_forbidden") is not True:
+        errors.append("未禁止写入采集仓库")
+    try:
+        source_registry = data_gate.registry()
+    except data_gate.DataSourceGateError as exc:
+        errors.append(str(exc))
+        source_registry = {}
+    if source_registry.get("status") != "ACTIVE":
+        errors.append("外部数据源注册表未激活")
+    required_sources = set(source_gate.get("required_for_sources", []))
+    registered_sources = set(source_registry.get("sources", {}))
+    if not required_sources.issubset(registered_sources):
+        errors.append("pipeline引用了未登记的外部数据源")
 
     domains = extensions.get("domains", [])
     domain_ids = {item.get("id") for item in domains}
@@ -157,15 +203,13 @@ def evidence_index(paths: list[Path]) -> list[dict[str, Any]]:
         resolved = path if path.is_absolute() else (ROOT / path)
         if not resolved.exists() or not resolved.is_file():
             raise ControllerError(f"证据文件不存在: {path}")
-        try:
-            display = str(resolved.relative_to(ROOT))
-        except ValueError:
-            display = str(resolved)
-        records.append({
-            "path": display.replace("\\", "/"),
-            "sha256": sha256_file(resolved),
-            "size": resolved.stat().st_size,
-        })
+        records.append(
+            {
+                "path": display_path(resolved).replace("\\", "/"),
+                "sha256": sha256_file(resolved),
+                "size": resolved.stat().st_size,
+            }
+        )
     return records
 
 
@@ -187,6 +231,8 @@ def cmd_start(args: argparse.Namespace) -> int:
     run_dir = resolve_run_dir(run_root, run_id)
     if run_dir.exists():
         raise ControllerError(f"运行ID已存在: {run_id}")
+    if args.data_source and args.data_source not in data_gate.available_source_ids():
+        raise ControllerError(f"未登记数据源: {args.data_source}")
     run_dir.mkdir(parents=True)
 
     base_branch = git_value("branch", "--show-current") or "main"
@@ -196,6 +242,8 @@ def cmd_start(args: argparse.Namespace) -> int:
         "created_at": now_iso(),
         "request": args.request,
         "mode": args.mode,
+        "task_type": args.mode,
+        "data_source": args.data_source,
         "source_repository": "fdsasaaa/guaji5",
         "stable_source": pipeline["stable_source"],
         "requested_domains": args.domain,
@@ -221,13 +269,15 @@ def cmd_start(args: argparse.Namespace) -> int:
         "status": "ACTIVE",
         "rework_round": 0,
         "max_rework_rounds": pipeline["max_rework_rounds"],
-        "history": [{
-            "from": None,
-            "to": "INTAKE",
-            "at": now_iso(),
-            "note": "任务已建立",
-            "evidence": [],
-        }],
+        "history": [
+            {
+                "from": None,
+                "to": "INTAKE",
+                "at": now_iso(),
+                "note": "任务已建立",
+                "evidence": [],
+            }
+        ],
         "created_at": now_iso(),
         "updated_at": now_iso(),
     }
@@ -265,12 +315,18 @@ def cmd_start(args: argparse.Namespace) -> int:
     write_json(run_dir / "audit_report.json", audit)
     write_json(run_dir / "extension_snapshot.json", extensions)
 
-    print(json.dumps({
-        "run_id": run_id,
-        "run_dir": str(run_dir),
-        "phase": "INTAKE",
-        "next": "PREFLIGHT",
-    }, ensure_ascii=False))
+    print(
+        json.dumps(
+            {
+                "run_id": run_id,
+                "run_dir": str(run_dir),
+                "phase": "INTAKE",
+                "data_source": args.data_source,
+                "next": "sync-data" if args.data_source else "PREFLIGHT",
+            },
+            ensure_ascii=False,
+        )
+    )
     return 0
 
 
@@ -278,6 +334,29 @@ def cmd_status(args: argparse.Namespace) -> int:
     run_dir = resolve_run_dir(Path(args.run_root).resolve(), args.run_id)
     state = load_state(run_dir)
     print(json.dumps(state, ensure_ascii=False, indent=2))
+    return 0
+
+
+def cmd_sync_data(args: argparse.Namespace) -> int:
+    require_valid_configs()
+    run_dir = resolve_run_dir(Path(args.run_root).resolve(), args.run_id)
+    task = load_json(run_dir / "task.json")
+    state = load_state(run_dir)
+    if state.get("phase") not in {"INTAKE", "PREFLIGHT", "REWORK"}:
+        raise ControllerError(
+            f"当前阶段不允许同步数据源: {state.get('phase')}"
+        )
+    try:
+        result = data_gate.sync_task_source(
+            run_dir=run_dir,
+            task=task,
+            cache_root=Path(args.cache_root).resolve() if args.cache_root else None,
+            allow_same_latest=args.allow_same_latest,
+        )
+    except data_gate.DataSourceGateError as exc:
+        raise ControllerError(f"外部数据源同步失败: {exc}") from exc
+    print("DATA_SOURCE_PREFLIGHT_READY")
+    print(json.dumps(result, ensure_ascii=False, indent=2))
     return 0
 
 
@@ -304,19 +383,33 @@ def cmd_advance(args: argparse.Namespace) -> int:
     if missing:
         raise ControllerError(f"当前阶段缺少输出，不能推进: {missing}")
 
+    if current == "PREFLIGHT" and target == "DIRECTOR":
+        task = load_json(run_dir / "task.json")
+        snapshot_errors = data_gate.validate_task_snapshot(
+            run_dir=run_dir,
+            task=task,
+        )
+        if snapshot_errors:
+            raise ControllerError(
+                "外部数据源闸门未通过，禁止进入DIRECTOR:\n- "
+                + "\n- ".join(snapshot_errors)
+            )
+
     evidence = evidence_index([Path(item) for item in args.evidence])
     state["phase"] = target
     if target == "BLOCKED":
         state["status"] = "BLOCKED"
     elif target == "COMPLETED":
         state["status"] = "COMPLETED"
-    state["history"].append({
-        "from": current,
-        "to": target,
-        "at": now_iso(),
-        "note": args.note,
-        "evidence": evidence,
-    })
+    state["history"].append(
+        {
+            "from": current,
+            "to": target,
+            "at": now_iso(),
+            "note": args.note,
+            "evidence": evidence,
+        }
+    )
     save_state(run_dir, state)
     print(f"ADVANCED {current}->{target}")
     return 0
@@ -351,7 +444,8 @@ def cmd_rollback_plan(args: argparse.Namespace) -> int:
     plan = {
         "run_id": args.run_id,
         "created_at": now_iso(),
-        "target": manifest.get("base_commit") or pipeline["rollback"]["rollback_target"],
+        "target": manifest.get("base_commit")
+        or pipeline["rollback"]["rollback_target"],
         "method": "new_revert_or_restore_commit",
         "force_push": False,
         "preserve_failed_branch": True,
@@ -417,7 +511,17 @@ def build_parser() -> argparse.ArgumentParser:
     start = sub.add_parser("start", help="建立一次受控任务")
     start.add_argument("--request", required=True)
     start.add_argument("--mode", default="STANDARD_SCHEME_TASK")
-    start.add_argument("--domain", action="append", choices=["PPT", "SCHEME", "PROGRAM", "SYSTEM", "CLEANUP"], default=[])
+    start.add_argument(
+        "--domain",
+        action="append",
+        choices=["PPT", "SCHEME", "PROGRAM", "SYSTEM", "CLEANUP"],
+        default=[],
+    )
+    start.add_argument(
+        "--data-source",
+        choices=list(data_gate.available_source_ids()),
+        help="哈希分分彩正式任务使用hxffc；其他任务不设置",
+    )
     start.add_argument("--run-id")
     start.add_argument("--run-root", default=str(DEFAULT_RUN_ROOT))
     start.set_defaults(func=cmd_start)
@@ -426,6 +530,17 @@ def build_parser() -> argparse.ArgumentParser:
     status.add_argument("--run-id", required=True)
     status.add_argument("--run-root", default=str(DEFAULT_RUN_ROOT))
     status.set_defaults(func=cmd_status)
+
+    sync_data = sub.add_parser("sync-data", help="同步并冻结本次外部开奖输入")
+    sync_data.add_argument("--run-id", required=True)
+    sync_data.add_argument("--run-root", default=str(DEFAULT_RUN_ROOT))
+    sync_data.add_argument("--cache-root")
+    sync_data.add_argument(
+        "--allow-same-latest",
+        action="store_true",
+        help="只供CI/故障诊断；正式方案不得使用",
+    )
+    sync_data.set_defaults(func=cmd_sync_data)
 
     advance = sub.add_parser("advance", help="推进到合法下一阶段")
     advance.add_argument("--run-id", required=True)
@@ -437,11 +552,23 @@ def build_parser() -> argparse.ArgumentParser:
 
     fail = sub.add_parser("fail", help="登记失败和返工路由")
     fail.add_argument("--run-id", required=True)
-    fail.add_argument("--category", required=True, choices=[
-        "INPUT_OR_VERSION", "LOGIC_OR_OVERFIT", "CONTRACT_DRIFT",
-        "TXT_OR_BUILD", "DATA_OR_BACKTEST", "PPT_OR_SEMANTIC",
-        "DELIVERY_INTEGRITY",
-    ])
+    fail.add_argument(
+        "--category",
+        required=True,
+        choices=[
+            "INPUT_OR_VERSION",
+            "EXTERNAL_DATA_SOURCE_FAILED",
+            "EXTERNAL_DATA_NOT_NEWER",
+            "EXTERNAL_DATA_STALE",
+            "EXTERNAL_DATA_CONFLICT",
+            "LOGIC_OR_OVERFIT",
+            "CONTRACT_DRIFT",
+            "TXT_OR_BUILD",
+            "DATA_OR_BACKTEST",
+            "PPT_OR_SEMANTIC",
+            "DELIVERY_INTEGRITY",
+        ],
+    )
     fail.add_argument("--code", required=True)
     fail.add_argument("--message", required=True)
     fail.add_argument("--run-root", default=str(DEFAULT_RUN_ROOT))

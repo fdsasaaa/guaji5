@@ -1,0 +1,3 @@
+# Runtime cache only. Never commit cumulative draw files or task snapshots.
+latest/
+snapshots/

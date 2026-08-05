@@ -1,0 +1,41 @@
+{
+  "validation_id": "HXFFC-FIXED-LINK-20260805-01",
+  "attempted_at_utc": "2026-08-05T03:43:04Z",
+  "guaji5_ci_run_id": 30973051250,
+  "guaji5_commit": "de97e68fe5553dab232e2b10920f7f701a9ff995",
+  "fixed_url": "https://github.com/fdsasaaa/haxiffccaiji/releases/download/data-latest/hxffc_history.txt",
+  "source_repository": "fdsasaaa/haxiffccaiji",
+  "source_repository_visibility": "private",
+  "adapter_live_download": {
+    "status": "BLOCKED_PRIVATE_READ_SECRET_MISSING",
+    "download_completed": false,
+    "parse_completed": false,
+    "validation_completed": false,
+    "sha256": null,
+    "ci_evidence": "LIVE_HXFFC_SKIPPED_PRIVATE_READ_SECRET_MISSING",
+    "required_next_action": "在guaji5仓库配置最小只读Secret HXFCCAIJI_READ_TOKEN或HXFFC_DATA_TOKEN后重新运行PR CI"
+  },
+  "offline_adapter_validation": {
+    "status": "PASS",
+    "adapter_tests": 14,
+    "controller_gate_tests": 6,
+    "architecture_validation": "PASS",
+    "full_repository_ci": "PASS"
+  },
+  "upstream_publication_evidence": {
+    "status_file": "fdsasaaa/haxiffccaiji:data/status.json",
+    "collector_ok": true,
+    "total_rows": 218,
+    "oldest_issue": "202608050436",
+    "newest_issue": "202608050653",
+    "release_tag": "data-latest",
+    "release_asset": "hxffc_history.txt",
+    "release_verified_at_utc": "2026-08-05T02:54:00Z",
+    "release_verification": "uploaded asset downloaded again and matched byte-for-byte"
+  },
+  "formal_acceptance": {
+    "status": "BLOCKED",
+    "reason": "不能把上游仓库发布验证或离线夹具测试冒充为guaji5通过固定链接完成的真实下载、解析、SHA-256和快照记录",
+    "pr_must_remain_draft": true
+  }
+}
