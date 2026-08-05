@@ -1,0 +1,28 @@
+{
+  "schema_version": 1,
+  "controller_id": "LOTTERY-FUNDING-SEQUENCE-STRUCTURE-V1",
+  "status": "ACTIVE",
+  "evidence_file_name": "funding_sequence_structure.json",
+  "bankroll_evidence_file_name": "bankroll_stress.json",
+  "required_for_task_types": ["STANDARD_SCHEME_TASK"],
+  "sequence_modes": ["FINITE", "CYCLIC"],
+  "requirements": {
+    "minimum_repeat_period_required": true,
+    "canonical_single_cycle_storage_required": true,
+    "effective_design_length_required": true,
+    "claimed_design_length_must_equal_effective": true,
+    "cross_cycle_stress_required": true,
+    "bankroll_path_consistency_required": true,
+    "stop_after_declared_horizon_required": true
+  },
+  "failure_states": [
+    "FUNDING_SEQUENCE_STRUCTURE_MISSING",
+    "EXPANDED_REPEAT_BLOCK",
+    "EFFECTIVE_DESIGN_LENGTH_MISMATCH",
+    "PATH_LENGTH_CLAIM_OVERSTATED",
+    "CYCLE_DISCLOSURE_INVALID",
+    "CROSS_CYCLE_STRESS_INCOMPLETE",
+    "BANKROLL_SEQUENCE_MISMATCH",
+    "POST_STOP_STAKE_DETECTED"
+  ]
+}
