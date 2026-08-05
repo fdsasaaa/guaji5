@@ -36,30 +36,56 @@ def score(evidence_rank: int, total_bias: int = 0, exposure_penalty: int = 2) ->
     return {"components": components, "notes": notes, "total": total}
 
 
+def feature_claim(profile: dict, feature_id: str) -> dict:
+    for item in profile["feature_evidence"]:
+        if item["feature_id"] == feature_id:
+            return item
+    raise KeyError(f"missing feature claim: {feature_id}")
+
+
 def build_valid() -> tuple[dict, dict, dict]:
     registry = load("controller/feature_evidence_registry.json")
     ledger = load("controller/function_coverage_ledger.json")
     evidence = core.fixture()
     profiles = {item["profile_id"]: item for item in evidence["candidate_profiles"]}
-    profiles["BASE"]["features"] = ["STATIC_NUMBER_LOGIC", "FUNDING_FLAT", "ROTATION_OR_COMBINATION"]
-    profiles["BASE"]["feature_evidence"] = [
-        {"feature_id": "STATIC_NUMBER_LOGIC", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-STATIC-TXT-RUNTIME"]},
-        {"feature_id": "FUNDING_FLAT", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-FLAT-RUNTIME"]},
-        {"feature_id": "ROTATION_OR_COMBINATION", "claimed_level": "E3", "evidence_refs": ["SW-EVID-003", "SW-EVID-004"]},
-    ]
-    profiles["STATE"]["features"] = ["MONITORING"]
-    profiles["STATE"]["feature_evidence"] = [
-        {"feature_id": "MONITORING", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-MONITORING"]}
-    ]
-    profiles["FUND"]["features"] = ["FUNDING_PRESSURE_RELEASE"]
-    profiles["FUND"]["feature_evidence"] = [
-        {"feature_id": "FUNDING_PRESSURE_RELEASE", "claimed_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"]}
-    ]
-    profiles["PROBE"]["features"] = ["SIMULATION_REAL_SWITCH", "FUNDING_ADVANCED_STATE"]
-    profiles["PROBE"]["feature_evidence"] = [
-        {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
-        {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
-    ]
+
+    feature_specs = {
+        "STATIC_NUMBER_LOGIC": ("E3", ["HISTORICAL-STATIC-TXT-RUNTIME"]),
+        "FUNDING_FLAT": ("E3", ["HISTORICAL-FLAT-RUNTIME"]),
+        "ROTATION_OR_COMBINATION": ("E3", ["SW-EVID-003", "SW-EVID-004"]),
+        "RISK_HARD_STOP": ("E3", ["PROCEDURAL-PERIOD-HARD-STOP"]),
+        "RANDOM_BASELINE": ("E3", ["HISTORICAL-RANDOM-CONTROL-RUNTIME"]),
+        "MONITORING": ("E1", ["UI-FIELD-MONITORING"]),
+        "FUNDING_PRESSURE_RELEASE": ("E2", ["ORDINARY-SEQUENCE-FORMAT"]),
+        "SIMULATION_REAL_SWITCH": ("E1", ["UI-FIELD-SIMULATION-REAL-SWITCH"]),
+        "FUNDING_ADVANCED_STATE": ("E2", ["SW-EVID-002", "SW-EVID-009"]),
+    }
+
+    profiles["STATE"]["layers"]["B"]["evidence_level"] = "E1"
+    profiles["PROBE"]["layers"]["G"]["evidence_level"] = "E1"
+    profiles["PROBE"]["layers"]["E"].update({
+        "candidates": ["平倍对照", "高级状态倍投隔离探针"],
+        "feature_ids": ["FUNDING_FLAT", "FUNDING_ADVANCED_STATE"],
+        "evidence_level": "E2",
+        "decision_reason": "保持平倍对照并实质覆盖高级状态资金路径",
+    })
+
+    for profile in evidence["candidate_profiles"]:
+        features = sorted({
+            feature_id
+            for layer in profile["layers"].values()
+            for feature_id in layer["feature_ids"]
+        })
+        profile["features"] = features
+        profile["feature_evidence"] = [
+            {
+                "feature_id": feature_id,
+                "claimed_level": feature_specs[feature_id][0],
+                "evidence_refs": feature_specs[feature_id][1],
+            }
+            for feature_id in features
+        ]
+
     profile_ranks = {"BASE": 3, "STATE": 1, "FUND": 2, "PROBE": 1}
     for profile in evidence["candidate_profiles"]:
         rank = profile_ranks[profile["profile_id"]]
@@ -172,7 +198,7 @@ def main() -> int:
             errors.append("未更新中央账本未被拒绝")
 
     inflated = copy.deepcopy(evidence)
-    inflated["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
+    feature_claim(inflated["candidate_profiles"][1], "MONITORING")["claimed_level"] = "E3"
     if not gate.validate_registry_and_ledger(inflated, registry, ledger):
         errors.append("监控证据从E1伪造为E3未被拒绝")
 
@@ -202,7 +228,7 @@ def main() -> int:
     lower_selected["candidate_profiles"][0]["scorecard"] = score(3, -3)
     lower_selected["candidate_profiles"][1]["eligible"] = True
     lower_selected["candidate_profiles"][1]["scorecard"] = score(3, 2)
-    lower_selected["candidate_profiles"][1]["feature_evidence"][0]["claimed_level"] = "E3"
+    feature_claim(lower_selected["candidate_profiles"][1], "MONITORING")["claimed_level"] = "E3"
     lower_selected["candidate_profiles"][1]["layers"]["B"]["evidence_level"] = "E3"
     if not scoring.validate_evidence(lower_selected):
         errors.append("低分画像无证据覆盖仍入选未被拒绝")
