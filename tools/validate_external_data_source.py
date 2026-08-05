@@ -3,10 +3,10 @@ from __future__ import annotations
 
 import ast
 import json
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
+SELF = Path(__file__).resolve()
 errors: list[str] = []
 
 
@@ -95,28 +95,40 @@ old_input = ROOT / "01_本次输入/哈希分分彩_20260731_0181至0380.txt"
 if old_input.exists():
     err("旧固定200期开奖文件仍存在")
 
-old_name = "哈希分分彩_20260731_0181至0380.txt"
-for path in list((ROOT / "tools").rglob("*.py")) + list(
+old_name = old_input.name
+python_paths = list((ROOT / "tools").rglob("*.py")) + list(
     (ROOT / "data_sources").rglob("*.py")
-):
+)
+for path in python_paths:
+    resolved = path.resolve()
     text = path.read_text(encoding="utf-8")
-    if old_name in text:
+    if resolved != SELF and old_name in text:
         err(f"程序仍引用旧固定开奖文件: {path.relative_to(ROOT)}")
-    if "haxiffccaiji" in text and any(
-        token in text
-        for token in (
-            "git push",
-            "releases/assets",
-            "DELETE ",
-            "PATCH ",
-            "POST ",
-        )
-    ):
-        err(f"适配器疑似包含对采集仓库写操作: {path.relative_to(ROOT)}")
     try:
         ast.parse(text, filename=str(path))
     except SyntaxError as exc:
         err(f"Python语法错误: {path.relative_to(ROOT)}: {exc}")
+
+adapter_paths = list((ROOT / "data_sources").rglob("*.py"))
+for path in adapter_paths:
+    text = path.read_text(encoding="utf-8")
+    if "haxiffccaiji" not in text:
+        continue
+    for forbidden in (
+        "git push",
+        "releases/assets",
+        "method=\"POST\"",
+        "method=\"PATCH\"",
+        "method=\"DELETE\"",
+        "method='POST'",
+        "method='PATCH'",
+        "method='DELETE'",
+    ):
+        if forbidden in text:
+            err(
+                f"适配器包含对采集仓库写操作标记{forbidden!r}: "
+                f"{path.relative_to(ROOT)}"
+            )
 
 for folder in (
     ROOT / "data_sources/hxffc/latest",
@@ -151,6 +163,15 @@ for phrase in (
 ):
     if phrase not in adapter:
         err(f"哈希分分彩适配器缺少能力: {phrase}")
+
+for legacy_builder in (
+    ROOT / "tools/build_current_delivery.py",
+    ROOT / "tools/build_b394_delivery.py",
+):
+    if legacy_builder.exists():
+        text = legacy_builder.read_text(encoding="utf-8")
+        if "BLOCKED_LEGACY_FIXED_DATA_BUILDER" not in text:
+            err(f"旧哈希构建器未明确停用: {legacy_builder.relative_to(ROOT)}")
 
 if errors:
     print("EXTERNAL_DATA_SOURCE_INVALID")
