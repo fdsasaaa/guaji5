@@ -4,6 +4,9 @@ on:
   push:
     branches:
       - agent/rebate-portfolio-50plus-5000-20260807
+  pull_request:
+    branches:
+      - main
 
 permissions:
   contents: read
