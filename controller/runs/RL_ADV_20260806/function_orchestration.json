@@ -2,14 +2,15 @@
   "run_id": "RL_ADV_20260806_1200",
   "domains": [
     "SCHEME",
-    "PPT"
+    "PPT",
+    "PROGRAM"
   ],
-  "selected_profile_id": "EXECUTION_OR_FUNDING_ADV_RETURN_2DIGIT",
+  "selected_profile_id": "EXECUTION_OR_FUNDING",
   "profiles": [
     {
       "profile_id": "BASELINE",
       "material_signature": {
-        "number_logic": "定位胆个位2码",
+        "number_logic": "定码轮换/定位胆/个位/3 7",
         "trigger": "立即投注",
         "execution": "单方案",
         "funding": "平倍1",
@@ -22,7 +23,7 @@
     {
       "profile_id": "STATE",
       "material_signature": {
-        "number_logic": "定位胆个位2码",
+        "number_logic": "定码轮换/定位胆/个位/3 7",
         "trigger": "开始即投",
         "execution": "单方案",
         "funding": "压力分区",
@@ -35,15 +36,15 @@
     {
       "profile_id": "EXECUTION_OR_FUNDING",
       "material_signature": {
-        "number_logic": "定位胆个位2码",
+        "number_logic": "定码轮换/定位胆/个位/3 7",
         "trigger": "开始即投",
-        "execution": "单方案+GJBTScheme",
+        "execution": "单方案+GJBTScheme九字段配置",
         "funding": "高级状态回利序列",
-        "stop": "29局封顶+止盈80+止损4350",
+        "stop": "29局封顶+止盈80+止损4325",
         "time_simulation": "真实"
       },
       "decision": "SELECTED",
-      "reason": "满足逐档首次命中回补且本金内有效局数最多"
+      "reason": "按玩法经济结构反推，29个有效档位首次命中均可覆盖此前净损并留下至少1元微利"
     },
     {
       "profile_id": "LOW_COVERAGE_PROBE",
@@ -74,7 +75,7 @@
       "sequence": [1,1,2,2,3,3,5,5,8,8,13,13],
       "max_multiplier": 13,
       "decision": "REJECTED",
-      "reason": "第12局后无法覆盖累计亏损"
+      "reason": "第12局后无法覆盖累计净损"
     },
     {
       "path_id": "PRESSURE_RELEASE",
@@ -92,11 +93,11 @@
       "max_multiplier": 221,
       "total_multiplier": 1163,
       "worst_case_exposure": 4388.24,
-      "reset_rule": "命中回第1局",
+      "reset_rule": "任意局命中回第1局",
       "cap_rule": "第29局未中停止，不进第30局",
-      "software_evidence_level": "E2_FORMAT_E3_MANUAL_REQUIRED",
+      "software_evidence_level": "E3_FORMAT_STATIC_RUNTIME_REIMPORT_REQUIRED",
       "decision": "SELECTED",
-      "reason": "按经济结构反推且逐档证明成立"
+      "reason": "主方案引用GJBTScheme配置名；配置采用29行固定九字段与D模式跳转"
     }
   ],
   "more_settings_candidates": [
@@ -104,8 +105,9 @@
       "category": "PROFIT_LOSS_STOP",
       "material_configuration": {
         "take_profit": "80元",
-        "stop_loss": "4350元",
-        "action": "停止复盘"
+        "stop_loss": "4325元",
+        "action": "停止并复盘",
+        "manual_cap": "第29局不中后强制停止"
       },
       "final_decision": "ENABLED"
     },
@@ -126,5 +128,12 @@
       "final_decision": "ENABLED"
     }
   ],
-  "machine_validation": "LOCAL_PASS_REPO_FULL_VALIDATION_NOT_RUN_DNS"
+  "import_regression": {
+    "failed_package": "回利二码高级倍投方案套.zip",
+    "replacement_package": "回利二码高级倍投方案套_导入修正版.zip",
+    "static_gate": "PASS",
+    "runtime_gate": "USER_REIMPORT_REQUIRED",
+    "zip_sha256": "d6e9228697aab52b1940ba6c86d2e70543d28a71390649af38224add82344803"
+  },
+  "machine_validation": "STATIC_IMPORT_GATE_PASS_FULL_REPOSITORY_VALIDATION_NOT_RUN"
 }
