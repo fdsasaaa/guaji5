@@ -1,0 +1,130 @@
+{
+  "run_id": "RL_ADV_20260806_1200",
+  "domains": [
+    "SCHEME",
+    "PPT"
+  ],
+  "selected_profile_id": "EXECUTION_OR_FUNDING_ADV_RETURN_2DIGIT",
+  "profiles": [
+    {
+      "profile_id": "BASELINE",
+      "material_signature": {
+        "number_logic": "定位胆个位2码",
+        "trigger": "立即投注",
+        "execution": "单方案",
+        "funding": "平倍1",
+        "stop": "固定29局",
+        "time_simulation": "真实"
+      },
+      "decision": "REJECTED",
+      "reason": "不能满足用户高级倍投与逐档回利要求"
+    },
+    {
+      "profile_id": "STATE",
+      "material_signature": {
+        "number_logic": "定位胆个位2码",
+        "trigger": "开始即投",
+        "execution": "单方案",
+        "funding": "压力分区",
+        "stop": "止盈止损",
+        "time_simulation": "真实"
+      },
+      "decision": "REVIEWED",
+      "reason": "保留状态分区，资金路径需更强"
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "material_signature": {
+        "number_logic": "定位胆个位2码",
+        "trigger": "开始即投",
+        "execution": "单方案+GJBTScheme",
+        "funding": "高级状态回利序列",
+        "stop": "29局封顶+止盈80+止损4350",
+        "time_simulation": "真实"
+      },
+      "decision": "SELECTED",
+      "reason": "满足逐档首次命中回补且本金内有效局数最多"
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "material_signature": {
+        "number_logic": "1码定位胆探针",
+        "trigger": "模拟优先",
+        "execution": "独立探针",
+        "funding": "低倍观察",
+        "stop": "30期成本上限",
+        "time_simulation": "模拟"
+      },
+      "decision": "PROBE_ONLY",
+      "reason": "命中等待过长，不进入正式方案"
+    }
+  ],
+  "funding_paths": [
+    {
+      "path_id": "FLAT",
+      "kind": "FLAT",
+      "sequence": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1],
+      "max_multiplier": 1,
+      "decision": "REJECTED",
+      "reason": "不具备连续不中后回补能力"
+    },
+    {
+      "path_id": "LIMITED_LINEAR",
+      "kind": "LIMITED_LINEAR",
+      "sequence": [1,1,2,2,3,3,5,5,8,8,13,13],
+      "max_multiplier": 13,
+      "decision": "REJECTED",
+      "reason": "第12局后无法覆盖累计亏损"
+    },
+    {
+      "path_id": "PRESSURE_RELEASE",
+      "kind": "PRESSURE_RELEASE",
+      "sequence": [1,2,3,2,1,2,4,6,4,2],
+      "max_multiplier": 6,
+      "decision": "REJECTED",
+      "reason": "降压后不满足逐档首次命中回补"
+    },
+    {
+      "path_id": "ADVANCED_STATE",
+      "kind": "ADVANCED_STATE",
+      "sequence": [1,1,1,1,1,2,2,3,3,4,5,6,8,9,12,14,18,22,27,33,41,51,63,77,95,118,145,179,221],
+      "states": ["轻压区1-10", "回补区11-22", "尾控区23-29"],
+      "max_multiplier": 221,
+      "total_multiplier": 1163,
+      "worst_case_exposure": 4388.24,
+      "reset_rule": "命中回第1局",
+      "cap_rule": "第29局未中停止，不进第30局",
+      "software_evidence_level": "E2_FORMAT_E3_MANUAL_REQUIRED",
+      "decision": "SELECTED",
+      "reason": "按经济结构反推且逐档证明成立"
+    }
+  ],
+  "more_settings_candidates": [
+    {
+      "category": "PROFIT_LOSS_STOP",
+      "material_configuration": {
+        "take_profit": "80元",
+        "stop_loss": "4350元",
+        "action": "停止复盘"
+      },
+      "final_decision": "ENABLED"
+    },
+    {
+      "category": "CHANGE_RULE",
+      "material_configuration": {
+        "change_rule": "不换号",
+        "digits": "3 7",
+        "reason": "减少变量污染，先验证高级倍投行为"
+      },
+      "final_decision": "ENABLED"
+    },
+    {
+      "category": "ROTATION_OR_COMBINATION",
+      "material_configuration": {
+        "execution": "不轮投、不并投，单方案"
+      },
+      "final_decision": "ENABLED"
+    }
+  ],
+  "machine_validation": "LOCAL_PASS_REPO_FULL_VALIDATION_NOT_RUN_DNS"
+}
