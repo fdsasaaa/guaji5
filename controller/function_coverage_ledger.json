@@ -1,31 +1,32 @@
 {
   "schema_version": 1,
   "status": "ACTIVE",
-  "sequence": 0,
-  "last_run_id": null,
+  "sequence": 1,
+  "last_run_id": "BATCH-B396-REBATE-7CODE-001",
   "selection_window": 3,
-  "recent_delivery_modes": ["BASELINE_ONLY", "BASELINE_ONLY"],
-  "baseline_only_streak": 2,
+  "recent_delivery_modes": ["BASELINE_ONLY", "BASELINE_ONLY", "EXPERIMENT_ONLY"],
+  "baseline_only_streak": 0,
   "recent_selected_fingerprints": [
     "cold_warm_omission|immediate|top_rotation|flat|18_period_hard_stop|none",
-    "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none"
+    "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none",
+    "unit_7code_omit_self_next_opposite|previous_unit_digit|single_scheme_no_parallel|advanced_state_1_3_8_24|take80_stop470_four_miss_stop|formal_with_optional_probe"
   ],
   "next_due_features": [
-    "MONITORING",
-    "FUNDING_ADVANCED_STATE",
-    "SIMULATION_REAL_SWITCH"
+    "PROFIT_LOSS_JUMP",
+    "PROFIT_LOSS_STOP",
+    "TIME_WINDOW"
   ],
   "features": {
-    "MONITORING": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 100},
-    "FUNDING_ADVANCED_STATE": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 98},
-    "SIMULATION_REAL_SWITCH": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 96},
+    "MONITORING": {"last_material_candidate_run": "BATCH-B396-REBATE-7CODE-001", "last_selected_run": null, "consecutive_not_material": 0, "priority": 100},
+    "FUNDING_ADVANCED_STATE": {"last_material_candidate_run": "BATCH-B396-REBATE-7CODE-001", "last_selected_run": "BATCH-B396-REBATE-7CODE-001", "consecutive_not_material": 0, "priority": 98},
+    "SIMULATION_REAL_SWITCH": {"last_material_candidate_run": "BATCH-B396-REBATE-7CODE-001", "last_selected_run": null, "consecutive_not_material": 0, "priority": 96},
     "PROFIT_LOSS_JUMP": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 90},
     "PROFIT_LOSS_STOP": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 88},
     "TIME_WINDOW": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 86},
     "BET_DIRECTION": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 84},
     "CHANGE_RULE": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 1, "priority": 72},
-    "FUNDING_PRESSURE_RELEASE": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 82},
-    "FUNDING_LIMITED_LINEAR": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 80},
+    "FUNDING_PRESSURE_RELEASE": {"last_material_candidate_run": "BATCH-B396-REBATE-7CODE-001", "last_selected_run": null, "consecutive_not_material": 0, "priority": 82},
+    "FUNDING_LIMITED_LINEAR": {"last_material_candidate_run": "BATCH-B396-REBATE-7CODE-001", "last_selected_run": null, "consecutive_not_material": 0, "priority": 80},
     "ROTATION_OR_COMBINATION": {"last_material_candidate_run": "BATCH-B396-FIRST-ORDER-TRANSITION-001", "last_selected_run": "BATCH-B396-FIRST-ORDER-TRANSITION-001", "consecutive_not_material": 0, "priority": 30},
     "FUNDING_FLAT": {"last_material_candidate_run": "BATCH-B396-FIRST-ORDER-TRANSITION-001", "last_selected_run": "BATCH-B396-FIRST-ORDER-TRANSITION-001", "consecutive_not_material": 0, "priority": 20}
   },
