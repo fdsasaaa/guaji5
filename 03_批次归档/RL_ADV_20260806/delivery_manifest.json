@@ -1,0 +1,15 @@
+{
+  "run_id": "RL_ADV_20260806_1200",
+  "deliverables": [
+    "回利二码高级倍投方案套.zip",
+    "回利二码高级倍投_人工讲解型PPT.pptx"
+  ],
+  "github_text_files": [
+    "GitHub验证记录_RL_ADV_20260806.md",
+    "function_orchestration_RL_ADV_20260806.json"
+  ],
+  "important_limits": {
+    "history_hit_rate": "not available from main",
+    "not_profit_claim": true
+  }
+}
