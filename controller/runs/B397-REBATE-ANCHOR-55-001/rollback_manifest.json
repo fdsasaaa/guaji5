@@ -1,0 +1,13 @@
+{
+  "run_id": "B397-REBATE-ANCHOR-55-001",
+  "base_ref": "main",
+  "created_branch": "b397-rebate-anchor-55",
+  "rollback_action": "close PR/delete branch only; no main mutation",
+  "files_created": [
+    "controller/runs/B397-REBATE-ANCHOR-55-001/*",
+    "03_批次归档/B397-REBATE-ANCHOR-55-001/*"
+  ],
+  "files_updated": [
+    "controller/function_coverage_ledger.json"
+  ]
+}
