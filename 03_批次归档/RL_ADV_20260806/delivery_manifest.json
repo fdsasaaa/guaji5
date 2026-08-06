@@ -1,5 +1,5 @@
 {
-  "run_id": "RL_ADV_20260806_1200",
+  "run_id": "RL_ADV_20260806",
   "deliverables": [
     "回利二码高级倍投方案套_导入修正版.zip",
     "回利二码高级倍投_人工讲解型PPT.pptx"
@@ -20,11 +20,15 @@
     "advanced_rows": 29,
     "main_encoding": "GBK_NO_BOM_CRLF",
     "advanced_encoding": "UTF8_BOM_CRLF",
-    "zip_sha256": "d6e9228697aab52b1940ba6c86d2e70543d28a71390649af38224add82344803"
+    "software_profit_loss_stop": "disabled_for_single_variable_probe",
+    "manual_profit_observation": "80元",
+    "manual_hard_stop": "第29局不中后停止",
+    "zip_sha256": "89ff1d8204062d5140c12f37735213ef64821ed5d2cfc095eb864eb04c8e688c"
   },
   "important_limits": {
     "history_hit_rate": "not available from main",
     "windows_runtime_import": "not executable in current environment",
+    "advanced_state_evidence_cap": "E2_PROBE_ONLY",
     "not_profit_claim": true
   }
 }
