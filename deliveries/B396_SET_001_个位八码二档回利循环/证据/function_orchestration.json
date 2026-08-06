@@ -1,0 +1,62 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-20260806-ROI-CYCLE-B396",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "DIRECTOR_COMPLETE",
+  "selection": {
+    "selected_profile_id": "SELECTED_P3",
+    "selected_funding_path_id": "ADVANCED_STATE",
+    "delivery_mode": "PROBE_ONLY",
+    "reason": "经济结构适配度最高且风险可封顶；证据不足部分不包装实盘。"
+  },
+  "candidate_profiles": [
+    {
+      "profile_id": "BASELINE",
+      "profile_type": "BASELINE",
+      "decision": "REJECTED",
+      "material_signature": {"number_logic":"个位八码静态","trigger":"立即投注","execution":"单方案","funding":"平倍","stop":"10期硬停","time_simulation":"不限时"},
+      "reason": "只作为成本基准，不满足阶段回利。"
+    },
+    {
+      "profile_id": "STATE",
+      "profile_type": "STATE",
+      "decision": "REJECTED",
+      "material_signature": {"number_logic":"五组双排除轮换","trigger":"命中换组","execution":"轮换","funding":"平倍","stop":"10期硬停","time_simulation":"不限时"},
+      "reason": "号码轮换成立，但没有资金修复。"
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "profile_type": "EXECUTION_OR_FUNDING",
+      "decision": "REJECTED",
+      "material_signature": {"number_logic":"个位八码","trigger":"立即投注","execution":"单方案","funding":"压力释放12期","stop":"12期硬停","time_simulation":"不限时"},
+      "reason": "全挂暴露267.84元，且中途命中不保证阶段回利。"
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "profile_type": "LOW_COVERAGE_PROBE",
+      "decision": "PROBE_ONLY",
+      "material_signature": {"number_logic":"个位八码固定一组","trigger":"仅模拟触发","execution":"隔离文件夹","funding":"平倍","stop":"30期成本上限","time_simulation":"模拟"},
+      "reason": "监控/模拟切换证据低，只做隔离探针。"
+    },
+    {
+      "profile_id": "SELECTED_P3",
+      "profile_type": "EXECUTION_OR_FUNDING",
+      "decision": "SELECTED_PROBE_ONLY",
+      "material_signature": {"number_logic":"五组双排除轮换","trigger":"S0未中进S1","execution":"单方案状态机","funding":"1-4二档","stop":"两期不中停/五循环止盈","time_simulation":"先模拟后人工确认"},
+      "reason": "只给一次修复机会，失败退出，最大合规亏损74.40元。高级状态证据未达E3。",
+      "hard_blockers": ["UNVERIFIED_FEATURE_SELECTED_FORMAL_BLOCKED"]
+    }
+  ],
+  "funding_paths": [
+    {"path_id":"FLAT","kind":"FLAT","sequence":[1,1,1,1,1,1,1,1,1,1],"max_multiplier":1,"total_multiplier":10,"worst_case_exposure":148.8,"software_evidence_level":"E3","decision":"REJECTED"},
+    {"path_id":"LIMITED_LINEAR","kind":"LIMITED_LINEAR","sequence":[1,4],"max_multiplier":4,"total_multiplier":5,"worst_case_exposure":74.4,"software_evidence_level":"E2","decision":"CANDIDATE"},
+    {"path_id":"PRESSURE_RELEASE","kind":"PRESSURE_RELEASE","sequence":[1,1,2,2,1,1,3,2,1,1,2,1],"max_multiplier":3,"total_multiplier":18,"worst_case_exposure":267.84,"software_evidence_level":"E2","decision":"REJECTED"},
+    {"path_id":"ADVANCED_STATE","kind":"ADVANCED_STATE","states":["S0_1X","S1_4X","TAKE_PROFIT","STOP_COOLDOWN"],"transitions":["S0 hit -> next cycle S0","S0 miss -> S1","S1 hit -> next cycle S0","S1 miss -> STOP_COOLDOWN"],"max_multiplier":4,"total_multiplier":5,"worst_case_exposure":74.4,"software_evidence_level":"E2","decision":"PROBE_ONLY_SELECTED"}
+  ],
+  "more_settings_review": [
+    {"category":"PROFIT_LOSS_STOP","material_configuration":{"take_profit":"5个成功小循环约+20~+23.6元","stop_loss":"任一小循环两期不中-74.4元"},"evidence_level":"E3_HARD_STOP_MANUAL","final_decision":"ENABLED_MANUAL"},
+    {"category":"SIMULATION_REAL_SWITCH","material_configuration":{"mode":"先模拟30期，记录状态跳转；真实切换需另行E3"},"evidence_level":"E1","final_decision":"PROBE_ONLY"},
+    {"category":"ROTATION_OR_COMBINATION","material_configuration":{"cycles":5,"sets":"双排除均衡轮换"},"evidence_level":"E3/E2_BOUNDARY","final_decision":"ENABLED_WITH_MANUAL_CHECK"}
+  ],
+  "coverage_debt": {"due_features":["FUNDING_ADVANCED_STATE","SIMULATION_REAL_SWITCH","MONITORING"],"blocked_features":["PROFIT_LOSS_JUMP"],"all_exploration_blocked":false}
+}
