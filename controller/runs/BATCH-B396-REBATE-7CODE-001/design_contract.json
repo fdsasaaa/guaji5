@@ -1,0 +1,16 @@
+{
+  "scheme_id": "B396-REBATE-7CODE",
+  "frozen": true,
+  "game": "个位定位胆",
+  "unit_amount": 2,
+  "notes_per_period": 7,
+  "cost_1x": 14,
+  "payout": 19.6,
+  "rebate_rate": 0.07,
+  "sequence": [1, 3, 8, 24],
+  "bankroll": 1500,
+  "take_profit": 80,
+  "stop_loss": 470,
+  "max_effective_stages": 4,
+  "data_status": "DATA_PENDING_NO_RAW_HISTORY_IN_MAIN"
+}

@@ -1,0 +1,5 @@
+{
+  "selected_mode": "短链强回利",
+  "why": "七码定位胆命中率高、单次净利低，适合短链覆盖，不适合长尾暴力强追",
+  "number_logic": "last unit d -> omit d,d+1,d+5, bet remaining 7"
+}
