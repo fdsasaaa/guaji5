@@ -1,0 +1,78 @@
+{
+  "schema_version": 1,
+  "run_id": "B397-REBATE-ANCHOR-55-001",
+  "selected_profile": "EXECUTION_OR_FUNDING",
+  "selected_funding_path": "ADVANCED_STATE",
+  "due_features_read": ["MONITORING", "FUNDING_ADVANCED_STATE", "SIMULATION_REAL_SWITCH"],
+  "profiles": [
+    {
+      "profile_id": "BASELINE",
+      "material_signature": {
+        "number_logic": "定位胆5个单码",
+        "trigger": "immediate",
+        "execution": "five_parallel",
+        "funding": "flat_0.1_or_1",
+        "stop": "55_period_hard_stop",
+        "time_simulation": "none"
+      },
+      "score": 62,
+      "decision": "rejected",
+      "reason": "无法逐档覆盖50期以上前损"
+    },
+    {
+      "profile_id": "STATE",
+      "material_signature": {
+        "number_logic": "定位胆5个单码",
+        "trigger": "monitoring_probe_only",
+        "execution": "single_variable_probe",
+        "funding": "flat",
+        "stop": "30_period_cap",
+        "time_simulation": "none"
+      },
+      "score": 48,
+      "decision": "probe_only",
+      "reason": "MONITORING证据上限E1，不进入正式方案"
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "material_signature": {
+        "number_logic": "定位胆五位单码",
+        "trigger": "immediate",
+        "execution": "5方案并投但1锚4哨兵",
+        "funding": "55档高级状态倍投",
+        "stop": "止盈300/止损4358/55档硬停",
+        "time_simulation": "none"
+      },
+      "score": 86,
+      "decision": "selected",
+      "reason": "满足用户50档以上高级倍投，并能逐档证明锚点命中覆盖"
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "material_signature": {
+        "number_logic": "同数字",
+        "trigger": "simulation_real_switch_probe",
+        "execution": "isolated_probe",
+        "funding": "flat",
+        "stop": "30_period_cap",
+        "time_simulation": "sim_to_real_probe"
+      },
+      "score": 41,
+      "decision": "blocked_probe_only",
+      "reason": "SIMULATION_REAL_SWITCH证据上限E1，本批只登记低覆盖阻塞，不混入正式资金路径"
+    }
+  ],
+  "funding_paths": [
+    {"type": "FLAT", "sequence": "1x", "max_exposure": "低", "rejected_reason": "不能在50期内覆盖累计亏损"},
+    {"type": "LIMITED_LINEAR", "sequence": "1,2,3,5,8,12", "rejected_reason": "档数不足，尾部暴露更差"},
+    {"type": "PRESSURE_RELEASE", "sequence": "1,1,2,2,3,3,5,5,8,8...", "rejected_reason": "可读性强但覆盖证明不足"},
+    {"type": "ADVANCED_STATE", "sequence": [1,1,1,1,1,1,1,2,2,2,2,3,3,3,4,4,5,5,6,6,7,8,9,10,11,12,13,15,16,18,20,22,24,27,30,33,37,41,45,50,55,61,67,74,82,91,100,111,122,135,149,165,182,202,223], "max_multiplier": 223, "selected_reason": "按净损递推，55档每档覆盖后为正"}
+  ],
+  "validation": {
+    "periods": 55,
+    "all_coverage_positive": true,
+    "total_stake": 4686.0,
+    "net_loss_no_hit": 4357.98,
+    "max_period_cost": 446.8
+  }
+}
