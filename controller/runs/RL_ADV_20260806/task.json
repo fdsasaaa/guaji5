@@ -1,0 +1,10 @@
+{
+  "schema_version": 1,
+  "run_id": "RL_ADV_20260806",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "CONTRACT_FROZEN",
+  "request": "修复回利二码29局高级倍投方案的导入结构，并以本机模拟验证作为运行门槛。",
+  "domains": ["SCHEME", "PROGRAM", "PPT"],
+  "base_branch": "main",
+  "work_branch": "scheme/return-advanced-state-20260806"
+}

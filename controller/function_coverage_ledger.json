@@ -1,24 +1,29 @@
 {
   "schema_version": 1,
   "status": "ACTIVE",
-  "sequence": 0,
-  "last_run_id": null,
+  "sequence": 1,
+  "last_run_id": "RL_ADV_20260806",
   "selection_window": 3,
-  "recent_delivery_modes": ["BASELINE_ONLY", "BASELINE_ONLY"],
-  "baseline_only_streak": 2,
+  "recent_delivery_modes": [
+    "BASELINE_ONLY",
+    "BASELINE_ONLY",
+    "BASELINE_PLUS_EXPERIMENT"
+  ],
+  "baseline_only_streak": 0,
   "recent_selected_fingerprints": [
     "cold_warm_omission|immediate|top_rotation|flat|18_period_hard_stop|none",
-    "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none"
+    "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none",
+    "3 7|I|S|F|29|N"
   ],
   "next_due_features": [
-    "MONITORING",
-    "FUNDING_ADVANCED_STATE",
-    "SIMULATION_REAL_SWITCH"
+    "PROFIT_LOSS_JUMP",
+    "PROFIT_LOSS_STOP",
+    "TIME_WINDOW"
   ],
   "features": {
-    "MONITORING": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 100},
-    "FUNDING_ADVANCED_STATE": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 98},
-    "SIMULATION_REAL_SWITCH": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 96},
+    "MONITORING": {"last_material_candidate_run": "RL_ADV_20260806", "last_selected_run": null, "consecutive_not_material": 0, "priority": 100},
+    "FUNDING_ADVANCED_STATE": {"last_material_candidate_run": "RL_ADV_20260806", "last_selected_run": null, "consecutive_not_material": 0, "priority": 98},
+    "SIMULATION_REAL_SWITCH": {"last_material_candidate_run": "RL_ADV_20260806", "last_selected_run": null, "consecutive_not_material": 0, "priority": 96},
     "PROFIT_LOSS_JUMP": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 90},
     "PROFIT_LOSS_STOP": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 88},
     "TIME_WINDOW": {"last_material_candidate_run": null, "last_selected_run": null, "consecutive_not_material": 3, "priority": 86},

@@ -1,0 +1,19 @@
+{
+  "schema_version": 1,
+  "run_id": "RL_ADV_20260806",
+  "status": "CONTRACT_FROZEN",
+  "strategy": "定码轮换",
+  "play_type": "定位胆",
+  "play_name": "个位",
+  "digits": "3 7",
+  "advanced_config_name": "高级倍投主配置",
+  "multipliers": [1,1,1,1,1,2,2,3,3,4,5,6,8,9,12,14,18,22,27,33,41,51,63,77,95,118,145,179,221],
+  "max_periods": 29,
+  "hit_transition": "回第1局",
+  "loss_transition": "进入下一局",
+  "last_loss_action": "人工停止，不进入下一轮",
+  "software_profit_loss_stop": "disabled",
+  "manual_profit_observation": "80元",
+  "manual_hard_stop": "第29局不中后停止",
+  "delivery_status": "STATIC_IMPORT_GATE_PASS_USER_RUNTIME_REQUIRED"
+}
