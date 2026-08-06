@@ -1,0 +1,10 @@
+{
+  "run_id": "B397-REBATE-ANCHOR-55-001",
+  "request": "生成5000元本金、超过50期、高级倍投、超过4方案一起投注的回利型方案",
+  "domains": [
+    "SCHEME",
+    "PPT"
+  ],
+  "base_ref": "main",
+  "branch": "b397-rebate-anchor-55"
+}
