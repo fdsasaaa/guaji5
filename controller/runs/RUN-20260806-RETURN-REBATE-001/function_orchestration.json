@@ -1,0 +1,108 @@
+{
+  "run_id": "RUN-20260806-RETURN-REBATE-001",
+  "profiles": [
+    {
+      "profile_id": "BASELINE",
+      "material_signature": {
+        "number_logic": "个位80期热7码",
+        "trigger": "立即投注",
+        "execution": "单方案",
+        "funding": "平倍",
+        "stop": "60期或人工止损",
+        "time_simulation": "无"
+      },
+      "decision": "FORMAL_OBSERVATION"
+    },
+    {
+      "profile_id": "STATE",
+      "material_signature": {
+        "number_logic": "同号码",
+        "trigger": "仅开始监控候选0011",
+        "execution": "单方案",
+        "funding": "平倍",
+        "stop": "30期探针",
+        "time_simulation": "模拟等待"
+      },
+      "decision": "REJECTED_E1_MONITORING"
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "material_signature": {
+        "number_logic": "同号码",
+        "trigger": "立即投注",
+        "execution": "单方案",
+        "funding": "1,2,6,18强回利",
+        "stop": "4挂硬停",
+        "time_simulation": "先模拟后人工真实"
+      },
+      "decision": "SELECTED_PROBE_ONLY_E2"
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "material_signature": {
+        "number_logic": "同号码",
+        "trigger": "立即投注",
+        "execution": "模拟文件首行False",
+        "funding": "高级状态两局候选未写入",
+        "stop": "最多30期",
+        "time_simulation": "模拟/真实切换候选"
+      },
+      "decision": "NOT_WRITTEN_TO_RUNTIME_E1"
+    }
+  ],
+  "funding_paths": [
+    {
+      "path_id": "FLAT",
+      "kind": "FLAT",
+      "sequence": [1,1,1,1,1,1,1,1,1,1],
+      "software_evidence_level": "E3",
+      "decision": "FORMAL_OBSERVATION",
+      "reason": "唯一达到E3正式边界"
+    },
+    {
+      "path_id": "LIMITED_LINEAR",
+      "kind": "LIMITED_LINEAR",
+      "sequence": [1,2,6,18],
+      "software_evidence_level": "E2",
+      "decision": "PROBE_ONLY_SELECTED",
+      "reason": "逐档强回利但未E3"
+    },
+    {
+      "path_id": "PRESSURE_RELEASE",
+      "kind": "PRESSURE_RELEASE",
+      "sequence": [1,1,1,2,2,3,3,2,1,1],
+      "software_evidence_level": "E2",
+      "decision": "REJECTED",
+      "reason": "战线长但不能保证逐档强回利"
+    },
+    {
+      "path_id": "ADVANCED_STATE",
+      "kind": "ADVANCED_STATE",
+      "states": ["S1低倍", "S2高倍"],
+      "transitions": ["hit->reset", "miss->advance"],
+      "software_evidence_level": "E2",
+      "decision": "NOT_SELECTED",
+      "reason": "本次不把高级状态与新回利同时首次启用"
+    }
+  ],
+  "more_settings_candidates": [
+    {
+      "category": "SIMULATION_REAL_SWITCH",
+      "material_configuration": "模拟完整跑1轮，连续4挂前不得真实；真实阶段最多4期",
+      "evidence_level": "E1",
+      "final_decision": "manual_only"
+    },
+    {
+      "category": "RISK_HARD_STOP",
+      "material_configuration": "连续4挂、净损360元或止盈80元停止",
+      "evidence_level": "E3_procedural",
+      "final_decision": "enabled_manual"
+    },
+    {
+      "category": "ROTATION_OR_COMBINATION",
+      "material_configuration": "不并投、不组合轮投，避免多变量",
+      "evidence_level": "E3_top_level_boundary",
+      "final_decision": "disabled_for_clean_test"
+    }
+  ]
+}
