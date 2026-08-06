@@ -1,0 +1,19 @@
+{
+  "run_id": "BATCH-B396-REBATE-7CODE-001",
+  "profiles": [
+    {"profile_id":"BASELINE","kind":"FLAT","material_signature":{"number_logic":"七码对冲","trigger":"上期个位","execution":"单方案","funding":"1,1,1,1","stop":"普通停损","time_simulation":"无"},"decision":"REJECTED","reason":"不能逐档覆盖前亏"},
+    {"profile_id":"STATE","kind":"命中重置+四挂停链","material_signature":{"number_logic":"七码对冲","trigger":"上期个位","execution":"单方案","funding":"1,3,8,24","stop":"四挂止损","time_simulation":"无"},"decision":"SELECTED","reason":"逐档回利成立"},
+    {"profile_id":"EXECUTION_OR_FUNDING","kind":"高级状态倍投","material_signature":{"number_logic":"七码对冲","trigger":"上期个位","execution":"单方案","funding":"ADVANCED_STATE","stop":"止盈80止损470","time_simulation":"无"},"decision":"SELECTED","reason":"满足用户高级倍投要求"},
+    {"profile_id":"LOW_COVERAGE_PROBE","kind":"模拟10期探针","material_signature":{"number_logic":"同正式规则","trigger":"上期个位","execution":"只模拟","funding":"不实投","stop":"10期记录","time_simulation":"模拟"},"decision":"PROBE_ONLY","reason":"历史命中率待复算"}
+  ],
+  "funding_paths": [
+    {"path_id":"FLAT","kind":"FLAT","sequence":[1,1,1,1],"max_multiplier":1,"total_multiplier":4,"worst_case_exposure":52.08,"reset_rule":"命中后重置","cap_rule":"4期","software_evidence_level":"E3","decision":"REJECTED","reason":"不能逐档覆盖前亏"},
+    {"path_id":"LIMITED_LINEAR","kind":"LIMITED_LINEAR","sequence":[1,2,4,8,16],"max_multiplier":16,"total_multiplier":31,"worst_case_exposure":403.62,"reset_rule":"命中后重置","cap_rule":"5期","software_evidence_level":"E3","decision":"REJECTED","reason":"前段回利不足"},
+    {"path_id":"PRESSURE_RELEASE","kind":"PRESSURE_RELEASE","sequence":[1,3,8,5,3],"max_multiplier":8,"total_multiplier":20,"worst_case_exposure":260.4,"reset_rule":"命中后重置","cap_rule":"5期","software_evidence_level":"E2","decision":"PROBE_ONLY","reason":"降压但不满足逐档完整回利"},
+    {"path_id":"ADVANCED_STATE","kind":"ADVANCED_STATE","sequence":[1,3,8,24],"max_multiplier":24,"total_multiplier":36,"worst_case_exposure":468.72,"reset_rule":"任意档命中重置1倍","cap_rule":"四挂停链，不开第五档","software_evidence_level":"E3","decision":"SELECTED","reason":"逐档首次命中均覆盖前亏并留微利"}
+  ],
+  "more_settings": [
+    {"category":"PROFIT_LOSS_STOP","material_configuration":{"take_profit":80,"stop_loss":470},"evidence_level":"E3","final_decision":"ENABLED"},
+    {"category":"SIMULATION_REAL_SWITCH","material_configuration":{"probe":"可选先模拟10期，不影响正式参数"},"evidence_level":"E2","final_decision":"PROBE_ONLY"}
+  ]
+}
