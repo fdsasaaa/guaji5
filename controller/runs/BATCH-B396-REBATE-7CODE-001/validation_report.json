@@ -1,0 +1,7 @@
+{
+  "arithmetic": "PASS",
+  "mapping_unique": true,
+  "coverage_proof": "PASS",
+  "historical_rate": "DATA_PENDING",
+  "ci": "PENDING_ON_GITHUB_PR"
+}
