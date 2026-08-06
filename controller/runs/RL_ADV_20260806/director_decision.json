@@ -1,0 +1,9 @@
+{
+  "schema_version": 1,
+  "run_id": "RL_ADV_20260806",
+  "decision": "BASELINE_PLUS_EXPERIMENT",
+  "formal_profile": "BASE",
+  "companion_probe": "ADV_PROBE",
+  "reason": "高级状态倍投在中央证据注册表中上限为E2，因此修正版只作为隔离导入与跳转探针；正式部分保留E3静态号码与平倍基准。",
+  "runtime_gate": "用户本机成功导入，并在模拟或最低单位下验证不中进下一局、命中回第1局。"
+}
