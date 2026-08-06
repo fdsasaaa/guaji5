@@ -1,0 +1,64 @@
+{
+  "run_id": "RUN-20260806-RETURN-REBATE-001",
+  "scheme_id": "RR-LOC7-REBATEMODE-001",
+  "name": "个位热七码回利测试",
+  "stage": "PRE_RUN_SETUP",
+  "formal_status": "MIXED: FLAT_OBSERVATION_E3_FORMAT; RETURN_REBATE_PROBE_ONLY_E2",
+  "source_data": "01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+  "data_range": "202607310181-202607310380",
+  "play": "定位胆/个位/7码",
+  "numbers": "4 8 6 9 3 5 7",
+  "number_logic": "最近80期个位出现次数前7名；并列按最近出现优先，再按数字升序",
+  "hit_rate": {
+    "theory": 0.7,
+    "frozen_full_200": 0.79,
+    "frozen_last80": 0.85,
+    "rolling_w80_decisions": 120,
+    "rolling_hits": 98,
+    "rolling_rate": 0.8166666667,
+    "max_rolling_miss_streak": 2
+  },
+  "economics_assumption": {
+    "single_bet_yuan": 2,
+    "notes": 7,
+    "cost_1x": 14,
+    "payout_on_hit": 19.6,
+    "rebate_rate": 0.07,
+    "rebate_1x": 0.98,
+    "hit_net_1x": 6.58,
+    "miss_net_1x": -13.02,
+    "platform_params_status": "actual odds, capital and limit fields were null; replace before live use"
+  },
+  "selected_path": {
+    "mode": "强回利",
+    "sequence": [1,2,6,18],
+    "max_effective_periods": 4,
+    "max_multiplier": 18,
+    "total_multiplier": 27,
+    "max_single_cost_yuan": 252,
+    "gross_exposure_yuan": 378,
+    "worst_case_net_loss_yuan": -351.54,
+    "at_least_one_hit_probability_theory": 0.9919,
+    "at_least_one_hit_probability_rolling": 0.99887,
+    "software_evidence_level": "E2_PROBE_ONLY"
+  },
+  "first_hit_proof": [
+    {"stage":1,"multiplier":1,"prior_net_loss":0,"net_after_first_hit":6.58},
+    {"stage":2,"multiplier":2,"prior_net_loss":-13.02,"net_after_first_hit":0.14},
+    {"stage":3,"multiplier":6,"prior_net_loss":-39.06,"net_after_first_hit":0.42},
+    {"stage":4,"multiplier":18,"prior_net_loss":-117.18,"net_after_first_hit":1.26}
+  ],
+  "capital_stop": {
+    "suggested_capital_yuan": 800,
+    "take_profit_yuan": 80,
+    "stop_loss_yuan": 360,
+    "stop_mode": "BOTH_MANUAL_HARD_STOP",
+    "manual_termination": ["4 misses in a row", "platform odds/rebate/cost mismatch", "software import mismatch", "probe file accidentally enabled for live betting"]
+  },
+  "deliverables_local": [
+    "个位热七码回利测试_完整交付.zip",
+    "个位热七码回利测试_方案套.zip",
+    "个位热七码回利测试_人工讲解型PPT.pptx",
+    "YouTube发布参考.txt"
+  ]
+}
