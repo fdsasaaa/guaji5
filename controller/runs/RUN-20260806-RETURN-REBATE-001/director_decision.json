@@ -1,0 +1,10 @@
+{
+  "run_id": "RUN-20260806-RETURN-REBATE-001",
+  "selected_scheme": "个位热七码回利测试",
+  "selected_number_logic": "定位胆/个位/最近80期热7码",
+  "selected_funding": "1,2,6,18 strong return-rebate path",
+  "formal_decision": "formal flat observation plus PROBE_ONLY rebate path",
+  "why_not_full_formal": "FUNDING_LIMITED_LINEAR max formal evidence is E2 and actual platform odds/capital/limits are null",
+  "candidates_compared": ["强回利", "阶段回利", "周期回利", "利润驱动"],
+  "final_reason": "强回利 has shortest exposure chain and proves first-hit recovery at each stage under explicit assumptions, but must remain simulated until runtime verification"
+}
