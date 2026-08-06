@@ -1,0 +1,47 @@
+{
+  "run_id": "RUN-20260806-ROI-CYCLE-B396",
+  "scheme_id": "B396_SET_001",
+  "status": "PROBE_ONLY_NOT_FORMAL_REAL_MONEY",
+  "economics": {
+    "play": "个位定位胆八码",
+    "notes": 8,
+    "unit_stake": 2,
+    "one_x_cost": 16,
+    "payout_per_hit": 19.6,
+    "rebate_rate": 0.07,
+    "rebate_per_1x": 1.12,
+    "hit_net_per_1x": 4.72,
+    "miss_net_per_1x": -14.88,
+    "theoretical_hit_rate": 0.8,
+    "historical_hit_rate": "WAITING_REAL_200_DRAW_FILE_NOT_FABRICATED",
+    "break_even_rebate_rate": 0.02,
+    "suggested_bankroll": 500,
+    "max_allowed_loss": 80,
+    "max_single_period_cost": 64,
+    "minimum_bet_unit": "1倍/2元单注，需按平台核对",
+    "platform_limit": "main未固定；本批封顶4倍"
+  },
+  "digits_sets": [
+    {"cycle": 1, "exclude": "4 9", "bet": "0 1 2 3 5 6 7 8"},
+    {"cycle": 2, "exclude": "0 5", "bet": "1 2 3 4 6 7 8 9"},
+    {"cycle": 3, "exclude": "1 6", "bet": "0 2 3 4 5 7 8 9"},
+    {"cycle": 4, "exclude": "2 7", "bet": "0 1 3 4 5 6 8 9"},
+    {"cycle": 5, "exclude": "3 8", "bet": "0 1 2 4 5 6 7 9"}
+  ],
+  "candidate_paths": [
+    {"path_id": "P0", "mode": "周期回利/平倍基准", "sequence": [1,1,1,1,1,1,1,1,1,1], "max_multiplier": 1, "all_miss_loss": 148.8, "decision": "REJECTED_BASELINE"},
+    {"path_id": "P1", "mode": "两档强回利", "sequence": [1,4], "max_multiplier": 4, "all_miss_loss": 74.4, "at_least_one_hit_probability": 0.96, "decision": "CANDIDATE"},
+    {"path_id": "P2", "mode": "压力释放12期", "sequence": [1,1,2,2,1,1,3,2,1,1,2,1], "max_multiplier": 3, "all_miss_loss": 267.84, "decision": "REJECTED_OVEREXPOSURE"},
+    {"path_id": "P3", "mode": "利润保护高级状态", "states": ["S0_1倍探测", "S1_4倍修复", "S2_利润锁定", "S3_冷却重启"], "transitions": ["S0 hit -> next cycle S0", "S0 miss -> S1", "S1 hit -> next cycle S0", "S1 miss -> STOP_COOLDOWN"], "max_multiplier": 4, "compliant_stop_loss": 74.4, "target_success_probability_5_cycles": 0.815373, "target_profit_range": "20.00-23.60", "decision": "SELECTED_PROBE_ONLY"}
+  ],
+  "proof": [
+    {"step": 1, "pre_loss": 0, "multiplier": 1, "hit_net": 4.72, "miss_cum": -14.88},
+    {"step": 2, "pre_loss": -14.88, "multiplier": 4, "hit_net": 4.00, "miss_cum": -74.40}
+  ],
+  "stop_rules": {
+    "take_profit": "完成5个二档内成功小循环，净利约20.00-23.60元即停",
+    "stop_loss": "任一小循环连续两期不中，立即停止；理论合规亏损-74.40元",
+    "manual_stop": ["返奖不是19.60", "返点低于2%", "平台不支持状态跳转", "单期超过4倍或64元"],
+    "cooldown": "止损后暂停20期"
+  }
+}
