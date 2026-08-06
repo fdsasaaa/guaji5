@@ -1,0 +1,10 @@
+{
+  "run_id": "B397-REBATE-ANCHOR-55-001",
+  "decision": "single_digit_anchor_with_four_sentinels",
+  "rejected": [
+    "8码/9码高命中低利润，无法50档覆盖",
+    "5个方案全部同高倍，超过5000资金暴露",
+    "监控/模拟切换证据等级不足，不进入正式方案"
+  ],
+  "selected": "定位胆单码1锚4哨兵，55档高级倍投"
+}
