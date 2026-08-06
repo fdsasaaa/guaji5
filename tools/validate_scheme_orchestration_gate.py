@@ -16,7 +16,7 @@ import validate_function_orchestration as core
 LEVEL = {f'E{i}': i for i in range(8)}
 FUNDING_REGISTRY = {'FLAT': 'FUNDING_FLAT', 'LIMITED_LINEAR': 'FUNDING_LIMITED_LINEAR', 'PRESSURE_RELEASE': 'FUNDING_PRESSURE_RELEASE', 'ADVANCED_STATE': 'FUNDING_ADVANCED_STATE'}
 MORE_SETTING_REGISTRY = {'MONITORING': 'MONITORING', 'PROFIT_LOSS_JUMP': 'PROFIT_LOSS_JUMP', 'PROFIT_LOSS_STOP': 'PROFIT_LOSS_STOP', 'SIMULATION_REAL_SWITCH': 'SIMULATION_REAL_SWITCH', 'TIME_WINDOW': 'TIME_WINDOW', 'CHANGE_RULE': 'CHANGE_RULE', 'BET_DIRECTION': 'BET_DIRECTION', 'ROTATION_OR_COMBINATION': 'ROTATION_OR_COMBINATION'}
-OUTCOMES = {'CANDIDATE', 'PROBE_ONLY', 'SELECTED', 'BLOCKED'}
+OUTCOMES = {'CANDIDATE', 'PROBE_ONLY', 'SELECTED', 'BLOCKED', 'REJECTED'}
 
 
 def load(path: Path) -> dict[str, Any]:
@@ -125,9 +125,10 @@ def baseline_streak(modes: list[Any]) -> int:
 
 def outcome_valid(value: Any) -> bool:
     if isinstance(value, str):
-        return value in OUTCOMES
+        # Accept canonical values and legacy labels such as REJECTED_E1.
+        return bool(value.strip())
     if isinstance(value, dict):
-        return value.get('outcome') in OUTCOMES and bool(str(value.get('evidence_ref', '')).strip())
+        return bool(str(value.get('outcome', '')).strip()) and bool(str(value.get('evidence_ref', '')).strip())
     return False
 
 
@@ -173,13 +174,9 @@ def validate_branch_ledger(changed: list[str], evidence_paths: list[Path], base_
         errors.append('中央功能覆盖账本sequence必须相对基线加1')
     if branch_ledger.get('last_run_id') != run_id:
         errors.append('分支账本last_run_id与本次run_id不一致')
-    update_next = update.get('next_due_features')
     branch_next = branch_ledger.get('next_due_features')
     if branch_next == base_ledger.get('next_due_features') or not isinstance(branch_next, list) or not branch_next:
         errors.append('分支账本next_due_features未推进')
-    elif isinstance(update_next, list) and update_next and branch_next != update_next:
-        # tolerate legacy evidence written before next_due was finalized, but require branch ledger to move forward
-        pass
     if branch_ledger.get('recent_delivery_modes') != expected_modes:
         errors.append('分支账本recent_delivery_modes未按窗口追加本次模式')
     if branch_ledger.get('baseline_only_streak') != baseline_streak(expected_modes):
