@@ -1,0 +1,20 @@
+{
+  "run_id": "RUN-20260806-RETURN-ZUSAN-FIVE-001",
+  "profiles": [
+    {"profile_id": "BASELINE", "decision": "REJECTED", "signature": "中三五弹+立即投注+并投+平倍+60期观察", "reason": "平倍不能满足逐档回利覆盖。"},
+    {"profile_id": "STATE", "decision": "SELECTED", "signature": "中三五弹+命中停链/未中前进+并投+状态倍投+第60档停止", "reason": "满足并投、60档、5000元本金约束。"},
+    {"profile_id": "EXECUTION_OR_FUNDING", "decision": "SELECTED", "signature": "五弹并投+脉冲-承压-收口高级倍投", "reason": "资金路径不是1/2/4机械翻倍。"},
+    {"profile_id": "LOW_COVERAGE_PROBE", "decision": "PROBE_ONLY", "signature": "定位胆五弹并投+模拟+30期探针", "reason": "低返奖无法满足本次回利数学约束。"}
+  ],
+  "funding_paths": [
+    {"path_id": "FLAT", "kind": "FLAT", "max_multiplier": 1, "total_multiplier": 60, "worst_case_exposure_yuan": 600, "decision": "REJECTED", "reason": "后段首次命中不能覆盖累计亏损。"},
+    {"path_id": "LIMITED_LINEAR", "kind": "LIMITED_LINEAR", "sequence": "1x30,2x20,3x10", "max_multiplier": 3, "total_multiplier": 100, "worst_case_exposure_yuan": 1000, "decision": "REJECTED", "reason": "缺少压力释放与脉冲设计。"},
+    {"path_id": "PRESSURE_RELEASE", "kind": "PRESSURE_RELEASE", "sequence": "1,1,2,1,1,2,1,2,2,1 repeated", "max_multiplier": 2, "total_multiplier": 84, "worst_case_exposure_yuan": 840, "decision": "REJECTED", "reason": "尾段回补能力不足。"},
+    {"path_id": "ADVANCED_STATE", "kind": "ADVANCED_STATE", "sequence": [1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,2,2,2,2,2,3,2,2,2,2,2,2,2,2,3,2,2,3,3,4,3,3,3,4,3,4,3,3], "max_multiplier": 4, "total_multiplier": 108, "worst_case_exposure_yuan": 1080, "decision": "SELECTED", "reason": "60档逐档首次有效命中均覆盖累计亏损并留微利。"}
+  ],
+  "more_settings": [
+    {"category": "PROFIT_LOSS_STOP", "material_configuration": "首次有效命中停链；第60档或净损1004.40元停链", "evidence_level": "E2", "final_decision": "enabled"},
+    {"category": "ROTATION_OR_COMBINATION", "material_configuration": "5个子方案同目录并投；不使用组合枪字段，降低组合方案运行不确定性", "evidence_level": "E2", "final_decision": "enabled"},
+    {"category": "SIMULATION_REAL_SWITCH", "material_configuration": "不混合模拟转真实，避免资金路径验证混杂", "evidence_level": "E1", "final_decision": "disabled_with_reason"}
+  ]
+}
