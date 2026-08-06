@@ -1,5 +1,6 @@
 {
   "run_id": "BATCH-B396-REBATE-7CODE-001",
+  "task_type": "STANDARD_SCHEME_TASK",
   "request": "回利型方案，读取main，生成可执行方案、PPT、YouTube参考、PR",
   "domains": ["SCHEME", "PPT"],
   "branch": "b396-rebate-7code-ring"
