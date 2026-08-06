@@ -7,17 +7,18 @@
   "recent_delivery_modes": [
     "BASELINE_ONLY",
     "BASELINE_ONLY",
-    "NON_BASELINE_PROBE"
+    "BASELINE_PLUS_EXPERIMENT"
   ],
   "baseline_only_streak": 0,
   "recent_selected_fingerprints": [
+    "cold_warm_omission|immediate|top_rotation|flat|18_period_hard_stop|none",
     "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none",
-    "loc7_hot80_gewei|immediate|single|flat_observation_plus_return_rebate_probe|4_period_hard_stop|manual_simulation_first"
+    "loc7_hot80_gewei|immediate|single|flat|4_period_or_360_manual_stop|none"
   ],
   "next_due_features": [
-    "MONITORING",
-    "FUNDING_ADVANCED_STATE",
-    "SIMULATION_REAL_SWITCH"
+    "PROFIT_LOSS_JUMP",
+    "PROFIT_LOSS_STOP",
+    "TIME_WINDOW"
   ],
   "features": {
     "MONITORING": {
@@ -80,7 +81,7 @@
     },
     "FUNDING_LIMITED_LINEAR": {
       "last_material_candidate_run": "RUN-20260806-RETURN-REBATE-001",
-      "last_selected_run": "RUN-20260806-RETURN-REBATE-001",
+      "last_selected_run": null,
       "consecutive_not_material": 0,
       "priority": 80,
       "selected_scope": "PROBE_ONLY_E2"
