@@ -1,0 +1,9 @@
+{
+  "run_id": "RUN-20260806-RETURN-REBATE-001",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "user_request": "return-rebate economic-structure-adapted hanging scheme",
+  "official_source": "fdsasaaa/guaji5 main",
+  "branch": "task/return-rebate-path-20260806",
+  "status": "ARTIFACTS_BUILT_LOCAL_PR_EVIDENCE_PENDING",
+  "key_boundary": "actual platform odds/capital/limits are null in repository constraints, therefore rebate path is simulated/probe only"
+}
