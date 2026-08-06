@@ -1,15 +1,30 @@
 {
   "run_id": "RL_ADV_20260806_1200",
   "deliverables": [
-    "回利二码高级倍投方案套.zip",
+    "回利二码高级倍投方案套_导入修正版.zip",
     "回利二码高级倍投_人工讲解型PPT.pptx"
+  ],
+  "superseded_deliverables": [
+    "回利二码高级倍投方案套.zip"
   ],
   "github_text_files": [
     "GitHub验证记录_RL_ADV_20260806.md",
-    "function_orchestration_RL_ADV_20260806.json"
+    "function_orchestration.json",
+    "import_failure_regression_fix.md"
   ],
+  "import_fix": {
+    "status": "STATIC_IMPORT_GATE_PASS_USER_REIMPORT_REQUIRED",
+    "main_strategy": "定码轮换",
+    "main_file": "A001_回利二码_个位-定码轮换.txt",
+    "advanced_config": "GJBTScheme/高级倍投主配置.txt",
+    "advanced_rows": 29,
+    "main_encoding": "GBK_NO_BOM_CRLF",
+    "advanced_encoding": "UTF8_BOM_CRLF",
+    "zip_sha256": "d6e9228697aab52b1940ba6c86d2e70543d28a71390649af38224add82344803"
+  },
   "important_limits": {
     "history_hit_rate": "not available from main",
+    "windows_runtime_import": "not executable in current environment",
     "not_profit_claim": true
   }
 }
