@@ -1,0 +1,5 @@
+{
+  "base_ref": "main",
+  "branch": "b396-rebate-7code-ring",
+  "rollback": "close PR and delete branch; no direct main writes"
+}
