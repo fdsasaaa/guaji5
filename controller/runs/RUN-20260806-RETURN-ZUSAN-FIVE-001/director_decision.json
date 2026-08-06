@@ -1,0 +1,21 @@
+{
+  "run_id": "RUN-20260806-RETURN-ZUSAN-FIVE-001",
+  "decision": "SELECT_HIGH_PAYOUT_LOW_COST_ZUSAN_BASKET",
+  "selected_play": "中三组三单式",
+  "selected_bullets": ["112", "224", "336", "558", "779"],
+  "rejected": [
+    {
+      "candidate": "定位胆五弹并投",
+      "reason": "5000元本金下无法同时满足五方案并投、逐档首次命中回补、超过50期；低返奖经济结构不合格。"
+    },
+    {
+      "candidate": "单方案定位胆轮投",
+      "reason": "可超过50档，但不满足超过4个方案一起投注的额外要求。"
+    },
+    {
+      "candidate": "平倍中三组选",
+      "reason": "暴露低，但不能逐档回利。"
+    }
+  ],
+  "selected_reason": "中三组三单式每1倍总成本10元，单个有效命中返奖按346元核算；60档总流水1080元，全链不中净损1004.40元，符合5000元本金边界。"
+}

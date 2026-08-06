@@ -1,0 +1,30 @@
+{
+  "run_id": "RUN-20260806-RETURN-ZUSAN-FIVE-001",
+  "scheme_name": "中三组选五弹回利套",
+  "play": "中三组三单式",
+  "execution": "五个子方案同一期并投",
+  "bullets": [
+    {"name": "中三112", "number": "112"},
+    {"name": "中三224", "number": "224"},
+    {"name": "中三336", "number": "336"},
+    {"name": "中三558", "number": "558"},
+    {"name": "中三779", "number": "779"}
+  ],
+  "unit_bet_yuan": 2,
+  "notes_per_1x": 5,
+  "cost_per_1x_yuan": 10,
+  "single_effective_hit_return_yuan_per_1x": 346,
+  "rebate_rate": 0.07,
+  "capital_yuan": 5000,
+  "max_terms": 60,
+  "multipliers": [1,1,1,1,1,1,1,2,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,1,1,1,1,2,1,1,1,2,2,2,2,2,3,2,2,2,2,2,2,2,2,3,2,2,3,3,4,3,3,3,4,3,4,3,3],
+  "total_multiplier": 108,
+  "gross_turnover_yuan": 1080,
+  "net_no_hit_loss_yuan": 1004.40,
+  "single_period_hit_probability": 0.015,
+  "hit_probability_60": 0.596193,
+  "take_profit": "首次有效命中即停止本链，不设置固定金额",
+  "stop_loss": "第60档未中停止，或净损1004.40元停止",
+  "min_first_hit_profit_yuan": 11.20,
+  "warning": "未读取到实时平台奖金/限额接口；346元返奖、7%返点为本批冻结运行参数，执行前必须人工核对平台。"
+}
