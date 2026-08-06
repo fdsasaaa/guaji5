@@ -1,0 +1,12 @@
+{
+  "run_id": "RUN-20260806-RETURN-REBATE-001",
+  "base_branch": "main",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "changed_paths": [
+    "controller/function_coverage_ledger.json",
+    "controller/runs/RUN-20260806-RETURN-REBATE-001/*",
+    "02_本次输出/个位热七码回利测试/*",
+    "youtube_seo/个位热七码回利测试_YouTube发布参考.txt"
+  ],
+  "rollback": "close PR or revert branch commits; main not modified"
+}
