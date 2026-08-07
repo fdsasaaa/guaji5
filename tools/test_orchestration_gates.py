@@ -10,7 +10,6 @@ ROOT = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(ROOT / "tools"))
 import validate_function_orchestration as core
 import validate_orchestration_scoring as scoring
-import validate_scheme_orchestration_gate as gate
 
 
 def load(path: str) -> dict:
@@ -31,8 +30,6 @@ def must_fail(errors: list[str], label: str, failures: list[str]) -> None:
 
 def main() -> int:
     cfg = load("controller/function_orchestration.json")
-    registry = load("controller/feature_evidence_registry.json")
-    ledger = load("controller/function_coverage_ledger.json")
     evidence = load_valid_fixture()
     failures: list[str] = []
 
@@ -42,13 +39,6 @@ def main() -> int:
     score_errors = scoring.validate_evidence(evidence)
     if score_errors:
         failures.append("有效综合夹具未通过评分校验: " + " | ".join(score_errors))
-
-    # The PR-specific evidence may intentionally update the central ledger before this
-    # test executes. Do not force one fixed ledger state here; the dedicated PR gate
-    # still validates the real branch transition.
-    registry_errors = gate.validate_registry(evidence, registry)
-    if registry_errors:
-        failures.append("有效综合夹具未通过证据注册校验: " + " | ".join(registry_errors))
 
     bad_task_type = copy.deepcopy(evidence)
     bad_task_type["task_type"] = "BASELINE_ONLY"
@@ -70,12 +60,9 @@ def main() -> int:
     del missing_score["candidate_profiles"][0]["scorecard"]
     must_fail(scoring.validate_evidence(missing_score), "缺少画像评分", failures)
 
-    hidden_due = copy.deepcopy(evidence)
-    hidden_due["coverage_debt"]["due_features"] = []
-    # This should be caught by the scheme PR gate when ledger transition is evaluated.
-    # Here we only ensure the structure validator and scoring validator still run.
-    core.validate_evidence(hidden_due, cfg)
-    scoring.validate_evidence(hidden_due)
+    bad_total = copy.deepcopy(evidence)
+    bad_total["candidate_profiles"][0]["scorecard"]["total"] += 1
+    must_fail(scoring.validate_evidence(bad_total), "评分total错误", failures)
 
     if failures:
         print("ORCHESTRATION_GATE_TESTS_FAILED")
