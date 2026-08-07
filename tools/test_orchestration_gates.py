@@ -40,33 +40,36 @@ def build_valid() -> tuple[dict, dict, dict]:
     registry = load("controller/feature_evidence_registry.json")
     ledger = load("controller/function_coverage_ledger.json")
     evidence = core.fixture()
+    registry_by_id = gate.registry_map(registry)
     profiles = {item["profile_id"]: item for item in evidence["candidate_profiles"]}
-    profiles["BASE"]["features"] = ["STATIC_NUMBER_LOGIC", "FUNDING_FLAT", "ROTATION_OR_COMBINATION"]
-    profiles["BASE"]["feature_evidence"] = [
-        {"feature_id": "STATIC_NUMBER_LOGIC", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-STATIC-TXT-RUNTIME"]},
-        {"feature_id": "FUNDING_FLAT", "claimed_level": "E3", "evidence_refs": ["HISTORICAL-FLAT-RUNTIME"]},
-        {"feature_id": "ROTATION_OR_COMBINATION", "claimed_level": "E3", "evidence_refs": ["SW-EVID-003", "SW-EVID-004"]},
-    ]
-    profiles["STATE"]["features"] = ["MONITORING"]
-    profiles["STATE"]["feature_evidence"] = [
-        {"feature_id": "MONITORING", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-MONITORING"]}
-    ]
-    profiles["FUND"]["features"] = ["FUNDING_PRESSURE_RELEASE"]
-    profiles["FUND"]["feature_evidence"] = [
-        {"feature_id": "FUNDING_PRESSURE_RELEASE", "claimed_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"]}
-    ]
-    profiles["PROBE"]["features"] = ["SIMULATION_REAL_SWITCH", "FUNDING_ADVANCED_STATE"]
-    profiles["PROBE"]["feature_evidence"] = [
-        {"feature_id": "SIMULATION_REAL_SWITCH", "claimed_level": "E1", "evidence_refs": ["UI-FIELD-SIMULATION-REAL-SWITCH"]},
-        {"feature_id": "FUNDING_ADVANCED_STATE", "claimed_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"]},
-    ]
-    profile_ranks = {"BASE": 3, "STATE": 1, "FUND": 2, "PROBE": 1}
-    for profile in evidence["candidate_profiles"]:
-        rank = profile_ranks[profile["profile_id"]]
+
+    # core.fixture() is the schema source of truth. Never replace its feature
+    # lists with hand-written subsets: doing so makes this adversarial fixture
+    # fail as soon as the core validator adds or rebinds a layer feature.
+    primary = {
+        "STATE": "MONITORING",
+        "FUND": "FUNDING_PRESSURE_RELEASE",
+        "PROBE": "SIMULATION_REAL_SWITCH",
+    }
+    for profile_id, profile in profiles.items():
+        features = list(profile["features"])
+        first = primary.get(profile_id)
+        if first in features:
+            features = [first] + [feature for feature in features if feature != first]
+        claims = []
+        ranks = []
+        for feature_id in features:
+            registered = registry_by_id[feature_id]
+            level = registered["max_formal_level"]
+            refs = list(registered["evidence_refs"])
+            claims.append({"feature_id": feature_id, "claimed_level": level, "evidence_refs": refs})
+            ranks.append(core.rank(level))
+        profile["feature_evidence"] = claims
+        rank = min(ranks)
         profile["eligible"] = profile["decision"] == "SELECTED"
         profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
         profile["hard_blockers"] = []
-        profile["scorecard"] = score(rank, 1 if profile["profile_id"] == "BASE" else 0)
+        profile["scorecard"] = score(rank, 1 if profile_id == "BASE" else 0)
 
     funding_refs = {
         "FLAT": ["HISTORICAL-FLAT-RUNTIME"],
@@ -89,14 +92,20 @@ def build_valid() -> tuple[dict, dict, dict]:
         )
 
     for setting in evidence["more_settings_review"]:
-        if setting["category"] == "MONITORING":
-            setting["evidence_refs"] = ["UI-FIELD-MONITORING"]
-            setting["evidence_level"] = "E1"
-        else:
-            setting["evidence_refs"] = ["UI-FIELD-SIMULATION-REAL-SWITCH"]
-            setting["evidence_level"] = "E1"
+        feature_id = gate.MORE_SETTING_REGISTRY[setting["category"]]
+        registered = registry_by_id[feature_id]
+        setting["evidence_refs"] = list(registered["evidence_refs"])
+        setting["evidence_level"] = registered["max_formal_level"]
 
-    evidence["coverage_debt"]["due_features"] = ledger["next_due_features"]
+    due = list(ledger["next_due_features"])
+    represented = {feature for profile in evidence["candidate_profiles"] for feature in profile["features"]}
+    blocked = [feature for feature in due if feature not in represented]
+    evidence["coverage_debt"]["due_features"] = due
+    evidence["coverage_debt"]["blocked_features"] = [
+        {"feature_id": feature, "reason": "综合夹具未启用该功能", "evidence_ref": "SELF-TEST-BLOCKED"}
+        for feature in blocked
+    ]
+    evidence["coverage_debt"]["all_exploration_blocked"] = bool(due) and len(blocked) == len(due)
     evidence["recent_delivery_modes"] = ledger["recent_delivery_modes"]
     evidence["repeat_guard"]["last_three_fingerprints"] = ledger["recent_selected_fingerprints"]
     fingerprint = evidence["repeat_guard"]["fingerprint"]
@@ -107,11 +116,22 @@ def build_valid() -> tuple[dict, dict, dict]:
         else:
             break
     evidence["repeat_guard"]["repeat_count"] = trailing
+
+    outcomes = {}
+    for feature in due:
+        if feature in represented:
+            outcomes[feature] = {"outcome": "CANDIDATE", "evidence_ref": "SELF-TEST"}
+        else:
+            outcomes[feature] = {
+                "outcome": "BLOCKED",
+                "evidence_ref": "SELF-TEST-BLOCKED",
+                "blocked_reason": "综合夹具未启用该功能",
+            }
     evidence["ledger_update"] = {
         "from_sequence": ledger["sequence"],
         "to_sequence": ledger["sequence"] + 1,
-        "outcomes": {feature: {"outcome": "CANDIDATE", "evidence_ref": "SELF-TEST"} for feature in ledger["next_due_features"]},
-        "next_due_features": ["PROFIT_LOSS_JUMP", "PROFIT_LOSS_STOP", "TIME_WINDOW"],
+        "outcomes": outcomes,
+        "next_due_features": due or ["MONITORING"],
     }
     evidence["selection"]["score_override_reason"] = ""
     evidence["selection"]["score_override_evidence_refs"] = []
@@ -132,8 +152,15 @@ def advanced_ledger(base: dict, evidence: dict) -> dict:
     branch["recent_selected_fingerprints"] = (base["recent_selected_fingerprints"] + [fingerprint])[-window:]
     for feature in base["next_due_features"]:
         entry = branch["features"][feature]
-        entry["last_material_candidate_run"] = evidence["run_id"]
-        entry["consecutive_not_material"] = 0
+        outcome = update["outcomes"][feature]
+        if outcome["outcome"] in {"CANDIDATE", "PROBE_ONLY", "SELECTED"}:
+            entry["last_material_candidate_run"] = evidence["run_id"]
+            entry["consecutive_not_material"] = 0
+        if outcome["outcome"] == "SELECTED":
+            entry["last_selected_run"] = evidence["run_id"]
+        if outcome["outcome"] == "BLOCKED":
+            entry["blocked_reason"] = outcome["blocked_reason"]
+            entry["blocked_evidence_ref"] = outcome["evidence_ref"]
     return branch
 
 
@@ -156,17 +183,13 @@ def main() -> int:
         branch_ledger = advanced_ledger(ledger, evidence)
         branch_errors = gate.validate_branch_ledger(
             ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
-            [evidence_path],
-            ledger,
-            branch_ledger,
+            [evidence_path], ledger, branch_ledger,
         )
         if branch_errors:
             errors.append("有效账本迁移被错误拒绝: " + " | ".join(branch_errors))
         stale_errors = gate.validate_branch_ledger(
             ["controller/function_coverage_ledger.json", "controller/runs/SELF-TEST/function_orchestration.json"],
-            [evidence_path],
-            ledger,
-            ledger,
+            [evidence_path], ledger, ledger,
         )
         if not stale_errors:
             errors.append("未更新中央账本未被拒绝")
