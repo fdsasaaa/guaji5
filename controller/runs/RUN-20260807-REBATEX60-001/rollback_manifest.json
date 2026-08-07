@@ -1,0 +1,12 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "branch": "agent/rebate-portfolio-50plus-5000-20260807",
+  "write_strategy": "new files plus ledger update; no direct main write",
+  "rollback_order": [
+    "restore controller/function_coverage_ledger.json",
+    "remove run evidence",
+    "remove validator and protocol"
+  ],
+  "destructive_actions": []
+}

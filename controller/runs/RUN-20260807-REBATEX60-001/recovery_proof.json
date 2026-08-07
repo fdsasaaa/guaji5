@@ -1,0 +1,30 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "formula": "net=(P-c)*m-c*S with rebate rate forced to zero",
+  "recurrence": "m_i=max(1,ceil((c*S_(i-1)+1)/(P-c)))",
+  "P": 150.5,
+  "c": 10.0,
+  "sequence": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5,6,6,6,7,7,8,8,9,10,10,11,12,13,14,15,16,17,18,19,21,22,24,25,27,29,31,33],
+  "stage_count": 60,
+  "total_multiplier": 496,
+  "full_chain_loss": 4960.0,
+  "maximum_period_exposure": 330.0,
+  "bankroll_reserve": 40.0,
+  "minimum_stage_profit": 1.0,
+  "last_stage_profit": 6.5,
+  "all_stages_pass": true,
+  "probability": {
+    "theoretical_period_hit": 0.05,
+    "no_hit_60": 0.046069798986951946,
+    "at_least_one_hit_60": 0.953930201013048
+  },
+  "checkpoints": [
+    {"stage": 1, "multiplier": 1, "previous_cost": 0, "current_cost": 10, "gross_payout": 150.5, "net": 140.5},
+    {"stage": 15, "multiplier": 2, "previous_cost": 140, "current_cost": 20, "gross_payout": 301, "net": 141},
+    {"stage": 30, "multiplier": 4, "previous_cost": 530, "current_cost": 40, "gross_payout": 602, "net": 32},
+    {"stage": 45, "multiplier": 12, "previous_cost": 1600, "current_cost": 120, "gross_payout": 1806, "net": 86},
+    {"stage": 60, "multiplier": 33, "previous_cost": 4630, "current_cost": 330, "gross_payout": 4966.5, "net": 6.5}
+  ],
+  "full_detail_location": "delivered scheme ZIP / 60档逐档回利证明.csv"
+}

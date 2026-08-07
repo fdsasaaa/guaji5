@@ -1,0 +1,43 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "status": "TEST_ONLY_EXACT_NUMBER_IMPORT_VALIDATION_REQUIRED",
+  "checks": {
+    "60_stage_count": "PASS",
+    "all_stage_recovery_at_gate": "PASS",
+    "bankroll_5000": "PASS",
+    "max_multiplier_33": "PASS",
+    "theoretical_probability": "PASS",
+    "five_scheme_no_duplicate_pairs": "PASS",
+    "advanced_config_encoding_local": "PASS",
+    "exact_number_semantic_mapping": "PASS",
+    "front2_direct_single_number_format": "PASS",
+    "exact_number_to_direct_multi_rewrite": "BLOCKED_BY_SEMANTIC_GATE",
+    "front2_direct_single_advanced_fixed_import": "BLOCKED_NEEDS_USER_E3",
+    "actual_platform_economics": "BLOCKED_NULL",
+    "multi_scheme_advanced_runtime": "BLOCKED_BELOW_E3"
+  },
+  "exact_number_delivery": {
+    "play_type": "前二",
+    "play_name": "直选单式",
+    "numbers": ["28", "49", "60", "81", "02"],
+    "round_examples": ["1|28|1|1", "1|49|1|1", "1|60|1|1", "1|81|1|1", "1|02|1|1"],
+    "line1": "False",
+    "formal_delivery": false,
+    "needs_user_import_validation": true
+  },
+  "withdrawn_semantic_carrier": {
+    "play_name": "直选复式",
+    "contents": ["2-8", "4-9", "6-0", "8-1", "0-2"],
+    "reason": "这些是位置候选集合格式，不应替代本任务的完整二位号码语义"
+  },
+  "local_validator_result": {
+    "status": "PASS_AT_ECONOMIC_GATE_ONLY",
+    "stages": 60,
+    "total_multiplier": 496,
+    "full_chain_exposure": 4960.0,
+    "max_multiplier": 33,
+    "max_period_exposure": 330.0,
+    "minimum_net": 1.0
+  },
+  "result": "Generate import-validation TXT only. Do not mark as formal executable delivery until direct-single carrier, multi-scheme state synchronization and actual platform economics are verified."
+}

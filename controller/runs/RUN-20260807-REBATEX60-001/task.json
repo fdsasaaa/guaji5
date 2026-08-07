@@ -1,0 +1,11 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "requested_principal": 5000,
+  "requested_minimum_periods": 51,
+  "requested_simultaneous_schemes_minimum": 5,
+  "source_branch": "main",
+  "base_commit": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "domains": ["SCHEME", "PPT", "PROGRAM", "SYSTEM"],
+  "status": "BLOCKED_DELIVERY_WITH_PARTIAL_ARTIFACTS"
+}

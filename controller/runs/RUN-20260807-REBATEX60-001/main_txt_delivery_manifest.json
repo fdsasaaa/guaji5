@@ -1,0 +1,47 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "status": "EXACT_NUMBER_DIRECT_SINGLE_TEST_ONLY",
+  "formal_delivery": false,
+  "needs_user_import_validation": true,
+  "strategy": "高级定码轮换",
+  "play_type": "前二",
+  "play_name": "直选单式",
+  "semantic_intent": "EXACT_COMPLETE_TWO_DIGIT_NUMBER",
+  "format_id": "CAT05_FRONT2_DIRECT_SINGLE_TEST",
+  "format_registry": "controller/betting_format_registry.json",
+  "format_evidence": {
+    "complete_number_format": "两位完整数字；多注ASCII空格分隔",
+    "verified_play_format_example": "08 50 89",
+    "candidate_round_wrapper": "1|60|1|1",
+    "forbidden_semantic_rewrite": "60 -> 6-0",
+    "任选位置": "",
+    "换号期数": "1"
+  },
+  "encoding": "GBK",
+  "line_ending": "CRLF",
+  "funding_type": 1,
+  "funding_scheme": "高级倍投主配置",
+  "files": [
+    {"name": "01_前二28-高级定码轮换_直选单式_验证.txt", "content": "1|28|1|1"},
+    {"name": "02_前二49-高级定码轮换_直选单式_验证.txt", "content": "1|49|1|1"},
+    {"name": "03_前二60-高级定码轮换_直选单式_验证.txt", "content": "1|60|1|1"},
+    {"name": "04_前二81-高级定码轮换_直选单式_验证.txt", "content": "1|81|1|1"},
+    {"name": "05_前二02-高级定码轮换_直选单式_验证.txt", "content": "1|02|1|1"}
+  ],
+  "withdrawn_outputs": [
+    "任何本批使用2-8/4-9/6-0/8-1/0-2作为完整二位号码表达的交付包"
+  ],
+  "builder": "tools/build_front2_60_txt_bundle.py",
+  "validator": "tools/validate_betting_format_registry.py",
+  "resolved_defects": [
+    "MAIN_TXT_MISSING",
+    "HARDCODED_BETTING_SEPARATOR_WITHOUT_REGISTRY",
+    "FRONT2_OPTIONAL_POSITION_WRONGLY_SET_0_1",
+    "EXACT_NUMBER_SILENTLY_REWRITTEN_TO_DIRECT_MULTI"
+  ],
+  "remaining_blockers": [
+    "FRONT2_DIRECT_SINGLE_ADV_FIXED_IMPORT_NOT_E3",
+    "ADVANCED_MULTI_SCHEME_STATE_NOT_E3",
+    "PLATFORM_ECONOMICS_UNCONFIRMED"
+  ]
+}

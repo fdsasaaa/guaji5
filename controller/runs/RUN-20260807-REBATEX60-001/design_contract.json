@@ -1,0 +1,24 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "stage": "PRE_RUN_SETUP",
+  "natural_name": "五路前二60档回利门控实验",
+  "numbers": ["28", "49", "60", "81", "02"],
+  "simultaneous_execution": true,
+  "top_gui_rotation": "OFF",
+  "single_bet_amount": 2.0,
+  "payout_gate": 150.5,
+  "rebate_guarantee": 0.0,
+  "principal": 5000.0,
+  "take_profit": "stop cycle after first valid hit; planned minimum 1 yuan",
+  "stop_loss": 4960.0,
+  "hard_stop": "stage 60 miss; no stage 61",
+  "sequence": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5,6,6,6,7,7,8,8,9,10,10,11,12,13,14,15,16,17,18,19,21,22,24,25,27,29,31,33],
+  "deliverable_status": "PARTIAL_BLOCKED_MAIN_TXT_TEMPLATE_MISSING",
+  "frozen_do_not_change": [
+    "number mapping",
+    "payout gate",
+    "60-state sequence",
+    "zero-rebate guarantee",
+    "hard stop"
+  ]
+}
