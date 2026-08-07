@@ -1,0 +1,12 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "audit_status": "BLOCKED_WITH_EVIDENCE",
+  "findings": [
+    {"severity": "BLOCKER", "code": "ACTUAL_ECONOMICS_NULL", "detail": "main input has null gameplay, payout, stake, rebate and limits"},
+    {"severity": "BLOCKER", "code": "IMPLEMENTATION_BLOCKED_TEMPLATE_MISSING", "detail": "main rules forbid guessing a full specialized TXT template"},
+    {"severity": "BLOCKER", "code": "ADVANCED_STATE_BELOW_E3", "detail": "60-state file format is E2; transition and multi-scheme state independence are not E3"},
+    {"severity": "PASS", "code": "MATH_RECOVERY", "detail": "60 of 60 stages recover prior and current cost with at least 1 yuan at a 150.50 payout and zero rebate"},
+    {"severity": "PASS", "code": "DELIVERY_BOUNDARY", "detail": "artifacts explicitly identify blocked status and do not claim platform execution"}
+  ],
+  "release_decision": "KEEP_DRAFT_PR_NOT_READY"
+}
