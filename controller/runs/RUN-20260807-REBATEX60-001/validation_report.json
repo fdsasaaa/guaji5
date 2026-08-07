@@ -1,0 +1,29 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "status": "PARTIAL_PASS_BLOCKED_RUNTIME",
+  "checks": {
+    "60_stage_count": "PASS",
+    "all_stage_recovery_at_gate": "PASS",
+    "bankroll_5000": "PASS",
+    "max_multiplier_33": "PASS",
+    "theoretical_probability": "PASS",
+    "five_scheme_no_duplicate_pairs": "PASS",
+    "advanced_config_encoding_local": "PASS",
+    "ppt_render_10_slides": "PASS",
+    "ppt_speaker_notes_all_slides": "PASS",
+    "outer_zip_exactly_three_root_files": "PASS",
+    "complete_main_scheme_txt": "BLOCKED_TEMPLATE_MISSING",
+    "actual_platform_economics": "BLOCKED_NULL",
+    "multi_scheme_advanced_runtime": "BLOCKED_BELOW_E3"
+  },
+  "local_validator_result": {
+    "status": "PASS",
+    "stages": 60,
+    "total_multiplier": 496,
+    "full_chain_exposure": 4960.0,
+    "max_multiplier": 33,
+    "max_period_exposure": 330.0,
+    "minimum_net": 1.0
+  },
+  "result": "Do not mark as formal executable delivery."
+}
