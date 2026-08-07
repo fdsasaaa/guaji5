@@ -11,6 +11,7 @@ from validate_betting_format_registry import (
     get_format_for_intent,
     load_registry,
     render_round,
+    require_generation_usage,
     validate_main_txt,
 )
 
@@ -20,9 +21,8 @@ PLAY_TYPE = "前二"
 PLAY_NAME = "直选单式"
 SEMANTIC_INTENT = "EXACT_COMPLETE_TWO_DIGIT_NUMBER"
 
-# 这是验证包，不是正式资金方案。当前组合仍缺用户导入验证。
 COMMON = [
-    "False",
+    "True",
     STRATEGY,
     "软件名称=CXGGJ",
     f"玩法类型={PLAY_TYPE}",
@@ -60,11 +60,13 @@ COMMON = [
 
 def format_spec() -> tuple[str, dict[str, object]]:
     registry = load_registry()
-    return get_format_for_intent(
+    format_id, spec = get_format_for_intent(
         registry,
         strategy=STRATEGY,
         semantic_intent=SEMANTIC_INTENT,
     )
+    require_generation_usage(spec, formal=True)
+    return format_id, spec
 
 
 def render(pair: str) -> bytes:
@@ -92,7 +94,7 @@ def validate(raw: bytes, pair: str) -> dict[str, object]:
         "generation_usage": spec.get("generation_usage"),
         "gbk_no_bom": not raw.startswith(b"\xef\xbb\xbf"),
         "crlf": b"\r\n" in raw and b"\n" not in raw.replace(b"\r\n", b""),
-        "line1_test_only_false": lines[0] == "False",
+        "line1_true": lines[0] == "True",
         "line2_strategy": lines[1] == STRATEGY,
         "front2_direct_single": f"玩法类型={PLAY_TYPE}" in text and f"玩法名称={PLAY_NAME}" in text,
         "optional_position_empty": "任选位置=\r\n" in text,
@@ -101,9 +103,9 @@ def validate(raw: bytes, pair: str) -> dict[str, object]:
         "no_direct_multi_rewrite": f"高级定码轮换内容=1|{pair[0]}-{pair[1]}|1|1" not in text,
         "registry_gate": not format_errors,
         "scheme_creator_empty": "SchemeCreator=\r\n" in text,
-        "generation_usage_test_only": spec.get("generation_usage") == "test_only",
-        "formal_delivery_blocked": spec.get("allow_formal") is False,
-        "needs_user_import_validation": spec.get("needs_user_import_validation") is True,
+        "generation_usage_formal": spec.get("generation_usage") == "formal_allowed",
+        "formal_allowed": spec.get("allow_formal") is True,
+        "user_import_validation_resolved": spec.get("needs_user_import_validation") is False,
     }
     bool_checks = {key: value for key, value in checks.items() if isinstance(value, bool)}
     if not all(bool_checks.values()):
@@ -118,9 +120,9 @@ def main() -> int:
     args.output.mkdir(parents=True, exist_ok=True)
     format_id, spec = format_spec()
     report: dict[str, object] = {
-        "status": "TEST_ONLY_PASS",
-        "formal_delivery": False,
-        "needs_user_import_validation": True,
+        "status": "FORMAL_FORMAT_PASS",
+        "formal_delivery": True,
+        "needs_user_import_validation": False,
         "format_id": format_id,
         "semantic_intent": SEMANTIC_INTENT,
         "strategy": STRATEGY,
@@ -130,15 +132,15 @@ def main() -> int:
         "files": {},
     }
     for i, pair in enumerate(PAIRS, 1):
-        name = f"{i:02d}_前二{pair}-高级定码轮换_直选单式_验证.txt"
+        name = f"{i:02d}_前二{pair}-高级定码轮换_直选单式.txt"
         raw = render(pair)
         (args.output / name).write_bytes(raw)
         report["files"][name] = validate(raw, pair)
-    (args.output / "TXT直选单式验证摘要.json").write_text(
+    (args.output / "TXT直选单式格式验证摘要.json").write_text(
         json.dumps(report, ensure_ascii=False, indent=2), encoding="utf-8"
     )
     print(
-        f"FRONT2_60_DIRECT_SINGLE_TEST_BUNDLE_PASS files=5 format_id={format_id} formal=false"
+        f"FRONT2_60_DIRECT_SINGLE_FORMAL_FORMAT_PASS files=5 format_id={format_id} formal=true"
     )
     return 0
 
