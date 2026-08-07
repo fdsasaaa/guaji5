@@ -1,22 +1,44 @@
 {
-  "version": "1.0.0",
+  "version": "1.1.0",
   "status": "ACTIVE",
   "authority": "machine-enforced companion to 01_软件格式与已验证执行规则.md",
   "unknown_format_policy": "BLOCK_GENERATION",
+  "semantic_mismatch_policy": "BLOCK_GENERATION",
   "principles": [
     "不得由AI凭语义猜测投注数字格式",
-    "玩法类型+玩法名称+承载策略必须命中已登记格式后才能生成正式TXT",
+    "先冻结投注对象语义，再选择玩法名称；不得用数学等价替代软件语义",
+    "完整二位号码属于前二直选单式，位置候选集合属于前二直选复式",
+    "玩法类型+玩法名称+承载策略必须命中已登记格式后才能生成TXT",
     "分隔符、段数、空值字段和外层包装必须来自已验证证据",
-    "只有格式注册表允许的派生才可从已验证语法实例化具体号码"
+    "test_only组合只能生成验证包，不得包装成正式可执行方案"
   ],
+  "semantic_intents": {
+    "EXACT_COMPLETE_TWO_DIGIT_NUMBER": {
+      "description": "投注对象是完整的两位号码，例如60、08、49；每个号码是一注",
+      "required_play_type": "前二",
+      "required_play_name": "直选单式",
+      "number_format": "两位数字；多个号码用空格分隔",
+      "examples": ["60", "08", "28 49 60 81 02"],
+      "forbidden_equivalent_rewrite": "不得改写为6-0、0-8等直选复式位置集合格式"
+    },
+    "POSITION_SET_TWO_DIGIT_DIRECT_MULTI": {
+      "description": "投注对象是两个位置各自的候选数字集合，按笛卡尔积形成注数",
+      "required_play_type": "前二",
+      "required_play_name": "直选复式",
+      "number_format": "两段数字集合以-分隔",
+      "examples": ["6-0", "012-123"]
+    }
+  },
   "formats": {
     "CAT05_FRONT2_DIRECT_MULTI": {
       "strategy": "高级定码轮换",
       "play_type": "前二",
       "play_name": "直选复式",
+      "semantic_intent": "POSITION_SET_TWO_DIGIT_DIRECT_MULTI",
       "generation_usage": "formal_allowed",
       "evidence_level": "A_HISTORY_USER_IMPORT",
       "bet_content": {
+        "content_model": "position_sets",
         "segment_count": 2,
         "segment_separator": "-",
         "segment_character_class": "0-9",
@@ -24,8 +46,7 @@
         "segment_digits_must_be_unique": true,
         "outer_pattern": "{round}|{bet_content}|{param1}|{param2}",
         "verified_example": "1|012-123|1|1",
-        "verified_generic_rule": "直选复式号码各段用-分隔，每段为不重复数字序列；二星=2段",
-        "singleton_exact_pair_derivation": "允许每段至少1个数字，因此精确二码60实例化为6-0；这是已验证语法的实例化，不是新分隔符或新格式"
+        "verified_generic_rule": "直选复式号码各段用-分隔，每段为不重复数字序列；二星=2段"
       },
       "required_template_values": {
         "line1": "True",
@@ -38,10 +59,6 @@
       },
       "evidence": [
         {
-          "source": "VERIFIED-RULEBOOK-V0.1 / CAT05高级定码轮换",
-          "claim": "直选复式号码各段用-分隔，每段为不重复数字序列；二星2段"
-        },
-        {
           "source": "full_settings_mastery_matrix_v0.3",
           "claim": "前二+直选复式 fixed_code_segments=2, fixed_code_example=1|012-123|1|1, user_feedback=都成功"
         },
@@ -50,15 +67,50 @@
           "claim": "013前二直选复式人工导入通过；任选位置为空；换号期数=1"
         }
       ],
-      "invalid_examples": [
-        "60",
-        "6 0",
-        "6,0",
-        "6|0",
-        "06-00",
-        "6--0",
-        "6-0-1"
-      ]
+      "semantic_forbidden_inputs": ["60", "08", "28", "49", "81", "02"]
+    },
+    "CAT05_FRONT2_DIRECT_SINGLE_TEST": {
+      "strategy": "高级定码轮换",
+      "play_type": "前二",
+      "play_name": "直选单式",
+      "semantic_intent": "EXACT_COMPLETE_TWO_DIGIT_NUMBER",
+      "generation_usage": "test_only",
+      "allow_formal": false,
+      "needs_user_import_validation": true,
+      "evidence_level": "D_CROSS_RULE_DERIVATION",
+      "bet_content": {
+        "content_model": "complete_numbers",
+        "number_width": 2,
+        "number_separator": " ",
+        "outer_pattern": "{round}|{bet_content}|{param1}|{param2}",
+        "verified_play_format_example": "08 50 89",
+        "candidate_carrier_example": "1|12 34 56|1|2",
+        "rule": "每一注是完整两位数字；多个号码用空格分隔；外层高级定码轮换仍使用局号|号码集合|参数1|参数2"
+      },
+      "required_template_values": {
+        "line1": "False",
+        "line2": "高级定码轮换",
+        "软件名称": "CXGGJ",
+        "玩法类型": "前二",
+        "玩法名称": "直选单式",
+        "任选位置": "",
+        "换号期数": "1"
+      },
+      "evidence": [
+        {
+          "source": "AI挂机方案功能百科_V1.0 / 开某投某投注内容格式表",
+          "claim": "前二+直选单式投注内容示例=08 50 89"
+        },
+        {
+          "source": "AI挂机方案生成总字典_V1.1",
+          "claim": "高级定码轮换多局每局必须匹配外层玩法格式；直选单式使用完整数字空格分隔"
+        },
+        {
+          "source": "AI-GENERATION-GATE-SPEC-V0.1",
+          "claim": "高级定码轮换+前二+直选单式当前为low_confidence_derivation/test_only，不得正式生成"
+        }
+      ],
+      "invalid_examples": ["6-0", "6 0", "6,0", "6|0", "060", "6", "60-49"]
     }
   }
 }
