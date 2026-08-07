@@ -10,6 +10,6 @@
 - 五个投注内容：`1|2-8|1|1`、`1|4-9|1|1`、`1|6-0|1|1`、`1|8-1|1|1`、`1|0-2|1|1`。
 - 高级倍投配置：UTF-8 BOM+CRLF、60行、每行9字段。
 - `MAIN_TXT_MISSING`：RESOLVED。
-- GitHub Actions：`Validate system repository #852` = SUCCESS。
+- GitHub Actions：TXT恢复后的完整验证已通过（#852）；后续仅文档冻结提交不改变生成逻辑。
 - 软件状态：仍为`BLOCKED_FOR_REAL_MONEY`。平台实际返奖、返点和限额未冻结；五方案高级倍投状态是否共享、任一命中是否全体复位仍未E3。
 - PR决策：保持Draft，不标Ready，不合并为正式实盘方案。
