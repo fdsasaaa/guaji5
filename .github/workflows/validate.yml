@@ -19,6 +19,10 @@ jobs:
           python-version: '3.12'
       - name: Validate repository
         run: python tools/validate_repository.py
+      - name: Validate betting format registry
+        run: python tools/validate_betting_format_registry.py --self-test
+      - name: Rebuild guarded front2 TXT sample
+        run: python tools/build_front2_60_txt_bundle.py --output "$RUNNER_TEMP/front2-format-gate"
       - name: Validate controller architecture
         run: python tools/validate_controller_architecture.py
       - name: Validate controller runtime configuration
@@ -66,6 +70,8 @@ jobs:
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
           test -f 14_导演执行审计学习总控与模块化变更协议.md
+          test -f 16_投注内容格式唯一源与防臆造门控协议.md
+          test -f controller/betting_format_registry.json
           test -f controller/pipeline.json
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
@@ -73,6 +79,7 @@ jobs:
           test -f controller/templates/orchestration_scorecard.template.json
           test -f controller/feature_evidence_registry.json
           test -f controller/function_coverage_ledger.json
+          test -f tools/validate_betting_format_registry.py
           test -f tools/validate_function_orchestration.py
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
