@@ -16,45 +16,93 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - name: Extract matching templates from rollback zip
+      - name: Search current tree and git history for verified templates
         run: |
           python - <<'PY'
           from pathlib import Path
-          import zipfile
-          zpath = Path('04_回滚源/AI挂机方案生成系统工作包_V3.8.1_直接执行与热5码六期验证版.zip')
-          out = Path('/tmp/front2_extract')
-          out.mkdir(parents=True, exist_ok=True)
-          if not zpath.exists():
-              (out/'ERROR.txt').write_text(f'ZIP_NOT_FOUND: {zpath}', encoding='utf-8')
-              raise SystemExit(0)
-          keys = ['前二','直选复式','CAT02','中三','组三单式','高级开某投某','定码轮换','玩法类型','玩法名称']
+          import subprocess, zipfile, re, os
+
+          ROOT=Path('.')
+          OUT=Path('/tmp/front2_extract')
+          OUT.mkdir(parents=True, exist_ok=True)
+          KEYS=['前二','直选复式','CAT02','中三','组三单式','高级开某投某','定码轮换']
           report=[]
-          listing=[]
-          with zipfile.ZipFile(zpath) as z:
-              for info in z.infolist():
-                  listing.append(info.filename)
-                  if info.is_dir():
-                      continue
+          seen=set()
+
+          def dec(raw):
+              for enc in ('utf-8-sig','gbk','utf-8','cp936'):
+                  try: return raw.decode(enc), enc
+                  except Exception: pass
+              return None, None
+
+          def save_match(origin, path, raw):
+              text,enc=dec(raw)
+              hay=str(path)+'\n'+(text or '')
+              if not any(k in hay for k in KEYS): return
+              key=(origin,str(path),raw[:64],len(raw))
+              if key in seen: return
+              seen.add(key)
+              report.append(f'===== ORIGIN: {origin} | FILE: {path} | decoded={enc} | bytes={len(raw)} =====\n')
+              report.append(text if text is not None else '<BINARY/UNDECODABLE>')
+              report.append('\n\n')
+              safe=re.sub(r'[^0-9A-Za-z._-]+','_',f'{len(seen):03d}_{Path(str(path)).name}')[:180]
+              (OUT/safe).write_bytes(raw)
+
+          # Current tree including archives.
+          for p in ROOT.rglob('*'):
+              if not p.is_file() or '.git' in p.parts: continue
+              try:
+                  if p.suffix.lower()=='.zip':
+                      with zipfile.ZipFile(p) as z:
+                          for info in z.infolist():
+                              if info.is_dir(): continue
+                              try: save_match(f'ZIP:{p}', info.filename, z.read(info))
+                              except Exception: pass
+                  elif p.suffix.lower() in {'.txt','.md','.json','.jsonl','.csv'}:
+                      save_match('CURRENT', p.as_posix(), p.read_bytes())
+              except Exception: pass
+
+          # Find matching files in every historical tree. This also recovers deleted rollback ZIPs.
+          commits=subprocess.check_output(['git','rev-list','--all'], text=True).splitlines()
+          historical_paths=[]
+          for ci,commit in enumerate(commits):
+              try:
+                  listing=subprocess.check_output(['git','ls-tree','-r','--name-only',commit], text=True, errors='replace').splitlines()
+              except Exception:
+                  continue
+              for path in listing:
+                  name=Path(path).name
+                  interesting_name=any(k in path for k in KEYS) or ('V3.8.1' in path) or ('回滚源' in path and path.lower().endswith('.zip'))
+                  if not interesting_name: continue
+                  marker=(commit,path)
+                  if marker in historical_paths: continue
+                  historical_paths.append(marker)
                   try:
-                      raw=z.read(info)
+                      raw=subprocess.check_output(['git','show',f'{commit}:{path}'])
                   except Exception:
                       continue
-                  text=None; enc=None
-                  for encoding in ('utf-8-sig','gbk','utf-8','cp936'):
+                  if path.lower().endswith('.zip'):
+                      temp=OUT/'historical_rollback.zip'
+                      temp.write_bytes(raw)
                       try:
-                          text=raw.decode(encoding); enc=encoding; break
-                      except Exception:
-                          pass
-                  hay=info.filename + '\n' + (text or '')
-                  if any(k in hay for k in keys):
-                      report.append(f'===== FILE: {info.filename} | decoded={enc} | bytes={len(raw)} =====\n')
-                      report.append(text if text is not None else '<BINARY/UNDECODABLE>')
-                      report.append('\n\n')
-          (out/'matches_utf8.txt').write_text(''.join(report) if report else 'NO_MATCHES', encoding='utf-8')
-          (out/'zip_listing.txt').write_text('\n'.join(listing), encoding='utf-8')
+                          with zipfile.ZipFile(temp) as z:
+                              for info in z.infolist():
+                                  if info.is_dir(): continue
+                                  try: save_match(f'HISTZIP:{commit[:12]}:{path}', info.filename, z.read(info))
+                                  except Exception: pass
+                      except Exception as e:
+                          report.append(f'ZIP_OPEN_ERROR {commit} {path}: {e}\n')
+                  else:
+                      save_match(f'HIST:{commit[:12]}', path, raw)
+
+          (OUT/'matches_utf8.txt').write_text(''.join(report) if report else 'NO_MATCHES', encoding='utf-8')
+          (OUT/'history_paths.txt').write_text('\n'.join(f'{c} {p}' for c,p in historical_paths), encoding='utf-8')
+          (OUT/'summary.txt').write_text(f'commits={len(commits)}\nhistorical_candidates={len(historical_paths)}\nmatches={len(seen)}\n', encoding='utf-8')
           PY
       - uses: actions/upload-artifact@v4
         with:
