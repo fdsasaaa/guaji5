@@ -90,7 +90,6 @@ def validate(raw: bytes, pair: str) -> dict[str, object]:
         "format_id": format_id,
         "semantic_intent": SEMANTIC_INTENT,
         "generation_usage": spec.get("generation_usage"),
-        "allow_formal": bool(spec.get("allow_formal", False)),
         "gbk_no_bom": not raw.startswith(b"\xef\xbb\xbf"),
         "crlf": b"\r\n" in raw and b"\n" not in raw.replace(b"\r\n", b""),
         "line1_test_only_false": lines[0] == "False",
@@ -102,10 +101,11 @@ def validate(raw: bytes, pair: str) -> dict[str, object]:
         "no_direct_multi_rewrite": f"高级定码轮换内容=1|{pair[0]}-{pair[1]}|1|1" not in text,
         "registry_gate": not format_errors,
         "scheme_creator_empty": "SchemeCreator=\r\n" in text,
+        "generation_usage_test_only": spec.get("generation_usage") == "test_only",
+        "formal_delivery_blocked": spec.get("allow_formal") is False,
+        "needs_user_import_validation": spec.get("needs_user_import_validation") is True,
     }
-    bool_checks = {
-        key: value for key, value in checks.items() if isinstance(value, bool)
-    }
+    bool_checks = {key: value for key, value in checks.items() if isinstance(value, bool)}
     if not all(bool_checks.values()):
         raise ValueError(f"{pair}: validation failed: {checks}; format_errors={format_errors}")
     return {**checks, "sha256": hashlib.sha256(raw).hexdigest()}
