@@ -1,12 +1,14 @@
 {
   "run_id": "RUN-20260807-REBATEX60-001",
-  "audit_status": "BLOCKED_WITH_EVIDENCE",
+  "audit_status": "BLOCKED_WITH_EXACT_NUMBER_SEMANTICS_CORRECTED",
   "findings": [
-    {"severity": "BLOCKER", "code": "ACTUAL_ECONOMICS_NULL", "detail": "main input has null gameplay, payout, stake, rebate and limits"},
-    {"severity": "BLOCKER", "code": "IMPLEMENTATION_BLOCKED_TEMPLATE_MISSING", "detail": "main rules forbid guessing a full specialized TXT template"},
-    {"severity": "BLOCKER", "code": "ADVANCED_STATE_BELOW_E3", "detail": "60-state file format is E2; transition and multi-scheme state independence are not E3"},
-    {"severity": "PASS", "code": "MATH_RECOVERY", "detail": "60 of 60 stages recover prior and current cost with at least 1 yuan at a 150.50 payout and zero rebate"},
-    {"severity": "PASS", "code": "DELIVERY_BOUNDARY", "detail": "artifacts explicitly identify blocked status and do not claim platform execution"}
+    {"severity": "RESOLVED", "code": "EXACT_NUMBER_REWRITTEN_AS_DIRECT_MULTI", "detail": "完整二位号码28/49/60/81/02不再改写为2-8/4-9/6-0/8-1/0-2；语义门控强制映射到前二直选单式"},
+    {"severity": "BLOCKER", "code": "FRONT2_DIRECT_SINGLE_ADV_FIXED_IMPORT_NOT_E3", "detail": "高级定码轮换+前二+直选单式当前仍是test_only，需要用户人工导入确认完整号码显示、注数和高级倍投引用"},
+    {"severity": "BLOCKER", "code": "ACTUAL_ECONOMICS_NULL", "detail": "main input has null gameplay payout stake rebate and limits; 150.50 remains only a reverse-solved threshold"},
+    {"severity": "BLOCKER", "code": "ADVANCED_STATE_BELOW_E3", "detail": "multi-scheme advanced-state synchronization/reset behavior remains below E3"},
+    {"severity": "PASS", "code": "MATH_RECOVERY_AT_ASSUMED_GATE", "detail": "60 of 60 stages recover prior and current cost with at least 1 yuan only under the stated 150.50 gross-payout threshold and zero rebate assumptions"},
+    {"severity": "PASS", "code": "SEMANTIC_FORMAT_GATE", "detail": "validator now rejects silent conversion from exact complete number 60 to direct-multi position set 6-0"}
   ],
-  "release_decision": "KEEP_DRAFT_PR_NOT_READY"
+  "release_decision": "KEEP_DRAFT_PR_NOT_READY",
+  "allowed_delivery": "TEST_ONLY_IMPORT_VALIDATION_PACKAGE"
 }
