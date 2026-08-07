@@ -65,6 +65,10 @@ def build_valid() -> tuple[dict, dict, dict]:
             claims.append({"feature_id": feature_id, "claimed_level": level, "evidence_refs": refs})
             ranks.append(core.rank(level))
         profile["feature_evidence"] = claims
+        for layer in profile["layers"].values():
+            feature_ids = layer.get("feature_ids", [])
+            if feature_ids:
+                layer["evidence_level"] = f"E{min(core.rank(registry_by_id[feature]["max_formal_level"]) for feature in feature_ids)}"
         rank = min(ranks)
         profile["eligible"] = profile["decision"] == "SELECTED"
         profile["eligibility_reason"] = "正式基准可入选" if profile["eligible"] else "证据未达E3，仅比较或探针"
