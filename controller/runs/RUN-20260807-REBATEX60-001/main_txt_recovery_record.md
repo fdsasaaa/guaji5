@@ -56,6 +56,8 @@ SchemeCreator=
 - 两段固定二码；
 - `SchemeCreator=` 为空。
 
+机器冻结清单：`controller/runs/RUN-20260807-REBATEX60-001/main_txt_delivery_manifest.json`。
+
 ## 尚未解除的运行风险
 
 TXT缺失问题已修复，但这不自动解除多方案高级倍投状态同步风险。五方案同时投注时，软件是否让5个方案共享同一高级倍投ID、以及任一方案命中后是否让其余4个方案一起复位，目前仍缺E3运行证据。
