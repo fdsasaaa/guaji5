@@ -1,0 +1,18 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "selected_concept": "five mutually exclusive front-two exact combinations with reverse-solved 60-state funding path",
+  "numbers": ["28", "49", "60", "81", "02"],
+  "number_source": "last issue 28194 front-two anchor 28; j mapping ((2+2j)%10,(8+j)%10)",
+  "why_selected": "five simultaneous plans keep one-unit total cost at 10 yuan and permit 60 stages only when the payout gate is high enough",
+  "rejected_concepts": [
+    "five positional high-coverage schemes: payout-to-cost ratio cannot support strict 60-stage recovery under 5000",
+    "simple geometric doubling: bankroll exhausted far before 50 stages",
+    "flat or pressure-release paths: do not satisfy every-stage recovery"
+  ],
+  "final_status": "BLOCKED_NOT_FORMAL_RUNTIME",
+  "blockers": [
+    "main economics values are null",
+    "complete same-type TXT template absent",
+    "advanced multi-scheme state interaction below E3"
+  ]
+}
