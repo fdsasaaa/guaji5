@@ -1,0 +1,23 @@
+{
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "status": "MAIN_TXT_RECOVERED",
+  "strategy": "高级定码轮换",
+  "play_type": "前二",
+  "play_name": "直选复式",
+  "encoding": "GBK",
+  "line_ending": "CRLF",
+  "funding_type": 1,
+  "funding_scheme": "高级倍投主配置",
+  "files": [
+    {"name": "01_前二28-高级定码轮换.txt", "content": "1|2-8|1|1"},
+    {"name": "02_前二49-高级定码轮换.txt", "content": "1|4-9|1|1"},
+    {"name": "03_前二60-高级定码轮换.txt", "content": "1|6-0|1|1"},
+    {"name": "04_前二81-高级定码轮换.txt", "content": "1|8-1|1|1"},
+    {"name": "05_前二02-高级定码轮换.txt", "content": "1|0-2|1|1"}
+  ],
+  "builder": "tools/build_front2_60_txt_bundle.py",
+  "remaining_blockers": [
+    "ADVANCED_MULTI_SCHEME_STATE_NOT_E3",
+    "PLATFORM_ECONOMICS_UNCONFIRMED"
+  ]
+}
