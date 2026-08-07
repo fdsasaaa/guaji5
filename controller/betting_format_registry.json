@@ -1,5 +1,5 @@
 {
-  "version": "1.1.0",
+  "version": "1.2.0",
   "status": "ACTIVE",
   "authority": "machine-enforced companion to 01_软件格式与已验证执行规则.md",
   "unknown_format_policy": "BLOCK_GENERATION",
@@ -10,7 +10,7 @@
     "完整二位号码属于前二直选单式，位置候选集合属于前二直选复式",
     "玩法类型+玩法名称+承载策略必须命中已登记格式后才能生成TXT",
     "分隔符、段数、空值字段和外层包装必须来自已验证证据",
-    "test_only组合只能生成验证包，不得包装成正式可执行方案"
+    "格式证据与运行行为证据分层管理；格式通过不得自动升级高级倍投多方案状态同步"
   ],
   "semantic_intents": {
     "EXACT_COMPLETE_TWO_DIGIT_NUMBER": {
@@ -69,26 +69,26 @@
       ],
       "semantic_forbidden_inputs": ["60", "08", "28", "49", "81", "02"]
     },
-    "CAT05_FRONT2_DIRECT_SINGLE_TEST": {
+    "CAT05_FRONT2_DIRECT_SINGLE": {
       "strategy": "高级定码轮换",
       "play_type": "前二",
       "play_name": "直选单式",
       "semantic_intent": "EXACT_COMPLETE_TWO_DIGIT_NUMBER",
-      "generation_usage": "test_only",
-      "allow_formal": false,
-      "needs_user_import_validation": true,
-      "evidence_level": "D_CROSS_RULE_DERIVATION",
+      "generation_usage": "formal_allowed",
+      "allow_formal": true,
+      "needs_user_import_validation": false,
+      "evidence_level": "A_USER_CONFIRMED_FORMAT_2026_08_08",
       "bet_content": {
         "content_model": "complete_numbers",
         "number_width": 2,
         "number_separator": " ",
         "outer_pattern": "{round}|{bet_content}|{param1}|{param2}",
         "verified_play_format_example": "08 50 89",
-        "candidate_carrier_example": "1|12 34 56|1|2",
+        "verified_carrier_examples": ["1|28|1|1", "1|49|1|1", "1|60|1|1", "1|81|1|1", "1|02|1|1"],
         "rule": "每一注是完整两位数字；多个号码用空格分隔；外层高级定码轮换仍使用局号|号码集合|参数1|参数2"
       },
       "required_template_values": {
-        "line1": "False",
+        "line1": "True",
         "line2": "高级定码轮换",
         "软件名称": "CXGGJ",
         "玩法类型": "前二",
@@ -103,12 +103,16 @@
         },
         {
           "source": "AI挂机方案生成总字典_V1.1",
-          "claim": "高级定码轮换多局每局必须匹配外层玩法格式；直选单式使用完整数字空格分隔"
+          "claim": "高级定码轮换每局必须匹配外层玩法格式；直选单式使用完整数字空格分隔"
         },
         {
-          "source": "AI-GENERATION-GATE-SPEC-V0.1",
-          "claim": "高级定码轮换+前二+直选单式当前为low_confidence_derivation/test_only，不得正式生成"
+          "source": "USER_CONFIRMATION_2026-08-08",
+          "claim": "用户确认五路前二完整号码直选单式方案设置无问题；28/49/60/81/02按完整二位号码表达正确"
         }
+      ],
+      "runtime_boundaries": [
+        "此确认升级的是主方案格式/显示语义，不自动证明五方案高级倍投状态同步推进或同步复位",
+        "平台返奖、返点、限额仍需独立经济门控"
       ],
       "invalid_examples": ["6-0", "6 0", "6,0", "6|0", "060", "6", "60-49"]
     }
