@@ -1,9 +1,19 @@
 {
   "run_id": "RUN-20260807-REBATEX60-001",
-  "status": "MAIN_TXT_RECOVERED",
+  "status": "MAIN_TXT_FORMAT_GUARDED",
   "strategy": "高级定码轮换",
   "play_type": "前二",
   "play_name": "直选复式",
+  "format_id": "CAT05_FRONT2_DIRECT_MULTI",
+  "format_registry": "controller/betting_format_registry.json",
+  "format_evidence": {
+    "segment_count": 2,
+    "segment_separator": "-",
+    "verified_example": "1|012-123|1|1",
+    "exact_pair_60": "1|6-0|1|1",
+    "任选位置": "",
+    "换号期数": "1"
+  },
   "encoding": "GBK",
   "line_ending": "CRLF",
   "funding_type": 1,
@@ -16,6 +26,12 @@
     {"name": "05_前二02-高级定码轮换.txt", "content": "1|0-2|1|1"}
   ],
   "builder": "tools/build_front2_60_txt_bundle.py",
+  "validator": "tools/validate_betting_format_registry.py",
+  "resolved_defects": [
+    "MAIN_TXT_MISSING",
+    "HARDCODED_BETTING_SEPARATOR_WITHOUT_REGISTRY",
+    "FRONT2_OPTIONAL_POSITION_WRONGLY_SET_0_1"
+  ],
   "remaining_blockers": [
     "ADVANCED_MULTI_SCHEME_STATE_NOT_E3",
     "PLATFORM_ECONOMICS_UNCONFIRMED"
