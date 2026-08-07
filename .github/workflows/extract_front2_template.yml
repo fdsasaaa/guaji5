@@ -1,0 +1,62 @@
+name: Extract front2 templates
+
+on:
+  push:
+    branches:
+      - agent/rebate-portfolio-50plus-5000-20260807
+
+permissions:
+  contents: read
+
+jobs:
+  extract:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Extract matching templates from rollback zip
+        run: |
+          python - <<'PY'
+          from pathlib import Path
+          import zipfile, re
+          zpath = Path('04_回滚源/AI挂机方案生成系统工作包_V3.8.1_直接执行与热5码六期验证版.zip')
+          out = Path('/tmp/front2_extract')
+          out.mkdir(parents=True, exist_ok=True)
+          if not zpath.exists():
+              (out/'ERROR.txt').write_text(f'ZIP_NOT_FOUND: {zpath}', encoding='utf-8')
+              raise SystemExit(0)
+          keys = ['前二','直选复式','CAT02','高级开某投某','定码轮换']
+          report=[]
+          with zipfile.ZipFile(zpath) as z:
+              for info in z.infolist():
+                  if info.is_dir():
+                      continue
+                  name=info.filename
+                  try:
+                      raw=z.read(info)
+                  except Exception as e:
+                      continue
+                  text=None; enc=None
+                  for encoding in ('utf-8-sig','gbk','utf-8','cp936'):
+                      try:
+                          text=raw.decode(encoding); enc=encoding; break
+                      except Exception:
+                          pass
+                  hay=name + '\n' + (text or '')
+                  if any(k in hay for k in keys):
+                      report.append(f'===== FILE: {name} | decoded={enc} | bytes={len(raw)} =====\n')
+                      if text is not None:
+                          report.append(text)
+                      else:
+                          report.append('<BINARY/UNDECODABLE>')
+                      report.append('\n\n')
+          (out/'matches_utf8.txt').write_text(''.join(report) if report else 'NO_MATCHES', encoding='utf-8')
+          (out/'zip_listing.txt').write_text('\n'.join(i.filename for i in zipfile.ZipFile(zpath).infolist()), encoding='utf-8')
+          PY
+      - uses: actions/upload-artifact@v4
+        with:
+          name: front2-template-extract
+          path: /tmp/front2_extract
+          if-no-files-found: error
