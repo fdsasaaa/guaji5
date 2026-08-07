@@ -221,22 +221,19 @@ def self_test() -> None:
         strategy="高级定码轮换",
         semantic_intent="EXACT_COMPLETE_TWO_DIGIT_NUMBER",
     )
-    assert single_id == "CAT05_FRONT2_DIRECT_SINGLE_TEST"
+    assert single_id == "CAT05_FRONT2_DIRECT_SINGLE"
     assert exact_pair_to_bet_content("60", single) == "60"
     assert not validate_bet_content("08", single)
     assert not validate_bet_content("28 49 60 81 02", single)
     for bad in single["invalid_examples"]:
         assert validate_bet_content(bad, single), f"negative example unexpectedly passed: {bad}"
-    try:
-        require_generation_usage(single, formal=True)
-    except BettingFormatError:
-        pass
-    else:
-        raise AssertionError("test_only direct-single carrier must block formal generation")
+    require_generation_usage(single, formal=True)
+    assert single.get("allow_formal") is True
+    assert single.get("needs_user_import_validation") is False
 
     good_text = "\n".join(
         [
-            "False",
+            "True",
             "高级定码轮换",
             "软件名称=CXGGJ",
             "玩法类型=前二",
