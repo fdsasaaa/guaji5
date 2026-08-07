@@ -1,0 +1,133 @@
+{
+  "schema_version": 1,
+  "run_id": "RUN-20260807-REBATEX60-001",
+  "task_type": "STANDARD_SCHEME_TASK",
+  "status": "BLOCKED",
+  "instructions": {
+    "central_evidence_registry": "controller/feature_evidence_registry.json",
+    "central_coverage_ledger": "controller/function_coverage_ledger.json",
+    "scorecard_template": "controller/templates/orchestration_scorecard.template.json",
+    "rule": "four profiles and four paths preserved; no evidence inflation"
+  },
+  "candidate_profiles": [
+    {
+      "profile_id": "BASELINE",
+      "profile_type": "BASELINE",
+      "name": "五路平倍60期基准",
+      "decision": "REJECTED",
+      "reason": "cannot recover deep prior losses",
+      "features": ["STATIC_NUMBER_LOGIC", "ROTATION_OR_COMBINATION", "FUNDING_FLAT", "RISK_HARD_STOP"],
+      "layers": {
+        "A": {"relevant": true, "candidates": ["five fixed front-two pairs"], "final_enabled": true, "decision_reason": "reproducible number source", "evidence_level": "E3"},
+        "B": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "immediate baseline", "evidence_level": "E0"},
+        "C": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "numbers frozen", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": ["five schemes simultaneous"], "final_enabled": true, "decision_reason": "portfolio cost model", "evidence_level": "E3"},
+        "E": {"relevant": true, "candidates": ["flat"], "final_enabled": true, "decision_reason": "baseline only", "evidence_level": "E3"},
+        "F": {"relevant": true, "candidates": ["60-period hard stop"], "final_enabled": true, "decision_reason": "external boundary", "evidence_level": "E3"},
+        "G": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "none", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": ["theoretical baseline"], "final_enabled": true, "decision_reason": "pre-run disclosure", "evidence_level": "E3"}
+      },
+      "material_signature": {"number_logic": "five_fixed_front2_pairs", "trigger": "immediate", "execution": "simultaneous", "funding": "flat", "stop": "60_period_stop", "time_simulation": "none"},
+      "first_use": false,
+      "new_state_features": [],
+      "eligible": false,
+      "eligibility_reason": "goal mismatch",
+      "hard_blockers": [],
+      "scorecard": {"components": {"problem_fit": 20, "software_evidence": 10, "risk_fit": 8, "novelty": 2, "explanation_value": 8, "coverage_value": 2, "exposure_penalty": 0, "unverified_penalty": 0, "complexity_penalty": 0, "logic_confusion_penalty": 0}, "total": 50}
+    },
+    {
+      "profile_id": "STATE",
+      "profile_type": "STATE",
+      "name": "五连挂监控后平倍探针",
+      "decision": "PROBE_ONLY",
+      "reason": "monitoring is capped at E1",
+      "features": ["STATIC_NUMBER_LOGIC", "MONITORING", "FUNDING_FLAT"],
+      "layers": {
+        "A": {"relevant": true, "candidates": ["five fixed front-two pairs"], "final_enabled": true, "decision_reason": "same number control", "evidence_level": "E3"},
+        "B": {"relevant": true, "candidates": ["monitor 00000"], "final_enabled": false, "decision_reason": "probe only below E3", "evidence_level": "E1"},
+        "C": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "none", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": ["isolated single variable"], "final_enabled": false, "decision_reason": "not mixed with formal path", "evidence_level": "E3"},
+        "E": {"relevant": true, "candidates": ["flat"], "final_enabled": true, "decision_reason": "isolate monitoring", "evidence_level": "E3"},
+        "F": {"relevant": true, "candidates": ["30-period cost cap"], "final_enabled": true, "decision_reason": "probe boundary", "evidence_level": "E3"},
+        "G": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "none", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": ["runtime probe log"], "final_enabled": false, "decision_reason": "awaiting E3", "evidence_level": "E1"}
+      },
+      "material_signature": {"number_logic": "five_fixed_front2_pairs", "trigger": "monitor_00000", "execution": "isolated", "funding": "flat", "stop": "30_period_probe", "time_simulation": "monitor"},
+      "first_use": true,
+      "new_state_features": ["MONITORING"],
+      "eligible": false,
+      "eligibility_reason": "below E3",
+      "hard_blockers": ["MONITORING_BELOW_E3"],
+      "probe_constraints": {"isolated": true, "single_variable": true, "max_periods": 30, "max_cost": 300},
+      "scorecard": {"components": {"problem_fit": 8, "software_evidence": 2, "risk_fit": 6, "novelty": 8, "explanation_value": 6, "coverage_value": 10, "exposure_penalty": 2, "unverified_penalty": 10, "complexity_penalty": 2, "logic_confusion_penalty": 2}, "total": 24}
+    },
+    {
+      "profile_id": "EXECUTION_OR_FUNDING",
+      "profile_type": "EXECUTION_OR_FUNDING",
+      "name": "五路60档反向回利状态链",
+      "decision": "BLOCKED",
+      "reason": "math-selected but advanced multi-scheme runtime is below E3 and main template/economics are missing",
+      "features": ["STATIC_NUMBER_LOGIC", "ROTATION_OR_COMBINATION", "FUNDING_ADVANCED_STATE", "RISK_HARD_STOP"],
+      "layers": {
+        "A": {"relevant": true, "candidates": ["28", "49", "60", "81", "02"], "final_enabled": true, "decision_reason": "ring mapping", "evidence_level": "E3"},
+        "B": {"relevant": false, "candidates": ["immediate"], "final_enabled": true, "decision_reason": "no trigger", "evidence_level": "E3"},
+        "C": {"relevant": true, "candidates": ["frozen numbers"], "final_enabled": true, "decision_reason": "do not change during run", "evidence_level": "E3"},
+        "D": {"relevant": true, "candidates": ["five simultaneous; top rotation off"], "final_enabled": true, "decision_reason": "required by economics", "evidence_level": "E3"},
+        "E": {"relevant": true, "candidates": ["60-state reverse-solved path"], "final_enabled": false, "decision_reason": "format E2, runtime blocked", "evidence_level": "E2"},
+        "F": {"relevant": true, "candidates": ["first-hit stop", "stage-60 hard stop", "4960 loss cap"], "final_enabled": true, "decision_reason": "external stop", "evidence_level": "E3"},
+        "G": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "none", "evidence_level": "E0"},
+        "H": {"relevant": true, "candidates": ["60-stage proof", "theoretical probability", "reused history disclosure"], "final_enabled": true, "decision_reason": "auditable pre-run evidence", "evidence_level": "E3"}
+      },
+      "material_signature": {"number_logic": "five_fixed_front2_pairs", "trigger": "immediate", "execution": "simultaneous_shared_state", "funding": "reverse_solved_60_state", "stop": "stage60_or_first_hit", "time_simulation": "none"},
+      "first_use": true,
+      "new_state_features": ["FUNDING_ADVANCED_STATE"],
+      "eligible": false,
+      "eligibility_reason": "three hard blockers",
+      "hard_blockers": ["ADVANCED_STATE_BELOW_E3", "TEMPLATE_MISSING", "ECONOMICS_UNCONFIRMED"],
+      "scorecard": {"components": {"problem_fit": 30, "software_evidence": 4, "risk_fit": 12, "novelty": 12, "explanation_value": 10, "coverage_value": 10, "exposure_penalty": 12, "unverified_penalty": 20, "complexity_penalty": 6, "logic_confusion_penalty": 4}, "total": 36}
+    },
+    {
+      "profile_id": "LOW_COVERAGE_PROBE",
+      "profile_type": "LOW_COVERAGE_PROBE",
+      "name": "模拟转真实单变量探针",
+      "decision": "PROBE_ONLY",
+      "reason": "due feature remains E1 and cannot be mixed with advanced funding",
+      "features": ["SIMULATION_REAL_SWITCH", "FUNDING_FLAT"],
+      "layers": {
+        "A": {"relevant": true, "candidates": ["single pair 28"], "final_enabled": true, "decision_reason": "single-variable control", "evidence_level": "E3"},
+        "B": {"relevant": true, "candidates": ["simulate five losses"], "final_enabled": false, "decision_reason": "probe only", "evidence_level": "E1"},
+        "C": {"relevant": false, "candidates": [], "final_enabled": false, "decision_reason": "none", "evidence_level": "E0"},
+        "D": {"relevant": true, "candidates": ["isolated single scheme"], "final_enabled": false, "decision_reason": "not main delivery", "evidence_level": "E3"},
+        "E": {"relevant": true, "candidates": ["flat"], "final_enabled": true, "decision_reason": "isolate switch", "evidence_level": "E3"},
+        "F": {"relevant": true, "candidates": ["30 periods or 60 yuan"], "final_enabled": true, "decision_reason": "probe cap", "evidence_level": "E3"},
+        "G": {"relevant": true, "candidates": ["simulation to real"], "final_enabled": false, "decision_reason": "await E3", "evidence_level": "E1"},
+        "H": {"relevant": true, "candidates": ["runtime log"], "final_enabled": false, "decision_reason": "not yet run", "evidence_level": "E1"}
+      },
+      "material_signature": {"number_logic": "single_fixed_pair", "trigger": "simulation_5_losses", "execution": "isolated_single_scheme", "funding": "flat", "stop": "30_period_cost_cap", "time_simulation": "simulation_to_real"},
+      "first_use": true,
+      "new_state_features": ["SIMULATION_REAL_SWITCH"],
+      "eligible": false,
+      "eligibility_reason": "below E3",
+      "hard_blockers": ["SIMULATION_REAL_SWITCH_BELOW_E3"],
+      "probe_constraints": {"isolated": true, "single_variable": true, "max_periods": 30, "max_cost": 60},
+      "scorecard": {"components": {"problem_fit": 6, "software_evidence": 2, "risk_fit": 6, "novelty": 8, "explanation_value": 5, "coverage_value": 10, "exposure_penalty": 1, "unverified_penalty": 10, "complexity_penalty": 3, "logic_confusion_penalty": 2}, "total": 21}
+    }
+  ],
+  "funding_paths": [
+    {"path_id": "FLAT", "kind": "FLAT", "sequence": [1,1,1,1,1,1,1,1,1,1], "unit_exposure": 10, "max_multiplier": 1, "total_multiplier": 60, "worst_case_exposure": 600, "reset_rule": "none", "cap_rule": "60 periods", "software_evidence_level": "E3", "evidence_refs": ["HISTORICAL-FLAT-RUNTIME"], "decision": "REJECTED", "reason": "not every-stage recovery", "eligible": true, "eligibility_reason": "runtime valid but goal mismatch", "hard_blockers": [], "scorecard": {"components": {}, "total": 30}},
+    {"path_id": "LIMITED_LINEAR", "kind": "LIMITED_LINEAR", "sequence": [1,1,2,2,3,3,4,4], "unit_exposure": 10, "max_multiplier": 4, "total_multiplier": 150, "worst_case_exposure": 1500, "reset_rule": "hit reset", "cap_rule": "4x", "software_evidence_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"], "decision": "REJECTED", "reason": "not every-stage recovery and below E3", "eligible": false, "eligibility_reason": "E2", "hard_blockers": ["BELOW_E3"], "scorecard": {"components": {}, "total": 40}},
+    {"path_id": "PRESSURE_RELEASE", "kind": "PRESSURE_RELEASE", "sequence": [1,1,2,3,2,1], "unit_exposure": 10, "max_multiplier": 3, "total_multiplier": 100, "worst_case_exposure": 1000, "reset_rule": "cycle", "cap_rule": "3x", "software_evidence_level": "E2", "evidence_refs": ["ORDINARY-SEQUENCE-FORMAT"], "decision": "REJECTED", "reason": "pressure control does not satisfy strict recovery", "eligible": false, "eligibility_reason": "goal mismatch", "hard_blockers": ["BELOW_E3"], "scorecard": {"components": {}, "total": 45}},
+    {"path_id": "ADVANCED_STATE", "kind": "ADVANCED_STATE", "states": ["ID1..ID60"], "transitions": ["hit:any->ID1", "miss:ID1..ID59->next", "miss:ID60->HARD_STOP"], "exposure_path": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,5,5,5,6,6,6,7,7,8,8,9,10,10,11,12,13,14,15,16,17,18,19,21,22,24,25,27,29,31,33], "unit_exposure": 10, "max_multiplier": 33, "total_multiplier": 496, "worst_case_exposure": 4960, "reset_rule": "valid hit returns ID1", "cap_rule": "ID60 miss hard stop", "software_evidence_level": "E2", "evidence_refs": ["SW-EVID-002", "SW-EVID-009"], "decision": "BLOCKED", "reason": "math-selected but runtime prohibited below E3", "probe_constraints": {"isolated": true, "single_variable": true, "max_periods": 30, "max_cost": 300}, "eligible": false, "eligibility_reason": "central evidence cap E2", "hard_blockers": ["ADVANCED_STATE_BELOW_E3", "MULTI_SCHEME_STATE_UNKNOWN"], "scorecard": {"components": {}, "total": 75}}
+  ],
+  "more_settings_review": [
+    {"category": "ROTATION_OR_COMBINATION", "candidate_profile_ids": ["BASELINE", "EXECUTION_OR_FUNDING"], "material_configuration": "five schemes simultaneous; top GUI rotation unchecked", "evidence_level": "E3", "final_decision": "BLOCKED_WITH_MAIN_SCHEME", "reason": "economics requires simultaneous execution"},
+    {"category": "PROFIT_LOSS_STOP", "candidate_profile_ids": ["EXECUTION_OR_FUNDING"], "material_configuration": "external first-hit stop and stage-60/4960-yuan hard stop", "evidence_level": "E3", "final_decision": "SELECTED_EXTERNAL_HARD_STOP", "reason": "internal field remains E1"},
+    {"category": "MONITORING", "candidate_profile_ids": ["STATE"], "material_configuration": "monitor five misses; isolated 30-period flat probe", "evidence_level": "E1", "final_decision": "PROBE_ONLY", "reason": "below E3"},
+    {"category": "SIMULATION_REAL_SWITCH", "candidate_profile_ids": ["LOW_COVERAGE_PROBE"], "material_configuration": "single scheme simulate five losses then real; 30-period/60-yuan cap", "evidence_level": "E1", "final_decision": "PROBE_ONLY", "reason": "below E3"}
+  ],
+  "repeat_guard": {"fingerprint": "front2_ring5|immediate|simultaneous|reverse60|stage60_stop|none", "last_three_fingerprints": ["cold_warm_omission|immediate|top_rotation|flat|18_period_hard_stop|none", "first_order_transition|immediate|top_rotation|flat|30_period_hard_stop|none"], "repeat_count": 0, "penalty_applied": false, "selected_same_fingerprint": false, "override_reason": ""},
+  "coverage_debt": {"due_features": ["MONITORING", "FUNDING_ADVANCED_STATE", "SIMULATION_REAL_SWITCH"], "blocked_features": ["MONITORING", "FUNDING_ADVANCED_STATE", "SIMULATION_REAL_SWITCH"], "all_exploration_blocked": false},
+  "ledger_update": {"from_sequence": 0, "to_sequence": 1, "outcomes": {"MONITORING": "PROBE_ONLY_E1", "FUNDING_ADVANCED_STATE": "BLOCKED_E2", "SIMULATION_REAL_SWITCH": "PROBE_ONLY_E1"}, "next_due_features": ["PROFIT_LOSS_JUMP", "PROFIT_LOSS_STOP", "TIME_WINDOW"]},
+  "selection": {"selected_profile_id": "EXECUTION_OR_FUNDING", "selected_funding_path_id": "ADVANCED_STATE", "companion_probe_profile_id": "LOW_COVERAGE_PROBE", "delivery_mode": "BLOCKED_NON_BASELINE", "reason": "best goal fit but prohibited from formal runtime until blockers clear", "score_override_reason": "", "score_override_evidence_refs": []},
+  "recent_delivery_modes": ["BASELINE_ONLY", "BASELINE_ONLY"]
+}
