@@ -1,0 +1,132 @@
+{
+  "schema_version": 1,
+  "policy_id": "PPT-NARRATIVE-HUMAN-BETTOR-V1",
+  "status": "MANDATORY",
+  "effective_date": "2026-08-10",
+  "principle": "PPT默认站在人工投注者/研究者视角，先解释如何从历史现象形成投注判断，再解释玩法、执行与资金策略；系统如何生成文件、拼装模块或修正规则不得成为主叙事。",
+  "default_narrative_role": "HUMAN_BETTOR_RESEARCHER",
+  "allowed_primary_frames": [
+    "BETTING_RESEARCH",
+    "HISTORICAL_PATTERN_EXPERIMENT",
+    "RUNTIME_REVIEW"
+  ],
+  "forbidden_primary_frames": [
+    "SYSTEM_DESIGN",
+    "AI_GENERATION_PROCESS",
+    "FILE_ASSEMBLY",
+    "VALIDATOR_EXPLANATION",
+    "ENGINEERING_CHANGELOG"
+  ],
+  "required_story_arc": [
+    "RESEARCH_QUESTION",
+    "HISTORICAL_OBSERVATION",
+    "ANALYSIS_AND_NUMBER_DERIVATION",
+    "NUMBER_SELECTION_REASON",
+    "PLAY_SELECTION_REASON",
+    "EXECUTION_STRUCTURE_REASON",
+    "FUNDING_STRATEGY_REASON",
+    "SOFTWARE_OPERATION",
+    "OBSERVATION_AND_STOP_RULE"
+  ],
+  "hard_rules": [
+    {
+      "rule_id": "PNR-001",
+      "name": "人工投注者/研究者视角",
+      "severity": "BLOCK",
+      "requirement": "主体叙事必须像熟悉玩法的人在解释自己如何发现现象、形成投注想法并执行，而不是系统解释自己如何生成方案。",
+      "failure_state": "PPT_HUMAN_BETTOR_NARRATIVE_MISSING",
+      "test_id": "PNR-T001"
+    },
+    {
+      "rule_id": "PNR-002",
+      "name": "禁止系统设计视角成为主线",
+      "severity": "BLOCK",
+      "requirement": "系统生成、模块拼装、文件格式、校验器、纠错过程只能进入GitHub内部记录或极少量必要操作说明，不得成为PPT主线。",
+      "failure_state": "PPT_SYSTEM_DESIGN_PERSPECTIVE_FORBIDDEN",
+      "test_id": "PNR-T002"
+    },
+    {
+      "rule_id": "PNR-003",
+      "name": "先分析后选号",
+      "severity": "BLOCK",
+      "requirement": "历史现象、分析角度、关键统计和取码过程必须先于最终投注数字出现。",
+      "failure_state": "PPT_ANALYSIS_BEFORE_SELECTION_MISSING",
+      "test_id": "PNR-T003"
+    },
+    {
+      "rule_id": "PNR-004",
+      "name": "必须解释玩法选择",
+      "severity": "BLOCK",
+      "requirement": "不能只说投什么数字，还必须解释为什么这些数字适合当前玩法以及为什么没有选择其他候选玩法。",
+      "failure_state": "PPT_PLAY_SELECTION_REASON_MISSING",
+      "test_id": "PNR-T004"
+    },
+    {
+      "rule_id": "PNR-005",
+      "name": "必须解释执行结构选择",
+      "severity": "BLOCK",
+      "requirement": "并投、轮投、单方案、组合或换号等执行结构必须从人工投注思路和风险分布出发解释，不得只描述按钮设置。",
+      "failure_state": "PPT_EXECUTION_STRUCTURE_REASON_MISSING",
+      "test_id": "PNR-T005"
+    },
+    {
+      "rule_id": "PNR-006",
+      "name": "必须解释资金策略为什么这样设置",
+      "severity": "BLOCK",
+      "requirement": "高级倍投、直线倍投、平倍或其他资金路径必须说明其与玩法命中结构、并投/轮投方式、本金和停止边界的关系；不能只展示倍率序列。",
+      "failure_state": "PPT_FUNDING_REASON_MISSING",
+      "test_id": "PNR-T006"
+    },
+    {
+      "rule_id": "PNR-007",
+      "name": "软件操作必须后置",
+      "severity": "BLOCK",
+      "requirement": "导入、勾选、文件夹和GUI按钮说明只能在观众已经理解号码、玩法、执行结构和资金理由后出现。",
+      "failure_state": "PPT_SOFTWARE_OPERATION_TOO_EARLY",
+      "test_id": "PNR-T007"
+    }
+  ],
+  "software_operation_policy": {
+    "position": "AFTER_REASONING",
+    "allowed_content": [
+      "导入步骤",
+      "勾选方案",
+      "方案轮投开关",
+      "高级倍投配置对应关系",
+      "必要的运行与停止操作"
+    ],
+    "forbidden_as_primary_story": true
+  },
+  "funding_explanation_required_fields": [
+    "玩法经济结构",
+    "单期成本或注数",
+    "执行结构对总暴露的影响",
+    "为什么选择当前资金路径",
+    "复位与停止边界"
+  ],
+  "runtime_contract": {
+    "template": "controller/templates/ppt_narrative_contract.template.json",
+    "filename": "ppt_narrative_contract.json",
+    "validator": "tools/validate_ppt_narrative_policy.py",
+    "required_for_ppt_tasks": true
+  },
+  "extension_contract": {
+    "append_only_rule_ids": true,
+    "rule_id_pattern": "PNR-[0-9]{3}",
+    "test_id_pattern": "PNR-T[0-9]{3}",
+    "new_rule_requires": [
+      "rule_id",
+      "name",
+      "severity",
+      "requirement",
+      "failure_state",
+      "test_id"
+    ],
+    "new_rule_must_add_test": true,
+    "existing_rule_semantics_may_not_silently_change": true,
+    "breaking_change_requires_schema_version_bump": true,
+    "policy_change_requires_branch_pr_and_validation": true,
+    "future_rules_may_extend_story_arc": true,
+    "validator_must_not_hardcode_total_rule_count": true
+  }
+}
