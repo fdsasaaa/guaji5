@@ -1,0 +1,44 @@
+{
+  "schema_version": 1,
+  "policy_id": "PPT-NARRATIVE-HUMAN-BETTOR-V1",
+  "run_id": "",
+  "stage": "PRE_RUN_SETUP",
+  "narrative_role": "HUMAN_BETTOR_RESEARCHER",
+  "primary_frame": "BETTING_RESEARCH",
+  "story_arc": [
+    "RESEARCH_QUESTION",
+    "HISTORICAL_OBSERVATION",
+    "ANALYSIS_AND_NUMBER_DERIVATION",
+    "NUMBER_SELECTION_REASON",
+    "PLAY_SELECTION_REASON",
+    "EXECUTION_STRUCTURE_REASON",
+    "FUNDING_STRATEGY_REASON",
+    "SOFTWARE_OPERATION",
+    "OBSERVATION_AND_STOP_RULE"
+  ],
+  "research_question": "",
+  "historical_observation_summary": "",
+  "analysis_angle_ids": [],
+  "number_derivation_summary": "",
+  "number_selection_reason": "",
+  "play_selection_reason": "",
+  "execution_structure_reason": "",
+  "funding_strategy_reason": "",
+  "software_operation_position": "AFTER_REASONING",
+  "observation_and_stop_rule": "",
+  "forbidden_primary_frame_hits": [],
+  "evidence_refs": {
+    "number_source": "",
+    "funding": "",
+    "software_execution": ""
+  },
+  "test_results": [
+    {"test_id":"PNR-T001","passed":false,"evidence":""},
+    {"test_id":"PNR-T002","passed":false,"evidence":""},
+    {"test_id":"PNR-T003","passed":false,"evidence":""},
+    {"test_id":"PNR-T004","passed":false,"evidence":""},
+    {"test_id":"PNR-T005","passed":false,"evidence":""},
+    {"test_id":"PNR-T006","passed":false,"evidence":""},
+    {"test_id":"PNR-T007","passed":false,"evidence":""}
+  ]
+}
