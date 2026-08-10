@@ -57,3 +57,8 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
+56. 任何包含PPT域的任务必须读取 `PPT叙事视角与扩展规则.json` 与 `PPT叙事视角验收测试集.jsonl`，默认采用 `HUMAN_BETTOR_RESEARCHER` 人工投注者/研究者叙事角色。
+57. PPT正文主线必须是“研究问题→历史现象→分析与取码→号码选择理由→玩法选择理由→执行结构理由→资金策略理由→软件操作→观察与停止”，不得以系统生成、文件拼装、校验器或纠错过程为主线。
+58. 每个包含PPT域的正式任务必须基于 `controller/templates/ppt_narrative_contract.template.json` 生成 `ppt_narrative_contract.json`，并在PPT生成前通过 `python tools/validate_ppt_narrative_policy.py --evidence <path>`。
+59. PPT规则的后续补充优先通过叙事规则注册表追加 `PNR-xxx` 与配套 `PNR-Txxx` 测试；禁止静默改变既有规则语义，破坏性变化必须提升schema版本并经独立PR验证。
+60. 仓库CI必须运行 `python tools/validate_ppt_narrative_policy.py --self-test --scan-runs`；叙事合同或核心规则失败时不得交付正式PPT。
