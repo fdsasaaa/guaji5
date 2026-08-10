@@ -83,3 +83,23 @@ jobs:
           test -f tools/validate_scheme_orchestration_gate.py
           test -f tools/validate_orchestration_scoring.py
           test -f tools/test_orchestration_gates.py
+
+  ppt-narrative:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Validate PPT human-bettor narrative policy independently
+        run: python tools/validate_ppt_narrative_policy.py --self-test --scan-runs
+      - name: Validate existing PPT director and number provenance rules independently
+        run: python tools/validate_ppt_director_rules.py
+      - name: Confirm narrative extension sources exist
+        run: |
+          test -f PPT叙事视角与扩展规则.json
+          test -f PPT叙事视角验收测试集.jsonl
+          test -f controller/templates/ppt_narrative_contract.template.json
+          test -f tools/validate_ppt_narrative_policy.py
