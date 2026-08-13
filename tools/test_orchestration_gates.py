@@ -111,6 +111,27 @@ def build_valid() -> tuple[dict, dict, dict]:
         setting["evidence_level"] = record["max_formal_level"]
 
     evidence["coverage_debt"]["due_features"] = ledger["next_due_features"]
+    represented_features = {
+        feature
+        for profile in evidence["candidate_profiles"]
+        for feature in profile.get("features", [])
+    }
+    probe_path_evidence = {}
+    for path in evidence["funding_paths"]:
+        feature_id = funding_feature[path["kind"]]
+        if path.get("decision") == "PROBE_ONLY":
+            refs = path.get("evidence_refs", [])
+            probe_path_evidence[feature_id] = refs[0] if refs else "SELF-TEST"
+    evidence["coverage_debt"]["blocked_features"] = [
+        {
+            "feature_id": feature,
+            "reason": "该到期功能已作为独立资金路径PROBE_ONLY审议；不重复塞入候选画像，且中央证据低于E3，禁止正式画像启用",
+            "evidence_ref": probe_path_evidence[feature],
+        }
+        for feature in ledger["next_due_features"]
+        if feature not in represented_features and feature in probe_path_evidence
+    ]
+    evidence["coverage_debt"]["all_exploration_blocked"] = False
     evidence["recent_delivery_modes"] = ledger["recent_delivery_modes"]
     evidence["repeat_guard"]["last_three_fingerprints"] = ledger["recent_selected_fingerprints"]
     fingerprint = evidence["repeat_guard"]["fingerprint"]
