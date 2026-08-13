@@ -1,6 +1,6 @@
 {
   "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
-  "upgrade_id": "FORMAT-DICTIONARY-LATEST-MERGE-1",
+  "upgrade_id": "FORMAT-DICTIONARY-LATEST-MERGE-2",
   "build_type": "SYSTEM_UPGRADE_ONLY",
   "baseline_branch": "main",
   "baseline_commit_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
@@ -8,25 +8,28 @@
     "当前GitHub main中已验证且更高版本的规则",
     "GitHub中有明确用户确认/验证证据的更新格式事实",
     "V3.4完整接管版中main尚未保存的补充事实",
+    "旧26字母生成器完整规则文档，仅用于补充当前未展开的玩法语法",
     "旧系统真实TXT样本，仅用于填补仍为空缺的专属字段"
   ],
-  "merge_rule": "低优先级来源只能填空，禁止覆盖高优先级来源的非空字段、状态、证据等级或禁用规则",
+  "merge_rule": "低优先级来源只能填空，禁止覆盖高优先级来源的非空字段、状态、证据等级、禁用规则或语义修复",
   "planned_files": [
     "00B_完整玩法格式字典与版本优先级.md",
     "controller/betting_format_registry.json",
+    "controller/legacy_play_grammar_catalog.json",
     "tools/validate_betting_format_registry.py",
     "AGENTS.md",
     ".github/workflows/validate.yml",
     "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/impact_report.json",
-    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/validation_report.json"
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/validation_report.json",
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/rollback_manifest.json"
   ],
   "before_git_blob_sha": {
     "AGENTS.md": "e7df60b6bf556fa7f9a35a3ec7b4c6b53617a330",
     ".github/workflows/validate.yml": "601ddbe8dbf8f109135ccbd838322c74ca4fb98e",
     "01_软件格式与已验证执行规则.md": "9d8eb95c23eb02a74778d818015128fae719346c"
   },
-  "before_sha256_note": "当前连接器直接返回Git blob SHA；本次不改写01正文，新增文件无修改前SHA-256。PR/CI保留完整差异用于回滚。",
-  "reason": "消除当前01仍要求回到已不存在V3.2模板的断点，同时把V3.4恢复出的能力补进当前V3.9体系，且绝不以旧版本覆盖新版本。",
+  "before_sha256_note": "当前连接器直接返回Git blob SHA；本次刻意不改写01正文，新增知识文件无修改前SHA-256。PR/CI完整保留差异用于回滚。",
+  "reason": "消除01历史V3.2外部依赖；把V3.4和旧26字母生成器中仍有价值的玩法设计语法补进当前V3.9体系；同时确保所有旧资料只能补空，绝不反向覆盖新版本。",
   "impact_scope": ["SYSTEM", "PROGRAM", "SCHEME"],
   "required_validation": [
     "python tools/validate_betting_format_registry.py",
@@ -39,11 +42,38 @@
   "rollback_order": [
     "撤销AGENTS与CI接入",
     "删除新validator",
-    "删除新registry",
+    "删除当前格式registry与历史语法catalog",
     "删除00B覆盖规则",
     "保留本运行证据目录作为失败证据"
   ],
   "migration": true,
   "delete_allowed": false,
-  "created_at": "2026-08-13T11:16:00+08:00"
+  "created_at": "2026-08-13T11:16:00+08:00",
+  "post_write": {
+    "branch": "agent/v34-v39-format-dictionary-merge-20260813",
+    "draft_pr": 36,
+    "draft_pr_url": "https://github.com/fdsasaaa/guaji5/pull/36",
+    "validated_branch_head_before_manifest_update": "ee80ec12f25944e6e820330d24cf4357497bc94a",
+    "format_registry_validation": "PASS",
+    "repository_validation": "PASS",
+    "controller_architecture_validation": "PASS",
+    "controller_runtime_validation": "PASS",
+    "function_orchestration_validation": "PASS",
+    "orchestration_scoring_validation": "PASS",
+    "github_actions_overall": "FAIL_DUE_TO_PREEXISTING_ADVERSARIAL_ORCHESTRATION_GATE",
+    "baseline_same_gate_failure": {
+      "baseline_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+      "run_id": 31663646420,
+      "failed_step": "Adversarial-test orchestration gates"
+    },
+    "latest_branch_run_id": 31664288273,
+    "latest_branch_failed_step": "Adversarial-test orchestration gates",
+    "merge_status": "NOT_MERGED_DRAFT",
+    "main_modified": false,
+    "known_limits": [
+      "历史语法目录补齐设计知识，不把旧E2/E0事实提升为当前E3",
+      "当前main未正式注册的历史玩法仍按PROBE/BLOCK处理",
+      "现有编排对抗测试夹具与中央证据不一致是基线既有问题，未在本PR顺手绕过或弱化"
+    ]
+  }
 }
