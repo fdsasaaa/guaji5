@@ -57,3 +57,8 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
+56. 任何方案设计在读取 `01_软件格式与已验证执行规则.md` 后，必须继续读取 `00B_完整玩法格式字典与版本优先级.md` 与 `controller/betting_format_registry.json`；机器注册表负责消除历史V3.2外部依赖。
+57. 玩法格式来源合并必须遵守 `CURRENT_GITHUB_MAIN_VERIFIED > NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED > V3_4_RECOVERED > LEGACY_REAL_TXT_SAMPLE`；低优先级只能填空，禁止覆盖高优先级非空事实。
+58. 已知玩法在注册表中缺失时必须标记 `REGISTRY_DEFECT` 并修复仓库，不得要求用户重新提供V3.2，也不得自行猜测字段、分隔符或相似玩法替代格式。
+59. 正式方案生成前必须运行 `python tools/validate_betting_format_registry.py`；该校验失败时不得进入方案冻结。
+60. `controller/betting_format_registry.json` 是玩法/类别/投注内容格式的机器总字典；新增用户确认格式、旧样本恢复事实或新玩法时只允许追加或升级证据，不允许以旧版本整表覆盖当前注册表。
