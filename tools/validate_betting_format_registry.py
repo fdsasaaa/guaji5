@@ -2,9 +2,9 @@
 # -*- coding: utf-8 -*-
 """Validate the self-contained betting format knowledge base.
 
-Checks current authority, precedence, current formal coverage, and the legacy
-knowledge supplement. It intentionally does not promote legacy knowledge to
-current runtime evidence.
+Checks current authority, precedence, current formal coverage, legacy knowledge
+supplement, and strict 投注监控 0/1 sequence semantics. It intentionally does
+not promote legacy knowledge to current runtime evidence.
 """
 
 from __future__ import annotations
@@ -18,6 +18,7 @@ REGISTRY = ROOT / "controller" / "betting_format_registry.json"
 LEGACY = ROOT / "controller" / "legacy_play_grammar_catalog.json"
 RULES = ROOT / "01_软件格式与已验证执行规则.md"
 OVERLAY = ROOT / "00B_完整玩法格式字典与版本优先级.md"
+AGENTS = ROOT / "AGENTS.md"
 
 
 def fail(msg: str) -> None:
@@ -30,6 +31,20 @@ def load_json(path: Path):
         return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
         fail(f"cannot parse {path.relative_to(ROOT)}: {exc}")
+
+
+def valid_monitor_value(value: str) -> bool:
+    """Current hard grammar for 投注监控.
+
+    OFF is exactly False-. ON is True- followed by a non-empty sequence in
+    which 0=挂 and 1=中. No other digit has monitor-state meaning.
+    """
+    if value == "False-":
+        return True
+    if not value.startswith("True-"):
+        return False
+    sequence = value[len("True-"):]
+    return bool(sequence) and set(sequence) <= {"0", "1"}
 
 
 def extract_formal_rows(text: str):
@@ -65,7 +80,7 @@ def extract_formal_rows(text: str):
 
 
 def main() -> int:
-    for p in (REGISTRY, LEGACY, RULES, OVERLAY):
+    for p in (REGISTRY, LEGACY, RULES, OVERLAY, AGENTS):
         if not p.exists():
             fail(f"missing required file: {p.relative_to(ROOT)}")
 
@@ -116,6 +131,33 @@ def main() -> int:
     for key in ["投注监控", "换号规则", "正反集", "真实模拟切换", "盈亏停止", "盈亏跳转", "时间控制", "顶部方案轮投"]:
         if key not in settings:
             fail(f"missing settings registry: {key}")
+
+    # 2026-08-13 user-confirmed monitor semantics: 0=挂, 1=中, only 0/1.
+    monitor = settings.get("投注监控", {})
+    monitor_contract = monitor.get("field_contract", {})
+    if monitor_contract.get("off") != "False-":
+        fail("投注监控 OFF must be exactly False-")
+    if monitor_contract.get("enabled") != "True-{01_sequence}":
+        fail("投注监控 ON grammar must be True-{01_sequence}")
+    monitor_semantics = str(monitor.get("sequence_semantics", ""))
+    if "0/1" not in monitor_semantics or "挂/中" not in monitor_semantics:
+        fail("投注监控 registry must preserve 0/1 => 挂/中 semantics")
+
+    monitor_accept = ["False-", "True-0", "True-1", "True-00011", "True-10101"]
+    monitor_reject = [
+        "False-50000", "True-50000", "True-0121", "True-", "False-0",
+        "False-1", "True-2", "True-10A1", "50000",
+    ]
+    for value in monitor_accept:
+        if not valid_monitor_value(value):
+            fail(f"monitor positive grammar regression: {value}")
+    for value in monitor_reject:
+        if valid_monitor_value(value):
+            fail(f"monitor invalid value unexpectedly accepted: {value}")
+
+    legacy_coldhot_monitor = coldhot.get("legacy_exact_sample", {}).get("投注监控")
+    if legacy_coldhot_monitor is not None and not valid_monitor_value(str(legacy_coldhot_monitor)):
+        fail(f"legacy cold/hot sample leaks invalid 投注监控 into registry: {legacy_coldhot_monitor}")
 
     registered = data.get("formal_allowed_combinations", [])
     lookup = {(r.get("category_code"), r.get("play_type"), r.get("play_name")) for r in registered}
@@ -180,8 +222,20 @@ def main() -> int:
     overlay_text = OVERLAY.read_text(encoding="utf-8")
     if "低优先级来源只能填空" not in overlay_text or "REGISTRY_DEFECT" not in overlay_text:
         fail("00B precedence/defect rule missing")
+    for required_monitor_rule in [
+        "0=挂", "1=中", "投注监控=False-", "投注监控=True-<非空01序列>",
+        "False-50000", "True-50000", "True-0121",
+    ]:
+        if required_monitor_rule not in overlay_text:
+            fail(f"00B strict monitor rule missing: {required_monitor_rule}")
+
+    agents_text = AGENTS.read_text(encoding="utf-8")
+    for required_agent_rule in ["0=挂、1=中", "False-50000", "True-50000", "True-0121"]:
+        if required_agent_rule not in agents_text:
+            fail(f"AGENTS strict monitor rule missing: {required_agent_rule}")
 
     print("[PASS] betting format knowledge base is self-contained and precedence-safe")
+    print("[PASS] 投注监控 grammar is strict: OFF=False-, ON=True-[01]+, 0=挂, 1=中")
     print(f"[INFO] current_primary_categories={len(categories)}")
     print(f"[INFO] historical_level1_known={len(hist)}")
     print(f"[INFO] legacy_play_grammar_families={len(catalog)}")
