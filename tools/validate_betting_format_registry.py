@@ -1,19 +1,21 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Validate the self-contained betting format registry.
+"""Validate the self-contained betting format knowledge base.
 
-This validator intentionally checks coverage and precedence, not runtime profitability.
+Checks current authority, precedence, current formal coverage, and the legacy
+knowledge supplement. It intentionally does not promote legacy knowledge to
+current runtime evidence.
 """
 
 from __future__ import annotations
 
 import json
-import re
 import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "controller" / "betting_format_registry.json"
+LEGACY = ROOT / "controller" / "legacy_play_grammar_catalog.json"
 RULES = ROOT / "01_软件格式与已验证执行规则.md"
 OVERLAY = ROOT / "00B_完整玩法格式字典与版本优先级.md"
 
@@ -63,11 +65,12 @@ def extract_formal_rows(text: str):
 
 
 def main() -> int:
-    for p in (REGISTRY, RULES, OVERLAY):
+    for p in (REGISTRY, LEGACY, RULES, OVERLAY):
         if not p.exists():
             fail(f"missing required file: {p.relative_to(ROOT)}")
 
     data = load_json(REGISTRY)
+    legacy = load_json(LEGACY)
 
     if data.get("unknown_format_policy") != "REGISTRY_DEFECT_AND_BLOCK_GENERATION":
         fail("unknown format policy must be REGISTRY_DEFECT_AND_BLOCK_GENERATION")
@@ -131,18 +134,57 @@ def main() -> int:
     if grammars.get("前二_直选单式", {}).get("forbidden_rewrite") is None:
         fail("semantic guard for exact two-digit numbers is missing")
 
-    legacy = data.get("legacy_evidence", [])
-    if not any("V3.4.0" in str(item.get("source", "")) for item in legacy):
+    evidence = data.get("legacy_evidence", [])
+    if not any("V3.4.0" in str(item.get("source", "")) for item in evidence):
         fail("V3.4 recovery source is not recorded")
-    if not any("方案2-冷热温出号" in str(item.get("source", "")) for item in legacy):
+    if not any("方案2-冷热温出号" in str(item.get("source", "")) for item in evidence):
         fail("legacy real cold/hot/warm TXT evidence is not recorded")
+
+    # Historical knowledge completeness: these are design-known categories, not formal promotions.
+    if legacy.get("status") != "KNOWLEDGE_SUPPLEMENT_ONLY":
+        fail("legacy catalog must remain knowledge-only")
+    hist = legacy.get("historical_level1_catalog", {})
+    required_historical = [
+        "遗漏出号", "开某投某", "固定取码", "定码轮换", "高级定码轮换",
+        "冷热温出号", "随机出号", "自定义开某投某", "高级开某投某",
+        "龙虎高级开某投某", "随机"
+    ]
+    missing_hist = [x for x in required_historical if x not in hist]
+    if missing_hist:
+        fail(f"historical level1 knowledge missing: {missing_hist}")
+    for name in required_historical:
+        if not hist[name].get("current_disposition"):
+            fail(f"historical category has no current disposition: {name}")
+
+    omission_fields = set(hist["遗漏出号"].get("known_fields", []))
+    required_omission = {
+        "遗漏出号期数", "遗漏出号类型", "遗漏检查数据传输期数",
+        "遗漏期数缓存期数", "遗漏出号个数", "遗漏出号容错个数"
+    }
+    if not required_omission.issubset(omission_fields):
+        fail("omission six-field legacy shape is incomplete")
+
+    catalog = legacy.get("bet_content_grammar_catalog", {})
+    for family in ["三位数", "二位数", "四位数", "五位数", "定位胆", "龙虎", "趣味", "不定位"]:
+        if family not in catalog:
+            fail(f"legacy betting grammar family missing: {family}")
+    if catalog["二位数"].get("直选单式", {}).get("format") is None:
+        fail("two-digit exact single grammar missing")
+    if catalog["五位数"].get("直选复式", {}).get("format") is None:
+        fail("five-position direct-multi grammar missing")
+
+    conflict_rows = legacy.get("historical_conflicts_resolved_by_current_main", [])
+    if len(conflict_rows) < 4 or any(x.get("winner") != "CURRENT_GITHUB_MAIN" for x in conflict_rows):
+        fail("legacy/current conflict precedence is incomplete")
 
     overlay_text = OVERLAY.read_text(encoding="utf-8")
     if "低优先级来源只能填空" not in overlay_text or "REGISTRY_DEFECT" not in overlay_text:
         fail("00B precedence/defect rule missing")
 
-    print("[PASS] betting format registry is self-contained and precedence-safe")
-    print(f"[INFO] primary_categories={len(categories)}")
+    print("[PASS] betting format knowledge base is self-contained and precedence-safe")
+    print(f"[INFO] current_primary_categories={len(categories)}")
+    print(f"[INFO] historical_level1_known={len(hist)}")
+    print(f"[INFO] legacy_play_grammar_families={len(catalog)}")
     print(f"[INFO] current_01_formal_rows={len(formal_rows)}")
     print(f"[INFO] registered_combinations={len(registered)}")
     return 0
