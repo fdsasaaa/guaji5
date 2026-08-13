@@ -1,0 +1,45 @@
+{
+  "task_id": "SYSTEM-20260813-ORCHESTRATION-FIXTURE-FIX",
+  "build_type": "SYSTEM_UPGRADE_ONLY",
+  "baseline_branch": "main",
+  "baseline_commit_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "reason": "main现有Adversarial-test orchestration gates失败：有效夹具没有同步中央功能证据注册表新增的八层绑定功能，导致CI在任何后续PR中都无法跑绿。",
+  "planned_files": [
+    "tools/test_orchestration_gates.py",
+    "controller/runs/SYSTEM-20260813-ORCHESTRATION-FIXTURE-FIX/rollback_manifest.json",
+    "controller/runs/SYSTEM-20260813-ORCHESTRATION-FIXTURE-FIX/validation_report.json"
+  ],
+  "before_git_blob_sha": {
+    "tools/test_orchestration_gates.py": "3ab5762b611208fceea4e272600ae9f16a75790a",
+    "controller/feature_evidence_registry.json": "416f08f294ec0424a0b50389eb62a81f19de994c"
+  },
+  "after_git_blob_sha": {
+    "tools/test_orchestration_gates.py": "a428cbad699a1c587471fb79102dc47039436e97"
+  },
+  "impact_scope": ["SYSTEM", "PROGRAM"],
+  "fix_rule": "只修复测试夹具与当前中央证据注册表的同步，不降低任何验证条件、不删除任何负向测试、不修改生产编排规则。",
+  "required_validation": [
+    "python tools/test_orchestration_gates.py",
+    "python tools/validate_repository.py",
+    "python tools/validate_controller_architecture.py",
+    "python tools/lottery_controller.py validate",
+    "GitHub Actions Validate system repository"
+  ],
+  "rollback_target": "main@03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "rollback_order": [
+    "恢复tools/test_orchestration_gates.py到3ab5762b611208fceea4e272600ae9f16a75790a",
+    "保留运行证据目录用于解释回滚原因"
+  ],
+  "delete_allowed": false,
+  "created_at": "2026-08-13T11:38:00+08:00",
+  "post_write": {
+    "draft_pr": 37,
+    "draft_pr_url": "https://github.com/fdsasaaa/guaji5/pull/37",
+    "validated_head_before_manifest_update": "23435077e664d9c82d0f76436f86e9105d3bb32f",
+    "github_actions_run_id": 31664693192,
+    "github_actions_result": "PASS",
+    "adversarial_gate_result": "PASS",
+    "diff_review": "tools/test_orchestration_gates.py only changes valid-fixture synchronization; negative tests remain present; production validators/central evidence unchanged",
+    "main_modified": false
+  }
+}

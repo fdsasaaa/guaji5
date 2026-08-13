@@ -1,0 +1,26 @@
+{
+  "task_id": "SYSTEM-20260813-ORCHESTRATION-FIXTURE-FIX",
+  "branch": "fix/orchestration-adversarial-fixture-20260813",
+  "draft_pr": 37,
+  "validated_head": "132dd39d84658ec8a8c86b8a40b19920d1d1d303",
+  "github_actions_run_id": 31664664464,
+  "result": "PASS",
+  "successful_steps": [
+    "Validate repository",
+    "Validate controller architecture",
+    "Validate controller runtime configuration",
+    "Validate full-function orchestration",
+    "Validate orchestration scoring",
+    "Adversarial-test orchestration gates",
+    "Validate scheme PR orchestration gate",
+    "Smoke-test controller task envelope",
+    "Validate PPT director and number provenance rules",
+    "Materialize fixed PPT pages",
+    "Validate fixed PPT pages",
+    "Confirm invalidated B395 builder is absent",
+    "Confirm source-gate files exist"
+  ],
+  "fix_scope": "test fixture synchronization only",
+  "security_statement": "没有降低生产验证条件、没有提高中央证据等级、没有删除任何负向对抗测试。有效夹具改为从中央feature_evidence_registry动态读取证据，并对不应重复塞入画像的高级资金PROBE_ONLY使用有证据的覆盖阻塞记录。",
+  "ready_for_diff_review": true
+}
