@@ -1,0 +1,49 @@
+{
+  "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
+  "upgrade_id": "FORMAT-DICTIONARY-LATEST-MERGE-1",
+  "build_type": "SYSTEM_UPGRADE_ONLY",
+  "baseline_branch": "main",
+  "baseline_commit_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "source_precedence": [
+    "当前GitHub main中已验证且更高版本的规则",
+    "GitHub中有明确用户确认/验证证据的更新格式事实",
+    "V3.4完整接管版中main尚未保存的补充事实",
+    "旧系统真实TXT样本，仅用于填补仍为空缺的专属字段"
+  ],
+  "merge_rule": "低优先级来源只能填空，禁止覆盖高优先级来源的非空字段、状态、证据等级或禁用规则",
+  "planned_files": [
+    "00B_完整玩法格式字典与版本优先级.md",
+    "controller/betting_format_registry.json",
+    "tools/validate_betting_format_registry.py",
+    "AGENTS.md",
+    ".github/workflows/validate.yml",
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/impact_report.json",
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/validation_report.json"
+  ],
+  "before_git_blob_sha": {
+    "AGENTS.md": "e7df60b6bf556fa7f9a35a3ec7b4c6b53617a330",
+    ".github/workflows/validate.yml": "601ddbe8dbf8f109135ccbd838322c74ca4fb98e",
+    "01_软件格式与已验证执行规则.md": "9d8eb95c23eb02a74778d818015128fae719346c"
+  },
+  "before_sha256_note": "当前连接器直接返回Git blob SHA；本次不改写01正文，新增文件无修改前SHA-256。PR/CI保留完整差异用于回滚。",
+  "reason": "消除当前01仍要求回到已不存在V3.2模板的断点，同时把V3.4恢复出的能力补进当前V3.9体系，且绝不以旧版本覆盖新版本。",
+  "impact_scope": ["SYSTEM", "PROGRAM", "SCHEME"],
+  "required_validation": [
+    "python tools/validate_betting_format_registry.py",
+    "python tools/validate_repository.py",
+    "python tools/validate_controller_architecture.py",
+    "python tools/lottery_controller.py validate",
+    "GitHub Actions Validate system repository"
+  ],
+  "rollback_target": "main@03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+  "rollback_order": [
+    "撤销AGENTS与CI接入",
+    "删除新validator",
+    "删除新registry",
+    "删除00B覆盖规则",
+    "保留本运行证据目录作为失败证据"
+  ],
+  "migration": true,
+  "delete_allowed": false,
+  "created_at": "2026-08-13T11:16:00+08:00"
+}
