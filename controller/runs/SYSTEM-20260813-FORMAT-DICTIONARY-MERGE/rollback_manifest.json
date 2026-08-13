@@ -28,7 +28,20 @@
     ".github/workflows/validate.yml": "601ddbe8dbf8f109135ccbd838322c74ca4fb98e",
     "01_软件格式与已验证执行规则.md": "9d8eb95c23eb02a74778d818015128fae719346c"
   },
-  "before_sha256_note": "当前连接器直接返回Git blob SHA；本次刻意不改写01正文，新增知识文件无修改前SHA-256。PR/CI完整保留差异用于回滚。",
+  "after_git_blob_sha": {
+    "00B_完整玩法格式字典与版本优先级.md": "420826af8b337b0476128c5b49c7e0d4ec370ff9",
+    "controller/betting_format_registry.json": "3980c5b57dcaf781d5e489a78e8e276eaba0bcdc",
+    "controller/legacy_play_grammar_catalog.json": "2123d03223c4e0960af83ae7ebbecd60cfa52acc",
+    "tools/validate_betting_format_registry.py": "28dbc8c3d109982120f4bca896162c80fdb9df7d",
+    "AGENTS.md": "43c9753bf0fdd03508dbc1ae301daba1b5ecf7eb",
+    ".github/workflows/validate.yml": "8552417299ff968ef618b003d635d8474099df45",
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/impact_report.json": "524defd7e5a1ed779992c6407e01280971a14c7b",
+    "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/validation_report.json": "90ef9611fdee8e25bca20eddcef94c7e355ee94a"
+  },
+  "unchanged_current_rule_blob": {
+    "01_软件格式与已验证执行规则.md": "9d8eb95c23eb02a74778d818015128fae719346c"
+  },
+  "before_sha256_note": "当前连接器直接返回Git blob SHA；本次刻意不改写01正文。完整差异、双父合并提交与GitHub Actions提供可回滚证据。",
   "reason": "消除01历史V3.2外部依赖；把V3.4和旧26字母生成器中仍有价值的玩法设计语法补进当前V3.9体系；同时确保所有旧资料只能补空，绝不反向覆盖新版本。",
   "impact_scope": ["SYSTEM", "PROGRAM", "SCHEME"],
   "required_validation": [
@@ -44,7 +57,7 @@
     "删除新validator",
     "删除当前格式registry与历史语法catalog",
     "删除00B覆盖规则",
-    "保留本运行证据目录作为失败证据"
+    "保留本运行证据目录作为失败/回滚证据"
   ],
   "migration": true,
   "delete_allowed": false,
@@ -53,27 +66,24 @@
     "branch": "agent/v34-v39-format-dictionary-merge-20260813",
     "draft_pr": 36,
     "draft_pr_url": "https://github.com/fdsasaaa/guaji5/pull/36",
-    "validated_branch_head_before_manifest_update": "ee80ec12f25944e6e820330d24cf4357497bc94a",
+    "ci_fixture_repair_pr": 37,
+    "ci_fixture_repair_merged_commit": "f4f1c30f92b906c89ed379a4848dba6ccec158c7",
+    "main_remerged_into_branch_commit": "9be19ce3c88abba3bb45b6a119799bbe6a3c144d",
     "format_registry_validation": "PASS",
     "repository_validation": "PASS",
     "controller_architecture_validation": "PASS",
     "controller_runtime_validation": "PASS",
     "function_orchestration_validation": "PASS",
     "orchestration_scoring_validation": "PASS",
-    "github_actions_overall": "FAIL_DUE_TO_PREEXISTING_ADVERSARIAL_ORCHESTRATION_GATE",
-    "baseline_same_gate_failure": {
-      "baseline_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
-      "run_id": 31663646420,
-      "failed_step": "Adversarial-test orchestration gates"
-    },
-    "latest_branch_run_id": 31664288273,
-    "latest_branch_failed_step": "Adversarial-test orchestration gates",
-    "merge_status": "NOT_MERGED_DRAFT",
-    "main_modified": false,
+    "adversarial_orchestration_gate": "PASS",
+    "github_actions_run_id": 31664873605,
+    "github_actions_overall": "PASS",
+    "merge_status": "READY_AFTER_FINAL_CI_AND_DIFF_REVIEW",
+    "main_dictionary_modified": false,
     "known_limits": [
       "历史语法目录补齐设计知识，不把旧E2/E0事实提升为当前E3",
       "当前main未正式注册的历史玩法仍按PROBE/BLOCK处理",
-      "现有编排对抗测试夹具与中央证据不一致是基线既有问题，未在本PR顺手绕过或弱化"
+      "真正新出现且两层字典都没有的玩法将报REGISTRY_DEFECT，而不是猜测"
     ]
   }
 }
