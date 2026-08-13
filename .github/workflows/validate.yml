@@ -70,6 +70,7 @@ jobs:
           test -f 14_导演执行审计学习总控与模块化变更协议.md
           test -f 00B_完整玩法格式字典与版本优先级.md
           test -f controller/betting_format_registry.json
+          test -f controller/legacy_play_grammar_catalog.json
           test -f tools/validate_betting_format_registry.py
           test -f controller/pipeline.json
           test -f controller/extensions.json
