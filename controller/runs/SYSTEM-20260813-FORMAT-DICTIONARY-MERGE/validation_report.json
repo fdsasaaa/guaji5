@@ -2,7 +2,7 @@
   "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
   "branch": "agent/v34-v39-format-dictionary-merge-20260813",
   "pr": 36,
-  "validation_time": "2026-08-13T11:32:00+08:00",
+  "validation_time": "2026-08-13T11:48:00+08:00",
   "format_dictionary_validation": {
     "command": "python tools/validate_betting_format_registry.py",
     "result": "PASS",
@@ -19,29 +19,42 @@
       "2026-08-08 user-confirmed front2 direct-single exact two-digit semantics migrated without importing unrelated funding claims"
     ]
   },
+  "base_repair": {
+    "pr": 37,
+    "merged_commit": "f4f1c30f92b906c89ed379a4848dba6ccec158c7",
+    "purpose": "repair pre-existing orchestration adversarial fixture drift without weakening production gates"
+  },
   "github_actions": {
-    "latest_run_id": 31664288273,
-    "latest_head": "ee80ec12f25944e6e820330d24cf4357497bc94a",
-    "overall": "FAIL_PREEXISTING_UNRELATED_GATE",
+    "validated_head": "9be19ce3c88abba3bb45b6a119799bbe6a3c144d",
+    "run_id": 31664873605,
+    "overall": "PASS",
     "successful_steps": [
       "Validate repository",
       "Validate controller architecture",
       "Validate controller runtime configuration",
       "Validate betting format registry",
       "Validate full-function orchestration",
-      "Validate orchestration scoring"
-    ],
-    "failed_step": "Adversarial-test orchestration gates",
-    "failure_scope": "existing orchestration adversarial fixture/evidence mismatch; not format-dictionary validation",
-    "baseline_evidence": {
-      "baseline_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
-      "baseline_run_id": 31663646420,
-      "baseline_result": "FAIL",
-      "baseline_failed_step": "Adversarial-test orchestration gates",
-      "note": "same baseline commit failed this gate before format-dictionary commits; therefore this PR does not weaken or patch that unrelated gate"
-    }
+      "Validate orchestration scoring",
+      "Adversarial-test orchestration gates",
+      "Validate scheme PR orchestration gate",
+      "Smoke-test controller task envelope",
+      "Validate PPT director and number provenance rules",
+      "Materialize fixed PPT pages",
+      "Validate fixed PPT pages",
+      "Confirm invalidated B395 builder is absent",
+      "Confirm source-gate files exist"
+    ]
   },
-  "merge_readiness": "DRAFT_NOT_READY",
-  "reason": "new format knowledge checks pass, but repository-wide CI remains red due to a pre-existing unrelated orchestration adversarial gate. Per governance, PR stays Draft and main remains unchanged.",
-  "recommended_next_action": "separate PR should repair the pre-existing orchestration adversarial fixtures/gate; after main is green, rebase/re-run PR36 and perform independent diff review before Ready/merge"
+  "precedence_review": {
+    "result": "PASS",
+    "rule": "CURRENT_GITHUB_MAIN > NEWER_USER_CONFIRMED > V3.4 > LEGACY_GENERATOR_DOCS > LEGACY_TXT",
+    "current_main_overrides_verified": [
+      "current combination rotation retained over old removal",
+      "current block on fictitious dragon-tiger advanced trigger category retained over legacy success record",
+      "current ban on 冷热温出号数据 retained",
+      "legacy LHHC values scoped to old samples only"
+    ]
+  },
+  "merge_readiness": "READY_AFTER_DIFF_REVIEW",
+  "reason": "all repository and format-dictionary gates pass after merging the separately reviewed and merged CI fixture repair from main; no current V3.9 rule was replaced by older material"
 }
