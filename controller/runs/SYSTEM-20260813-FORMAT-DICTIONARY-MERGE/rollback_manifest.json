@@ -33,7 +33,7 @@
     "controller/betting_format_registry.json": "3980c5b57dcaf781d5e489a78e8e276eaba0bcdc",
     "controller/legacy_play_grammar_catalog.json": "2123d03223c4e0960af83ae7ebbecd60cfa52acc",
     "tools/validate_betting_format_registry.py": "28dbc8c3d109982120f4bca896162c80fdb9df7d",
-    "AGENTS.md": "43c9753bf0fdd03508dbc1ae301daba1b5ecf7eb",
+    "AGENTS.md": "15120107a4b2ba9f56b26a581a2627c7e02a0c23",
     ".github/workflows/validate.yml": "8552417299ff968ef618b003d635d8474099df45",
     "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/impact_report.json": "524defd7e5a1ed779992c6407e01280971a14c7b",
     "controller/runs/SYSTEM-20260813-FORMAT-DICTIONARY-MERGE/validation_report.json": "90ef9611fdee8e25bca20eddcef94c7e355ee94a"
@@ -69,6 +69,7 @@
     "ci_fixture_repair_pr": 37,
     "ci_fixture_repair_merged_commit": "f4f1c30f92b906c89ed379a4848dba6ccec158c7",
     "main_remerged_into_branch_commit": "9be19ce3c88abba3bb45b6a119799bbe6a3c144d",
+    "latest_rule_commit_before_manifest_refresh": "fe6f45033d5f583a24e3f62f31bef8909680bebf",
     "format_registry_validation": "PASS",
     "repository_validation": "PASS",
     "controller_architecture_validation": "PASS",
@@ -76,8 +77,8 @@
     "function_orchestration_validation": "PASS",
     "orchestration_scoring_validation": "PASS",
     "adversarial_orchestration_gate": "PASS",
-    "github_actions_run_id": 31664873605,
-    "github_actions_overall": "PASS",
+    "last_full_green_run_before_manifest_refresh": 31664980441,
+    "final_ci_required_after_this_manifest_refresh": true,
     "merge_status": "READY_AFTER_FINAL_CI_AND_DIFF_REVIEW",
     "main_dictionary_modified": false,
     "known_limits": [
