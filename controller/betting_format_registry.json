@@ -1,0 +1,366 @@
+{
+  "schema_version": "2.0.0",
+  "registry_version": "V3.9.7-FORMAT-REGISTRY-MERGE-1",
+  "status": "ACTIVE_ON_BRANCH_PENDING_CI",
+  "authority": "machine-enforced companion to 01_软件格式与已验证执行规则.md and 00B_完整玩法格式字典与版本优先级.md",
+  "unknown_format_policy": "REGISTRY_DEFECT_AND_BLOCK_GENERATION",
+  "semantic_mismatch_policy": "BLOCK_GENERATION",
+  "external_v32_dependency": false,
+  "merge_policy": {
+    "mode": "FILL_GAPS_ONLY",
+    "priority_high_to_low": [
+      "CURRENT_GITHUB_MAIN_VERIFIED",
+      "NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED",
+      "V3_4_RECOVERED",
+      "LEGACY_REAL_TXT_SAMPLE"
+    ],
+    "rules": [
+      "低优先级来源只能填补高优先级为空的字段",
+      "不得用V3.4覆盖V3.9更高版本的字段、状态、禁令或证据等级",
+      "冲突时保留高优先级最终值，并把旧值保存在legacy_evidence",
+      "已知玩法不得使用unknown作为最终状态",
+      "未登记玩法必须报REGISTRY_DEFECT，禁止AI猜格式"
+    ]
+  },
+  "encoding_contract": {
+    "main_scheme_txt": {"encoding": "GBK", "line_ending": "CRLF", "evidence": "CURRENT_GITHUB_MAIN_E2"},
+    "advanced_betting_txt": {"encoding": "UTF-8 BOM", "line_ending": "CRLF", "evidence": "CURRENT_GITHUB_MAIN_E2"},
+    "registry_and_docs": {"encoding": "UTF-8", "line_ending": "LF"}
+  },
+  "main_txt_common_contract": {
+    "source": "CURRENT_GITHUB_MAIN_VERIFIED_PLUS_LEGACY_FIELD_ORDER_RECOVERY",
+    "line1": "True|False",
+    "line2": "软件实际一级分类/策略名",
+    "required_common_fields": [
+      "软件名称",
+      "玩法类型",
+      "玩法名称",
+      "金额模式",
+      "投注监控",
+      "任选中奖",
+      "任选位置",
+      "换号规则",
+      "换号期数",
+      "翻倍方式",
+      "正集",
+      "倍投类型",
+      "倍投计划",
+      "倍投方案",
+      "显示更多",
+      "真实投注1",
+      "真实投注2",
+      "模拟投注1",
+      "模拟投注2",
+      "盈利跳转",
+      "亏损跳转",
+      "盈利停止",
+      "亏损停止",
+      "投注时间",
+      "投注时间类型",
+      "范围开始时间",
+      "范围停止时间",
+      "范围停止类型",
+      "倒计时停止时间",
+      "倒计时停止类型",
+      "SchemeCreator"
+    ],
+    "current_defaults": {
+      "软件名称": "CXGGJ unless a category-specific verified template says otherwise",
+      "金额模式": "2 unless a category-specific verified template says otherwise",
+      "任选中奖": "1-10",
+      "任选位置": "",
+      "翻倍方式": "0",
+      "正集": "True",
+      "显示更多": "False",
+      "SchemeCreator": ""
+    },
+    "warning": "通用骨架不能单独证明任意一级分类可正式导入；必须同时命中primary_categories与play_formats中的登记项"
+  },
+  "required_known_primary_categories": [
+    "定位胆",
+    "开某投某",
+    "定码轮换",
+    "高级定码轮换",
+    "冷热温出号",
+    "足迹出号",
+    "重号侦测",
+    "组合方案出号",
+    "组合方案轮投"
+  ],
+  "primary_categories": {
+    "定位胆": {
+      "generation_state": "FORMAL_WHEN_PLAY_FORMAT_REGISTERED",
+      "purpose": "单位置或多位置号码选择；固定取码归入本族处理",
+      "current_evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED_CAT02_AND_CAT04",
+      "dedicated_fields": [],
+      "notes": ["定位胆具体位置/玩法必须命中play_formats", "不得把定位胆玩法名写到TXT第2行冒充一级策略"]
+    },
+    "开某投某": {
+      "generation_state": "FORMAL_FOR_REGISTERED_DRAGON_TIGER; OTHERWISE_GATE_BY_PLAY_FORMAT",
+      "purpose": "根据开出状态改变后续投注内容",
+      "current_evidence": "CURRENT_GITHUB_MAIN_VERIFIED",
+      "dedicated_fields": ["开某投某类型", "开某投某号码", "开某投某内容"],
+      "field_contract": {
+        "开某投某类型": "comma-separated integers such as 0,3,4",
+        "开某投某号码": "range such as 0-2",
+        "开某投某内容": "space-separated content such as 龙 虎"
+      },
+      "semantic_guard": "高级映射不得把0-9十个触发全部映射到同一常量集合"
+    },
+    "定码轮换": {
+      "generation_state": "FORMAL_WHEN_PLAY_FORMAT_REGISTERED",
+      "purpose": "固定号码集合按换号条件轮换",
+      "current_evidence": "CURRENT_GITHUB_MAIN_VERIFIED",
+      "dedicated_fields": ["定码轮换内容", "定码轮换单组"],
+      "field_contract": {
+        "定码轮换内容": "按玩法内容语义；龙虎已验证为空格分隔，如 虎 龙",
+        "定码轮换单组": "boolean"
+      }
+    },
+    "高级定码轮换": {
+      "generation_state": "FORMAL_WHEN_PLAY_FORMAT_REGISTERED",
+      "purpose": "多局号码结构轮换",
+      "current_evidence": "CURRENT_GITHUB_MAIN_VERIFIED_PLUS_NEWER_USER_CONFIRMED_FORMAT",
+      "dedicated_fields": ["定码轮换单组", "高级定码轮换内容"],
+      "field_contract": {
+        "定码轮换单组": "boolean",
+        "高级定码轮换内容": "多局以英文分号分隔；单局外层={round}|{bet_content}|{param1}|{param2}"
+      },
+      "content_semantics": {
+        "前二_直选复式": "两段位置候选集合以-分隔，例如1|012-123|1|1",
+        "前二_直选单式": "完整二位号码，每注保持两位数字；多个号码空格分隔，例如1|28 49 60|1|1"
+      }
+    },
+    "冷热温出号": {
+      "generation_state": "FORMAL_WHEN_PLAY_FORMAT_REGISTERED_AND_CATEGORY_TEMPLATE_MATCHES",
+      "purpose": "按统计窗口和冷热温分组动态/半动态出号",
+      "current_evidence": "V3_4_CATEGORY_KNOWN_PLUS_LEGACY_REAL_TXT_EXACT_FIELDS; CURRENT_MAIN_RULES_WIN_ON_CONFLICT",
+      "dedicated_fields": ["冷热温统计期数", "冷热温出号类型", "冷热温容错个数"],
+      "field_contract": {
+        "冷热温统计期数": "positive integer",
+        "冷热温出号类型": "comma-separated integer list; exact meanings follow software GUI evidence",
+        "冷热温容错个数": "single integer or range such as 1-4"
+      },
+      "legacy_exact_sample": {
+        "line1": "False",
+        "line2": "冷热温出号",
+        "软件名称": "LHHC",
+        "玩法类型": "后四",
+        "玩法名称": "直选复式",
+        "金额模式": "3",
+        "投注监控": "False-",
+        "任选中奖": "1-10",
+        "任选位置": "",
+        "换号规则": "0",
+        "换号期数": "3",
+        "翻倍方式": "0",
+        "正集": "True",
+        "倍投类型": "0",
+        "倍投计划": "1",
+        "倍投方案": "",
+        "显示更多": "False",
+        "真实投注1": "False-50000",
+        "真实投注2": "False-50000",
+        "模拟投注1": "False-50000",
+        "模拟投注2": "False-50000",
+        "盈利跳转": "False-50000-1",
+        "亏损跳转": "False-50000-1",
+        "盈利停止": "False-50000",
+        "亏损停止": "False-50000",
+        "投注时间": "False",
+        "投注时间类型": "0",
+        "范围开始时间": "False-09:01:00",
+        "范围停止时间": "False-21:32:00",
+        "范围停止类型": "0",
+        "倒计时停止时间": "02:00:00",
+        "倒计时停止类型": "0",
+        "冷热温统计期数": "24",
+        "冷热温出号类型": "0,1,2,3,4,5,6,7,8",
+        "冷热温容错个数": "1-4"
+      },
+      "legacy_scope_warning": "LHHC/后四/金额模式3只证明该旧样本，不得覆盖当前V3.9对其他玩法或软件名称的更新规则"
+    },
+    "足迹出号": {
+      "generation_state": "PROBE_OR_FORMAL_ONLY_WHEN_MATCHING_REGISTERED_PLAY_TEMPLATE",
+      "purpose": "按历史足迹生成号码",
+      "current_evidence": "CURRENT_GITHUB_MAIN_VERIFIED_IMPORT_GUI_PARTIAL",
+      "dedicated_fields": ["足迹出号个数"],
+      "field_contract": {"足迹出号个数": "single integer; historical known values include 1/2/3/5/10/0"},
+      "missing_behavior_policy": "已知字段可设计，不得虚构软件内部动态算法；运行算法未E3时降级为PROBE_ONLY"
+    },
+    "重号侦测": {
+      "generation_state": "PROBE_OR_FORMAL_ONLY_WHEN_MATCHING_REGISTERED_PLAY_TEMPLATE",
+      "purpose": "观察历史重复号码并按设置出号",
+      "current_evidence": "CURRENT_GITHUB_MAIN_VERIFIED_IMPORT_GUI_PARTIAL",
+      "dedicated_fields": ["重号侦测出号类型", "重号侦测重号个数", "重号侦测号码个数", "重号侦测固定取号"],
+      "field_contract": {
+        "重号侦测出号类型": "0/1",
+        "重号侦测重号个数": "single integer or range",
+        "重号侦测号码个数": "single integer",
+        "重号侦测固定取号": "text; display_unstable"
+      }
+    },
+    "组合方案出号": {
+      "generation_state": "FORMAL_FORMAT_E2_RUNTIME_BEHAVIOR_GATED",
+      "purpose": "枪：引用多个子弹进行组合出号编排",
+      "current_evidence": "CURRENT_GITHUB_MAIN_E2",
+      "dedicated_fields": ["组合方案出号内容", "组合方案出号中几中奖"],
+      "field_contract": {
+        "组合方案出号内容": "方案显示名用英文分号;分隔，不带路径或.txt",
+        "组合方案出号中几中奖": "1-10"
+      },
+      "runtime_boundary": "具体投注算法未核对时不得写成E3"
+    },
+    "组合方案轮投": {
+      "generation_state": "FORMAL_FORMAT_E2_RUNTIME_BEHAVIOR_GATED",
+      "purpose": "枪：多局多子弹编排",
+      "current_evidence": "CURRENT_GITHUB_MAIN_E2",
+      "dedicated_fields": ["组合方案轮投内容"],
+      "field_contract": {
+        "组合方案轮投内容": "局号|方案名称列表|条件范围|参数1|参数2;...",
+        "multi_round_separator": ";",
+        "within_round_separator": "|",
+        "multi_scheme_separator": ","
+      },
+      "verified_example": "1|B001_冷热温出号_万位,B003_足迹出号_十位|1-5|1|2;2|B002_固定取码_千位,B004_重号侦测_百位_最近开出|3-10|1|1",
+      "runtime_boundary": "真实轮投顺序、条件范围和参数1/2含义未E3时不得解释"
+    }
+  },
+  "settings_registry": {
+    "投注监控": {
+      "known_modes": {"OFF": "关闭", "ALWAYS": "一直监控", "START_ONLY": "仅开始监控"},
+      "field_contract": {"off": "False-", "enabled": "True-{01_sequence}", "mode_0": "一直监控", "mode_1": "仅开始监控"},
+      "sequence_semantics": "0/1表示历史挂/中状态，不是开奖号码",
+      "runtime_boundary": "与高级倍投精确重置、多方案交互仍需E3"
+    },
+    "换号规则": {
+      "0": "旧默认/未选择/未知，不等于从不换号",
+      "1": "中后换号",
+      "2": "挂后换号",
+      "3": "连挂N期换号",
+      "4": "连中N期换号",
+      "5": "累积挂N期换号",
+      "6": "累积中N期换号",
+      "7": "中后或挂N期换号",
+      "8": "挂后或中N期换号",
+      "9": "从不换号",
+      "10": "每期换号/期期滚"
+    },
+    "正反集": {
+      "正集=True": "GUI正集",
+      "正集=False": "GUI反集",
+      "boundary": "独立反集=字段只限特定已验证模板；补集算法与注数需运行核对"
+    },
+    "真实模拟切换": {
+      "真实投注1": "True-X => 模拟挂X后切真实",
+      "真实投注2": "True-X => 模拟中X后切真实",
+      "模拟投注1": "True-X => 真实中X后切模拟",
+      "模拟投注2": "True-X => 真实挂X后切模拟",
+      "generation_state": "PROBE_ONLY_BELOW_E3"
+    },
+    "盈亏停止": {
+      "盈利停止": "True-金额",
+      "亏损停止": "True-金额",
+      "generation_state": "PROBE_ONLY_UNLESS_CURRENT_E3_EVIDENCE",
+      "boundary": "统计范围、累计口径和停止对象未完全确认"
+    },
+    "盈亏跳转": {
+      "盈利跳转": "True-金额-跳局数",
+      "亏损跳转": "True-金额-跳局数",
+      "generation_state": "PROBE_ONLY_UNLESS_CURRENT_E3_EVIDENCE",
+      "boundary": "第三段只确认GUI名称跳局数，不得自行解释具体目标机制"
+    },
+    "时间控制": {
+      "投注时间=False": "无时间限制",
+      "enabled_type_0": "时间范围",
+      "enabled_type_1": "倒计时",
+      "range_time": "True-HH:MM:SS",
+      "boundary": "跨午夜、重启、多方案交互与类型1真实动作未完全E3"
+    },
+    "顶部方案轮投": {
+      "checked": "所有已勾选方案依次循环投注，每期只投一个方案",
+      "unchecked": "所有已勾选方案一起投注，风险叠加",
+      "stored_in_txt": false,
+      "evidence": "CURRENT_GITHUB_MAIN_E3"
+    }
+  },
+  "betting_registry": {
+    "普通倍投": {
+      "倍投类型": "0",
+      "倍投计划": "positive numeric sequence",
+      "倍投方案": "must remain present and preferably valid",
+      "forbidden": ["empty", "0", "0,0,0"],
+      "note": "资金路径不提高选号命中概率"
+    },
+    "高级倍投": {
+      "main_txt": {"倍投类型": "1", "倍投计划": "1,1,1,1,1,1,1,1", "倍投方案": "高级倍投主配置"},
+      "directory": "GJBTScheme/高级倍投主配置.txt",
+      "config_encoding": "UTF-8 BOM CRLF",
+      "fields_in_order": ["软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转", "挂后监控", "挂后跳转"],
+      "standard_line": "软件名称=CXGGJ;ID=1;倍数=1;中后ID=1;挂后ID=2;中后监控=False;中后跳转=False-方案名;挂后监控=False;挂后跳转=False-方案名",
+      "formal_forbidden": ["倍数=0", "LF-only", "间隔控制型", "中后监控=True", "挂后监控=True", "中后跳转=True", "挂后跳转=True", "多方案跳转", "未验证的超级轮换/双轨等命名能力"],
+      "design_recipes": {
+        "C": "挂后回1，中后进下一",
+        "D": "挂后进下一，中后回1，末局挂后回1"
+      },
+      "required_risk_calculation": ["最高倍数", "总倍数", "一轮最大暴露", "最长未中", "最大回撤", "单日最大亏损"]
+    }
+  },
+  "play_content_grammars": {
+    "前二_直选复式": {"semantic_intent": "POSITION_SET_TWO_DIGIT_DIRECT_MULTI", "format": "两段位置集合以-分隔", "verified_example": "012-123", "evidence": "NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED"},
+    "前二_直选单式": {"semantic_intent": "EXACT_COMPLETE_TWO_DIGIT_NUMBER", "format": "每注完整两位号码；多注空格分隔", "verified_example": "28 49 60 81 02", "evidence": "USER_CONFIRMED_2026_08_08", "forbidden_rewrite": "不得改写为2-8/4-9/6-0/8-1/0-2"},
+    "前三_直选复式": {"semantic_intent": "THREE_POSITION_SETS", "format": "三段位置集合；具体分隔符继承已验证同类模板", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "中三_直选复式": {"semantic_intent": "THREE_POSITION_SETS", "format": "三段位置集合；具体分隔符继承已验证同类模板", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "后三_直选复式": {"semantic_intent": "THREE_POSITION_SETS", "format": "三段位置集合；具体分隔符继承已验证同类模板", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "后二_直选复式": {"semantic_intent": "TWO_POSITION_SETS", "format": "两段位置集合；具体分隔符继承已验证同类模板", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "五星_直选复式": {"semantic_intent": "FIVE_POSITION_SETS", "format": "五段位置集合；具体分隔符继承已验证同类模板", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "中三_组三单式": {"semantic_intent": "EXACT_GROUP3_SINGLE", "format": "继承CAT01已验证样本", "evidence": "CURRENT_GITHUB_MAIN_FORMAL_ALLOWED", "exact_template_gate": true},
+    "龙虎": {"format": "内容使用空格分隔，如龙 虎/虎 龙；任选位置为空；软件名称=CXGGJ", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"}
+  },
+  "formal_allowed_combinations": [
+    {"id": "CAT01_MIDDLE3_GROUP3_SINGLE", "category_code": "CAT01", "play_type": "中三", "play_name": "组三单式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FIXED_WAN", "category_code": "CAT02", "play_type": "定位胆", "play_name": "万位", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FIXED_QIAN", "category_code": "CAT02", "play_type": "定位胆", "play_name": "千位", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FIXED_BAI", "category_code": "CAT02", "play_type": "定位胆", "play_name": "百位", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FIXED_SHI", "category_code": "CAT02", "play_type": "定位胆", "play_name": "十位", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FIXED_GE", "category_code": "CAT02", "play_type": "定位胆", "play_name": "个位", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FRONT3_DIRECT_MULTI", "category_code": "CAT02", "play_type": "前三", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT02_FRONT2_DIRECT_MULTI", "category_code": "CAT02", "play_type": "前二", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_FIVE_DIRECT_MULTI", "category_code": "CAT05", "play_type": "五星", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_FRONT3_DIRECT_MULTI", "category_code": "CAT05", "play_type": "前三", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_BACK3_DIRECT_MULTI", "category_code": "CAT05", "play_type": "后三", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_FRONT2_DIRECT_MULTI", "category_code": "CAT05", "play_type": "前二", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_MIDDLE3_DIRECT_MULTI", "category_code": "CAT05", "play_type": "中三", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_BACK2_DIRECT_MULTI", "category_code": "CAT05", "play_type": "后二", "play_name": "直选复式", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT04_FIXED_BAI", "category_code": "CAT04", "play_type": "定位胆", "play_name": "百位", "state": "verified_with_history", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED_WITH_HISTORY"},
+    {"id": "CAT04_FIXED_QIAN", "category_code": "CAT04", "play_type": "定位胆", "play_name": "千位", "state": "verified_with_history", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED_WITH_HISTORY"},
+    {"id": "CAT03_DRAGON_QIAN_SHI", "category_code": "CAT03+龙虎", "play_type": "龙虎", "play_name": "千十", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT03_DRAGON_WAN_QIAN", "category_code": "CAT03+龙虎", "play_type": "龙虎", "play_name": "万千", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT03_DRAGON_BAI_SHI", "category_code": "CAT03+龙虎", "play_type": "龙虎", "play_name": "百十", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT06_DRAGON_BAI_GE", "category_code": "CAT06+龙虎", "play_type": "龙虎", "play_name": "百个", "state": "formal_allowed", "evidence": "CURRENT_GITHUB_MAIN_VERIFIED"},
+    {"id": "CAT05_FRONT2_DIRECT_SINGLE", "category_code": "CAT05", "play_type": "前二", "play_name": "直选单式", "carrier_strategy": "高级定码轮换", "state": "formal_allowed", "evidence": "USER_CONFIRMED_2026_08_08_FROM_NEWER_GITHUB_PR32", "semantic_intent": "EXACT_COMPLETE_TWO_DIGIT_NUMBER"}
+  ],
+  "nonformal_known_groups": {
+    "test_only": ["DT01 开某投某+龙虎 7个位置组合", "DT02 定码轮换+龙虎 9个位置组合", "DT03 高级定码轮换+新龙虎 3个", "CAT02低置信派生8个", "CAT04低置信派生3个", "CAT05低置信派生9个", "CAT06除龙虎外候选3个"],
+    "blocked_or_abandoned": ["外接计划", "虚构龙虎高级开某投某策略名/字段", "用LHHC作为龙虎软件名", "龙|虎|和等虚构龙虎内容格式", "冷热温出号数据等已导致异常的虚构字段", "含前导0的错误高级开某投某号码写法", "普通开某投某字段冒充超级开某投某", "unknown/forbidden/rejected字段"]
+  },
+  "legacy_evidence": [
+    {
+      "source": "AI挂机方案生成统一总典_V3.4.0_套装生成与分析路由版",
+      "usage": "gap_fill_only",
+      "claims_used": ["一级/二级/三级分类体系", "20个formal_allowed基线", "更多设置映射", "高级倍投九字段", "投注监控三模式", "枪弹与组合格式"]
+    },
+    {
+      "source": "Google Drive old system / 方案2-冷热温出号.txt",
+      "usage": "exact_legacy_template_evidence_only",
+      "claims_used": ["冷热温出号三个专属字段", "旧样本通用字段顺序", "旧样本具体值"],
+      "conflict_rule": "具体旧值不得覆盖当前GitHub更高版本规则"
+    },
+    {
+      "source": "GitHub Draft PR #32 controller/betting_format_registry.json v1.2.0",
+      "usage": "newer_user_confirmed_fact_migration",
+      "claims_used": ["前二直选复式位置集合语义", "前二直选单式完整两位号码语义", "USER_CONFIRMATION_2026-08-08"],
+      "note": "迁移事实不等于迁移该PR全部资金或方案结论"
+    }
+  ]
+}

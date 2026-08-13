@@ -1,0 +1,42 @@
+{
+  "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
+  "domains": ["SYSTEM", "PROGRAM", "SCHEME"],
+  "summary": "在不覆盖V3.9现有更高版本规则的前提下，将V3.4、旧26字母生成器规则和真实样本中仍有价值的格式知识补入两层机器字典，并把未来缺模板处理从‘寻找V3.2’改为‘REGISTRY_DEFECT仓库修复’。",
+  "preserved_current_rules": [
+    "01现有20个formal_allowed与test_only/blocked门控不降级",
+    "V3.9现有高级倍投九字段、E0-E3边界不降级",
+    "V3.9现有更多设置未知交互仍保持PROBE_ONLY/待E3",
+    "SchemeCreator默认空、编码、CRLF、顶部GUI轮投等现行规则不改变",
+    "00A的PPT/交付/号码来源最新规则不受本次修改影响",
+    "旧版曾删除的组合方案轮投不会覆盖当前V3.9已经恢复的组合轮投规则",
+    "旧版龙虎高级开某投某成功记录不会覆盖当前01对虚构该策略名/字段的禁令"
+  ],
+  "supplemented_from_older_sources": [
+    "冷热温出号三个专属字段及一份真实旧TXT完整字段顺序",
+    "遗漏出号6个历史锁定字段",
+    "固定取码内容外层格式",
+    "二位/三位/四位/五位/定位胆/龙虎/趣味/不定位投注内容语法",
+    "直选单式/复式、组三/组六、组选保胆/包胆等历史生成语法",
+    "历史11个实用一级分类/生成选项及其当前处置",
+    "V3.4分类/格式知识作为gap-fill证据",
+    "不再依赖外部V3.2文件"
+  ],
+  "migrated_newer_facts": [
+    "从GitHub Draft PR #32迁移前二直选复式的位置集合语义",
+    "从GitHub Draft PR #32迁移用户已确认的前二直选单式完整两位号码语义",
+    "没有迁移PR #32的资金参数、收益结论或多方案运行主张"
+  ],
+  "new_machine_sources": [
+    "00B_完整玩法格式字典与版本优先级.md",
+    "controller/betting_format_registry.json",
+    "controller/legacy_play_grammar_catalog.json",
+    "tools/validate_betting_format_registry.py"
+  ],
+  "compatibility": "additive_with_precedence_guard",
+  "known_limits": [
+    "两层字典消除‘某玩法完全不知道怎么设计’的知识空白，但不会把旧E2/E0事实虚升为当前E3",
+    "只在历史语法目录存在而未被当前注册表正式允许的玩法，仍必须走PROBE/注册升级",
+    "足迹、重号、组合轮投、盈亏跳转等仍按当前证据边界执行",
+    "某个真正新出现的玩法若两层字典都未登记，将明确报REGISTRY_DEFECT而不是猜格式"
+  ]
+}

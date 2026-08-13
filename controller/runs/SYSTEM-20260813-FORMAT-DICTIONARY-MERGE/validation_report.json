@@ -1,0 +1,60 @@
+{
+  "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
+  "branch": "agent/v34-v39-format-dictionary-merge-20260813",
+  "pr": 36,
+  "validation_time": "2026-08-13T11:48:00+08:00",
+  "format_dictionary_validation": {
+    "command": "python tools/validate_betting_format_registry.py",
+    "result": "PASS",
+    "checks": [
+      "current GitHub 01 formal rows all registered",
+      "current/newer/V3.4/legacy source precedence enforced",
+      "external V3.2 dependency disabled",
+      "current primary categories have explicit generation state",
+      "historical 11 practical level1 categories/options have explicit current disposition",
+      "legacy two/three/four/five-digit, fixed-position, dragon-tiger, fun and non-position grammar families preserved",
+      "cold/hot/warm dedicated 3-field shape preserved",
+      "omission legacy 6-field shape preserved",
+      "advanced betting 9-field order preserved",
+      "2026-08-08 user-confirmed front2 direct-single exact two-digit semantics migrated without importing unrelated funding claims"
+    ]
+  },
+  "base_repair": {
+    "pr": 37,
+    "merged_commit": "f4f1c30f92b906c89ed379a4848dba6ccec158c7",
+    "purpose": "repair pre-existing orchestration adversarial fixture drift without weakening production gates"
+  },
+  "github_actions": {
+    "validated_head": "9be19ce3c88abba3bb45b6a119799bbe6a3c144d",
+    "run_id": 31664873605,
+    "overall": "PASS",
+    "successful_steps": [
+      "Validate repository",
+      "Validate controller architecture",
+      "Validate controller runtime configuration",
+      "Validate betting format registry",
+      "Validate full-function orchestration",
+      "Validate orchestration scoring",
+      "Adversarial-test orchestration gates",
+      "Validate scheme PR orchestration gate",
+      "Smoke-test controller task envelope",
+      "Validate PPT director and number provenance rules",
+      "Materialize fixed PPT pages",
+      "Validate fixed PPT pages",
+      "Confirm invalidated B395 builder is absent",
+      "Confirm source-gate files exist"
+    ]
+  },
+  "precedence_review": {
+    "result": "PASS",
+    "rule": "CURRENT_GITHUB_MAIN > NEWER_USER_CONFIRMED > V3.4 > LEGACY_GENERATOR_DOCS > LEGACY_TXT",
+    "current_main_overrides_verified": [
+      "current combination rotation retained over old removal",
+      "current block on fictitious dragon-tiger advanced trigger category retained over legacy success record",
+      "current ban on 冷热温出号数据 retained",
+      "legacy LHHC values scoped to old samples only"
+    ]
+  },
+  "merge_readiness": "READY_AFTER_DIFF_REVIEW",
+  "reason": "all repository and format-dictionary gates pass after merging the separately reviewed and merged CI fixture repair from main; no current V3.9 rule was replaced by older material"
+}

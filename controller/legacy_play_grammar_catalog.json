@@ -1,0 +1,185 @@
+{
+  "schema_version": "1.0.0",
+  "status": "KNOWLEDGE_SUPPLEMENT_ONLY",
+  "authority": "supplement to controller/betting_format_registry.json; never overrides current registry/main",
+  "source_precedence": "CURRENT_GITHUB_MAIN > NEWER_USER_CONFIRMED > V3.4 > LEGACY_GENERATOR_DOCS > LEGACY_TXT",
+  "purpose": "保存旧系统已经掌握但当前main未逐项展开的玩法格式知识，使AI知道如何设计、如何表达、当前是否允许正式生成，而不是遇到未展开玩法就失忆。",
+  "hard_rules": [
+    "本目录只补知识，不自动提升formal_allowed",
+    "与current main冲突时current main无条件胜出",
+    "旧系统写过100%导入成功不自动等于当前软件版本E3",
+    "当前注册表未允许的玩法只能PROBE/BLOCK，不能因本目录存在而绕过",
+    "旧字段冷热温出号数据已被current main禁用，不得复活"
+  ],
+  "historical_level1_catalog": {
+    "遗漏出号": {
+      "historical_state": "SUCCESS_RULE_LOCKED",
+      "current_disposition": "PROBE_ONLY_UNTIL_CURRENT_TEMPLATE_AND_RUNTIME_EVIDENCE",
+      "known_fields": [
+        "遗漏出号期数",
+        "遗漏出号类型",
+        "遗漏检查数据传输期数",
+        "遗漏期数缓存期数",
+        "遗漏出号个数",
+        "遗漏出号容错个数"
+      ],
+      "legacy_verified_shape": {
+        "遗漏出号期数": "10",
+        "遗漏出号类型": "0",
+        "遗漏检查数据传输期数": "1-{2..5}",
+        "遗漏期数缓存期数": "1-{8..12}",
+        "遗漏出号个数": "1-{8..10}",
+        "遗漏出号容错个数": "1-{1..2}"
+      },
+      "current_boundary": "V3.4明确记录遗漏出号等软件内部动态生成算法仍未核对，因此格式知识保留但不得把内部算法包装成E3"
+    },
+    "开某投某": {
+      "historical_state": "KNOWN_AND_LOCKED_IN_LEGACY",
+      "current_disposition": "USE_CURRENT_REGISTRY_AND_01",
+      "known_fields": ["开某投某类型", "开某投某号码", "开某投某内容"],
+      "legacy_shape": {"开某投某类型": "{1-3},{1-3}", "开某投某号码": "可空", "开某投某内容": "按玩法语法生成"}
+    },
+    "固定取码": {
+      "historical_state": "KNOWN_FORMAT",
+      "current_disposition": "KNOWN_ATOM; FORMAL_ONLY_WHEN_CURRENT_REGISTERED_TEMPLATE_MATCHES",
+      "known_fields": ["固定取码内容"],
+      "content_grammar": "位置范围|类型范围|投注内容",
+      "legacy_example": "0-4|0-2|1 6 7"
+    },
+    "定码轮换": {
+      "historical_state": "KNOWN_FORMAT",
+      "current_disposition": "USE_CURRENT_REGISTRY_AND_01",
+      "known_fields": ["定码轮换内容", "定码轮换单组"]
+    },
+    "高级定码轮换": {
+      "historical_state": "KNOWN_FORMAT",
+      "current_disposition": "USE_CURRENT_REGISTRY_AND_01",
+      "known_fields": ["高级定码轮换内容", "定码轮换单组"],
+      "outer_grammar": "round|bet_content|param1|param2;..."
+    },
+    "冷热温出号": {
+      "historical_state": "KNOWN_FORMAT",
+      "current_disposition": "USE_CURRENT_REGISTRY; CURRENT_RULES_OVERRIDE_OLD_VALUES",
+      "known_fields": ["冷热温统计期数", "冷热温出号类型", "冷热温容错个数"],
+      "forbidden_legacy_field": "冷热温出号数据"
+    },
+    "随机出号": {
+      "historical_state": "KNOWN_LEGACY_LEVEL1",
+      "current_disposition": "UNREGISTERED_CURRENT_MAIN => REGISTRY_DEFECT/PROBE_ONLY",
+      "design_meaning": "随机生成合法投注内容，必须套用目标玩法的当前合法内容语法"
+    },
+    "自定义开某投某": {
+      "historical_state": "KNOWN_LEGACY_LEVEL1",
+      "current_disposition": "UNREGISTERED_CURRENT_MAIN => REGISTRY_DEFECT/PROBE_ONLY",
+      "design_meaning": "自定义触发映射；字段必须从真实同类模板取得"
+    },
+    "高级开某投某": {
+      "historical_state": "KNOWN_LEGACY_LEVEL1",
+      "current_disposition": "CURRENT_MAIN_SPECIALIZED_FIELDS_ONLY; DO_NOT_INVENT_STANDALONE_CATEGORY",
+      "design_meaning": "触发号码改变后续投注集合；current main的高级语义防呆优先"
+    },
+    "龙虎高级开某投某": {
+      "historical_state": "LEGACY_USER_VERIFIED_AT_2025_08_26",
+      "current_disposition": "BLOCKED_BY_CURRENT_MAIN_IF_EXPRESSED_AS_VIRTUAL_STRATEGY",
+      "legacy_fields": ["高级开某投某选择", "高级开某投某开出号码", "高级开某投某正投号码", "高级开某投某反投号码"],
+      "legacy_example": {"高级开某投某选择": "True,True,True", "高级开某投某开出号码": "龙|虎|和", "高级开某投某正投号码": "龙|虎|和", "高级开某投某反投号码": "龙,虎|虎|和,虎"},
+      "current_override": "01当前明确禁止虚构龙虎高级开某投某策略名和字段，因此只保留历史证据，不允许恢复为正式一级分类"
+    },
+    "随机": {
+      "historical_state": "LEGACY_GUI_META_OPTION",
+      "current_disposition": "NOT_A_TXT_PRIMARY_CATEGORY",
+      "design_meaning": "仅作为生成器选择机制，不写成TXT第2行"
+    }
+  },
+  "bet_content_grammar_catalog": {
+    "三位数": {
+      "applicable_play_types": ["前三", "中三", "后三", "任三"],
+      "直选单式": {"format": "完整3位号码，空格分隔", "example": "133 680 872"},
+      "直选复式": {"format": "位置候选集合以-分隔；三位置玩法使用3段，任三旧生成器曾使用5段位置池", "legacy_example": "478-089-069-125-209", "current_note": "实际段数必须由当前玩法/承载模板决定，不机械复制旧任三5段示例"},
+      "组三单式": {"format": "完整3位号码，空格分隔", "example": "229 337 799"},
+      "组三复式": {"format": "4-8个不重复数字，空格分隔", "example": "1 2 3 5 6"},
+      "组六单式": {"format": "完整3位号码，空格分隔", "example": "178 247 359"},
+      "组六复式": {"format": "4-8个不重复数字，空格分隔", "example": "1 6 7 8 9"},
+      "组选保胆": {"format": "单个数字", "example": "6"},
+      "组选包胆": {"format": "单个数字0-9", "example": "3", "legacy_note": "旧系统用它替代组选胆拖；是否当前formal以current registry为准"},
+      "混合组选单式": {"format": "完整3位号码，空格分隔", "example": "760 883 901", "legacy_scope": "前三/中三/后三"}
+    },
+    "二位数": {
+      "applicable_play_types": ["前二", "后二", "任二"],
+      "直选单式": {"format": "完整2位号码，必须保留前导0；空格分隔", "example": "17 66 99", "current_upgrade": "USER_CONFIRMED_2026_08_08: 28 49 60 81 02，不得改写为2-8等复式"},
+      "直选复式": {"format": "位置候选集合以-分隔", "legacy_example": "8-39-3-09-34", "current_upgrade": "前二两位置集合示例012-123；具体段数按当前玩法语义"},
+      "组选单式": {"format": "完整2位号码，空格分隔", "example": "27 54 75"},
+      "组选复式": {"format": "候选数字空格分隔", "example": "0 5 7"},
+      "组选保胆": {"format": "单个数字", "example": "6"},
+      "组选包胆": {"format": "单个数字0-9", "example": "7"}
+    },
+    "四位数": {
+      "applicable_play_types": ["前四", "后四", "任四"],
+      "直选单式": {"format": "完整4位号码，空格分隔", "example": "1950 6667 8383"},
+      "组选单式": {"format": "完整4位号码，空格分隔", "example": "1950 6667 8383"},
+      "直选复式": {"format": "4段位置集合以-分隔", "example": "256-578-789-069"},
+      "组选复式": {"format": "4段位置集合以-分隔", "example": "256-578-789-069"}
+    },
+    "五位数": {
+      "applicable_play_types": ["五星"],
+      "直选单式": {"format": "完整5位号码，必须保留前导0；空格分隔", "example": "07894 60105 77620"},
+      "直选复式": {"format": "5段位置集合以-分隔", "example": "468-012-026-027-268"},
+      "组60复式": {"legacy_state": "BLOCKED_IN_2025_LEGACY", "current_disposition": "BLOCK_UNLESS_NEWER_CURRENT_REGISTRY_EXPLICITLY_ENABLES"},
+      "组120复式": {"legacy_state": "BLOCKED_IN_2025_LEGACY", "current_disposition": "BLOCK_UNLESS_NEWER_CURRENT_REGISTRY_EXPLICITLY_ENABLES"}
+    },
+    "定位胆": {
+      "positions": ["万位", "千位", "百位", "十位", "个位"],
+      "format": "候选数字空格分隔",
+      "example": "1 6 7"
+    },
+    "龙虎": {
+      "legacy_content_formats": ["龙", "龙 虎", "龙 虎 和"],
+      "current_override": "current 01要求真实承载类别、CXGGJ、任选位置为空且内容用空格分隔；不得恢复被current禁用的虚构策略"
+    },
+    "趣味": {"legacy_format": "候选数字空格分隔", "example": "1 6 9", "current_disposition": "KNOWN_GRAMMAR_NOT_FORMAL_UNLESS_REGISTERED"},
+    "不定位": {"legacy_format": "候选数字空格分隔", "example": "1 6 9", "current_disposition": "KNOWN_GRAMMAR_NOT_FORMAL_UNLESS_REGISTERED"}
+  },
+  "legacy_intelligent_bet_count_rules": {
+    "任二直选复式": {"legacy_segments": 5, "digits_per_segment": "1-3", "bet_count_range": "2-80", "note": "旧生成器规则；当前具体玩法位置数优先"},
+    "任三直选复式": {"legacy_segments": 5, "digits_per_segment": "2-4", "bet_count_range": "20-800", "note": "旧生成器规则；当前具体玩法位置数优先"},
+    "任三组三复式": {"digit_count": "4-8", "legacy_formula": "C(n,2)*2", "bet_count_range": "20-800"},
+    "任三组六复式": {"digit_count": "4-8", "legacy_formula": "C(n,3)", "bet_count_range": "20-800"}
+  },
+  "historical_mapping_rules": {
+    "任二": "任二，不得旧式错误映射为‘任选’",
+    "任三": "任三，不得旧式错误映射为‘任选’",
+    "前三": "前三",
+    "后二": "后二"
+  },
+  "historical_conflicts_resolved_by_current_main": [
+    {
+      "legacy": "2025旧GUI删除组合方案轮投",
+      "current": "V3.9已有组合方案轮投E2格式与顶部GUI轮投E3说明",
+      "winner": "CURRENT_GITHUB_MAIN"
+    },
+    {
+      "legacy": "龙虎高级开某投某作为一级分类并有四个专属字段",
+      "current": "01当前禁止虚构龙虎高级开某投某策略名和字段",
+      "winner": "CURRENT_GITHUB_MAIN"
+    },
+    {
+      "legacy": "冷热温出号数据字段用于投注数字提取",
+      "current": "01当前明确将冷热温出号数据列为已导致异常的虚构字段",
+      "winner": "CURRENT_GITHUB_MAIN"
+    },
+    {
+      "legacy": "旧模板常见软件名称=LHHC",
+      "current": "当前各类别软件名称按current同类模板；龙虎明确不得用LHHC",
+      "winner": "CURRENT_GITHUB_MAIN"
+    }
+  ],
+  "sources": [
+    "scheme_generation_rules_complete.md (2025-08-26)",
+    "PROJECT_SOLUTION_LOG.md (2025-08-26)",
+    "quick_reference_guide.md (2025-08-26)",
+    "V3.4完整接管版",
+    "Google Drive真实旧TXT样本",
+    "当前GitHub main 01/02/00A",
+    "GitHub Draft PR #32中的2026-08-08用户确认格式事实"
+  ]
+}
