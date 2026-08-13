@@ -1,0 +1,47 @@
+{
+  "task_id": "SYSTEM-20260813-FORMAT-DICTIONARY-MERGE",
+  "branch": "agent/v34-v39-format-dictionary-merge-20260813",
+  "pr": 36,
+  "validation_time": "2026-08-13T11:32:00+08:00",
+  "format_dictionary_validation": {
+    "command": "python tools/validate_betting_format_registry.py",
+    "result": "PASS",
+    "checks": [
+      "current GitHub 01 formal rows all registered",
+      "current/newer/V3.4/legacy source precedence enforced",
+      "external V3.2 dependency disabled",
+      "current primary categories have explicit generation state",
+      "historical 11 practical level1 categories/options have explicit current disposition",
+      "legacy two/three/four/five-digit, fixed-position, dragon-tiger, fun and non-position grammar families preserved",
+      "cold/hot/warm dedicated 3-field shape preserved",
+      "omission legacy 6-field shape preserved",
+      "advanced betting 9-field order preserved",
+      "2026-08-08 user-confirmed front2 direct-single exact two-digit semantics migrated without importing unrelated funding claims"
+    ]
+  },
+  "github_actions": {
+    "latest_run_id": 31664288273,
+    "latest_head": "ee80ec12f25944e6e820330d24cf4357497bc94a",
+    "overall": "FAIL_PREEXISTING_UNRELATED_GATE",
+    "successful_steps": [
+      "Validate repository",
+      "Validate controller architecture",
+      "Validate controller runtime configuration",
+      "Validate betting format registry",
+      "Validate full-function orchestration",
+      "Validate orchestration scoring"
+    ],
+    "failed_step": "Adversarial-test orchestration gates",
+    "failure_scope": "existing orchestration adversarial fixture/evidence mismatch; not format-dictionary validation",
+    "baseline_evidence": {
+      "baseline_sha": "03a443d4e2c5752a303c3db508a3baaacfc16e0e",
+      "baseline_run_id": 31663646420,
+      "baseline_result": "FAIL",
+      "baseline_failed_step": "Adversarial-test orchestration gates",
+      "note": "same baseline commit failed this gate before format-dictionary commits; therefore this PR does not weaken or patch that unrelated gate"
+    }
+  },
+  "merge_readiness": "DRAFT_NOT_READY",
+  "reason": "new format knowledge checks pass, but repository-wide CI remains red due to a pre-existing unrelated orchestration adversarial gate. Per governance, PR stays Draft and main remains unchanged.",
+  "recommended_next_action": "separate PR should repair the pre-existing orchestration adversarial fixtures/gate; after main is green, rebase/re-run PR36 and perform independent diff review before Ready/merge"
+}
