@@ -1,0 +1,16 @@
+{
+  "artifacts": [
+    {
+      "file": "B396_个位七码对冲回利_完整交付.zip",
+      "sha256": "5806787f18e2cb4651ff20021bfd909c438dfe11c36a6082f10af6cf618b2fa3",
+      "size_bytes": 16203765,
+      "delivery": "sandbox download in chat; GitHub PR stores source/evidence manifest"
+    },
+    {
+      "file": "B396_个位七码对冲回利_人工讲解型PPT.pptx",
+      "sha256": "d5c4b81e75b2c991f9b9ba40ca516f8b094d03e3dab11f0f306b65943ca6e118",
+      "size_bytes": 16545040,
+      "delivery": "sandbox download in chat; GitHub PR stores source/evidence manifest"
+    }
+  ]
+}
