@@ -1,0 +1,10 @@
+{
+  "run_id": "RUN-20260806-RETURN-ZUSAN-FIVE-001",
+  "user_request": "回利型挂机方案；超过4个方案可一起投注；高级倍投；本金5000元；倍投期数超过50期",
+  "repo": "fdsasaaa/guaji5",
+  "base_branch": "main",
+  "domains": ["SCHEME", "PPT"],
+  "stage": "delivery_generated",
+  "capital_yuan": 5000,
+  "created_at": "2026-08-06"
+}
