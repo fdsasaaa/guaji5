@@ -1,0 +1,74 @@
+{
+  "schema_version": 1,
+  "status": "ACTIVE",
+  "updated_at": "2026-08-10",
+  "incident": {
+    "incident_id": "INC-SCHEME-NULL-20260810",
+    "observed_exception": "System.NullReferenceException at IntelligentPlanning.ConfigurationStatus.Scheme.get_Value -> GetFileValue -> AutoBetsWindow.exportScheme during scheme import/export flow",
+    "rejected_artifact": "B401_SET_001 个位固定6回利",
+    "observed_unsafe_structure": [
+      "第2行=定位胆（玩法类型被误作一级分类）",
+      "使用未从已验证同类模板复制的投注号码=6字段"
+    ],
+    "evidence_boundary": "已确认该文件在用户实际环境触发空引用异常；软件内部究竟在哪个字段返回null未取得源码级证明，因此不把单一字段写成唯一根因。"
+  },
+  "invalid_second_line_tokens": [
+    "定位胆",
+    "龙虎",
+    "新龙虎",
+    "五星",
+    "前三",
+    "后三",
+    "前二",
+    "后二",
+    "中三",
+    "任二",
+    "任三",
+    "任四",
+    "前四",
+    "组选24",
+    "组选120",
+    "直选复式",
+    "直选单式"
+  ],
+  "required_common_fields": [
+    "软件名称",
+    "玩法类型",
+    "玩法名称",
+    "金额模式",
+    "任选中奖",
+    "任选位置",
+    "换号规则",
+    "换号期数",
+    "翻倍方式",
+    "正集",
+    "倍投类型",
+    "倍投计划",
+    "倍投方案",
+    "显示更多",
+    "投注时间",
+    "SchemeCreator"
+  ],
+  "strategy_required_fields": {
+    "定码轮换": ["定码轮换内容"],
+    "高级定码轮换": ["高级定码轮换内容"],
+    "开某投某": ["开某投某类型", "开某投某号码", "开某投某内容"],
+    "组合方案出号": ["组合方案出号内容", "组合方案出号中几中奖"],
+    "组合方案轮投": ["组合方案轮投内容"]
+  },
+  "advanced_betting": {
+    "directory": "GJBTScheme",
+    "fields": ["软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转", "挂后监控", "挂后跳转"],
+    "encoding": "UTF-8 BOM",
+    "newline": "CRLF",
+    "require_contiguous_ids": true,
+    "require_positive_multiplier": true,
+    "formal_monitoring_allowed": false,
+    "formal_true_jump_allowed": false
+  },
+  "environment_specific_order_floor": {
+    "observed_minimum_yuan": 0.2,
+    "evidence": "用户实际环境曾返回‘注单金额小于0.2元’",
+    "policy": "生成器不得把0.1元直接标记为正式可执行；若无法由文件推导首局实际注单金额，必须在README要求导入后小额核对。"
+  }
+}

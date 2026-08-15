@@ -1,0 +1,81 @@
+{
+  "run_id": "RUN-20260810-SCHEME-NULL-FIX",
+  "date": "2026-08-10",
+  "task_type": "SCHEME+PROGRAM+SYSTEM",
+  "incident": {
+    "id": "INC-SCHEME-NULL-20260810",
+    "exception": "System.NullReferenceException",
+    "stack_summary": "Scheme.get_Value -> Scheme.GetFileValue -> AutoBetsWindow.exportScheme -> import click",
+    "old_artifact_sha256": "92b7268ac8d10d062de19cf3885ee1dfb14e68d53e3e9789e0f606aa4cafce8c",
+    "confirmed_invalid_structure": [
+      "主方案第2行使用定位胆，玩法类型被误作一级分类",
+      "主方案包含未从同类已验证模板继承的投注号码=6字段"
+    ],
+    "root_cause_boundary": "确认旧文件结构不合格且在用户实际环境触发异常；没有软件源码运行态对象证据，因此不声称某一个字段是唯一null来源。"
+  },
+  "guardrail_change": {
+    "validator": "05_工具/audit_scheme_semantics.py",
+    "registry": "05_工具/scheme_import_safety.json",
+    "checks": [
+      "GBK+CRLF主方案",
+      "True/False首行",
+      "第2行玩法词黑名单",
+      "通用必填字段",
+      "策略专属字段",
+      "重复字段",
+      "SchemeCreator默认空",
+      "倍投类型与正数序列",
+      "高级倍投关联文件存在",
+      "高级倍投UTF-8 BOM+CRLF",
+      "高级倍投固定9字段顺序",
+      "ID从1连续",
+      "倍数正整数",
+      "中后ID/挂后ID不越界",
+      "正式配置禁止监控=True和跳转=True"
+    ]
+  },
+  "rebuild": {
+    "artifact": "回利型前二五注_84局高级倍投_修正版.zip",
+    "artifact_sha256": "0342ef504727cf322b4f1526c9fa16f98361340d5edd69fa7d40f20823fd5d08",
+    "main_scheme_count": 5,
+    "advanced_config_count": 5,
+    "main_strategy": "定码轮换",
+    "game_type": "前二",
+    "game_name": "直选复式",
+    "bets_per_scheme": 5,
+    "single_bet_yuan": 0.2,
+    "one_x_total_cost_yuan": 1.0,
+    "minimum_one_x_total_payout_required_yuan": 15.0,
+    "bankroll_yuan": 3000,
+    "state_count": 84,
+    "total_multiplier": 2720,
+    "worst_full_miss_cost_yuan": 2720,
+    "remaining_bankroll_buffer_yuan": 280,
+    "max_multiplier": 182,
+    "multipliers": [1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,3,3,3,3,3,4,4,4,4,5,5,5,6,6,7,7,8,8,9,9,10,11,12,12,13,14,15,16,17,19,20,21,23,25,26,28,30,32,35,37,40,43,46,49,53,56,60,65,69,74,79,85,91,98,105,112,120,129,138,148,158,170,182],
+    "candidate_schemes": [
+      {"name":"B001_前二五注_5-74025","content":"5-74025","train_hits":17,"train_n":150,"oos_hits":2,"oos_n":50},
+      {"name":"B002_前二五注_7-12603","content":"7-12603","train_hits":13,"train_n":150,"oos_hits":1,"oos_n":50},
+      {"name":"B003_前二五注_9-02469","content":"9-02469","train_hits":12,"train_n":150,"oos_hits":1,"oos_n":50},
+      {"name":"B004_前二五注_6-57481","content":"6-57481","train_hits":12,"train_n":150,"oos_hits":5,"oos_n":50},
+      {"name":"B005_前二五注_8-56149","content":"8-56149","train_hits":13,"train_n":150,"oos_hits":2,"oos_n":50}
+    ],
+    "selection_rule": "B001仅按前150期训练区排序选择；后50期只做样本外观察，不反向用于选方案。",
+    "theoretical_single_period_hit_probability": 0.05,
+    "theoretical_at_least_one_hit_in_84": 0.9866,
+    "gui_scheme_rotation": "DO_NOT_CHECK",
+    "gui_reason": "顶部方案轮投与多方案高级倍投状态独立/未轮到方案状态保存仍未达到完整E3。正式运行仅勾选一个主方案，其他四个作为替换/对照备用，不同时下注。",
+    "advanced_betting_evidence_boundary": "GJBTScheme编码和9字段结构为E2；84局状态真实跳转仍需用户最小金额导入/运行确认，不能标成完全E3。",
+    "minimum_order_floor_policy": "用户环境已观察到低于0.2元失败，因此本次不再以0.1元作为正式可执行前提。"
+  },
+  "regression": {
+    "old_artifact_expected_result": "REJECT",
+    "old_artifact_actual_result": "REJECT",
+    "old_artifact_error": "第2行把玩法类型/玩法名称误作一级分类: 定位胆",
+    "new_artifact_expected_result": "PASS_STRUCTURAL_AUDIT",
+    "new_artifact_actual_result": "PASS_STRUCTURAL_AUDIT",
+    "new_artifact_checked_objects": 10,
+    "new_artifact_errors": 0,
+    "new_artifact_warnings": 0
+  }
+}

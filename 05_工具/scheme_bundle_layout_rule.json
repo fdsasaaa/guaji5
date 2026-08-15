@@ -1,0 +1,32 @@
+{
+  "schema_version": 1,
+  "status": "ACTIVE",
+  "updated_at": "2026-08-10",
+  "rule_id": "SCHEME-BUNDLE-LAYOUT-001",
+  "purpose": "防止挂机方案套因目录层级错误导致导入、引用或高级倍投关联异常。",
+  "required_layout": {
+    "single_import_root": true,
+    "all_main_scheme_txt_same_level": true,
+    "single_gjbt_scheme_directory": true,
+    "gjbt_scheme_directory_name": "GJBTScheme",
+    "gjbt_scheme_directory_must_be_child_of_import_root": true,
+    "advanced_configs_must_be_direct_children_of_gjbt_scheme": true,
+    "per_main_scheme_subdirectory_forbidden": true
+  },
+  "canonical_example": [
+    "方案导入文件夹/方案A-一级分类.txt",
+    "方案导入文件夹/方案B-一级分类.txt",
+    "方案导入文件夹/方案C-一级分类.txt",
+    "方案导入文件夹/GJBTScheme/方案A高级倍投.txt",
+    "方案导入文件夹/GJBTScheme/方案B高级倍投.txt",
+    "方案导入文件夹/GJBTScheme/方案C高级倍投.txt"
+  ],
+  "advanced_plan_binding": "每个启用高级倍投的主方案通过倍投方案=配置名，绑定到同一个GJBTScheme目录内对应的唯一配置TXT。多个主方案不得因文件名冲突共用错误配置。",
+  "forbidden_examples": [
+    "方案导入文件夹/方案A/方案A.txt + 方案A/GJBTScheme/...",
+    "方案导入文件夹/方案B/方案B.txt + 方案B/GJBTScheme/...",
+    "为每个主方案分别创建一个GJBTScheme目录"
+  ],
+  "source": "2026-08-10用户实际导入目录反馈；修正PR #34后续规则",
+  "validation_policy": "生成器在交付ZIP前必须扫描目录树；主方案TXT父目录不唯一、GJBTScheme数量不为1、或任一主方案被包在独立子目录时，直接判定交付失败。"
+}
