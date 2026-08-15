@@ -1,0 +1,38 @@
+{
+  "scheme_id": "B396_SET_001",
+  "status": "PASS",
+  "checks": {
+    "main_no_utf8_bom": true,
+    "main_gbk_decode": true,
+    "main_crlf_only": true,
+    "main_first_line_false": true,
+    "main_second_line_strategy": true,
+    "main_field_order": true,
+    "main_ends_two_blank_lines": true,
+    "main_gjbt_enabled": true,
+    "positive_group_count_10": true,
+    "positive_each_8_unique_digits": true,
+    "negative_group_count_10": true,
+    "negative_each_2_unique_digits": true,
+    "cfg_utf8_bom": true,
+    "cfg_crlf_only": true,
+    "cfg_row_count_2": true,
+    "cfg_field_order": true,
+    "cfg_no_zero_multiplier": true,
+    "cfg_ids": true,
+    "cfg_multipliers_1_4": true,
+    "cfg_d_mode_jumps": true,
+    "cfg_filename_matches_main": true
+  },
+  "errors": [],
+  "boundaries": [
+    "主方案与高级倍投配置的字节格式、字段结构和文件名引用已自动核对。",
+    "8号码映射在挂机软件中的显示与实际投注仍需人工导入验证。",
+    "二局1→4跳转需人工核对；第二局未中后的停止仍为人工硬停止。",
+    "未启用内部亏损停止、监控或跨方案跳转。"
+  ],
+  "sha256": {
+    "可导入方案/B396_SET_001_个位八码二档回利_主方案.txt": "b353797e5e26be965444a998b9653f518e977a548dd7106dc497ebf1ac5bfe00",
+    "可导入方案/GJBTScheme/高级倍投主配置.txt": "900a052e861c3d580a8bf9f3d84ab2fc002e8233699864886be05f08ad3df15c"
+  }
+}
