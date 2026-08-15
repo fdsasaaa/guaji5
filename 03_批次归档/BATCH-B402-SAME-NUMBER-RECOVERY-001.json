@@ -1,0 +1,15 @@
+{
+  "batch_id": "BATCH-B402-SAME-NUMBER-RECOVERY-001",
+  "scheme_id": "B402_SET_001",
+  "branch": "agent/b402-same-number-recovery-20260815",
+  "source_main_commit": "ae12bc8a2311fbd95ad6bfd8d8b229673049a6f1",
+  "task": "本金5000元；一级分类高级定码轮换；超过10个TXT；100-200期直线倍投回利模型",
+  "decision": "采用11个TXT同号同步投注，而不是11个不同号码并投",
+  "reason": "11个不同号码会提高命中率但压缩命中净返，无法在5000本金下证明100-200期逐档首次命中回利；同号十一轨牺牲覆盖率以换取200期资金耐久。",
+  "local_package_sha256": "e8dffd3ebd156b9eb4180a3e6cae05db26406f13cd7b893e173291a8b6192e55",
+  "evidence_boundary": {
+    "format_generation": "local E1; follows current registry advanced fixed-code grammar",
+    "runtime": "not E3 until user import/run validates",
+    "profitability": "not a future guarantee"
+  }
+}
