@@ -1,0 +1,19 @@
+{
+  "batch_id": "BATCH-B404-ADVANCED-OPEN-BALANCED-001",
+  "status": "DRAFT_BRANCH_RECORDED",
+  "supersedes": "B403_SET_001",
+  "supersede_reason": "避开高级定码轮换内部局号与高级倍投ID双状态机潜在冲突",
+  "scheme_id": "B404_SET_001",
+  "scheme_name": "高级开某投某_九重均衡覆盖回利",
+  "source_branch": "agent/b404-advanced-open-balanced-rebate-20260815",
+  "main_base_sha": "ae12bc8a2311fbd95ad6bfd8d8b229673049a6f1",
+  "local_deliverable": {
+    "scheme_zip": "B404_SET_001_高级开某投某_九重均衡覆盖回利_方案包.zip",
+    "scheme_zip_sha256": "97eb732fd56f5a84117ab5b7dc8c1e850083bace00c743b9c383db71792f28a9",
+    "main_scheme_txt_count": 11,
+    "advanced_betting_ids": 200
+  },
+  "core_decision": "高级开某投某负责开奖触发后的号码集合；高级倍投中后/挂后统一进入同一下一ID，消除资金状态分叉",
+  "risk_boundary": "返点必须高于2%且平台必须承认八码/九码全覆盖类投注的有效返点；真实软件运行仍需E3核对",
+  "created_at": "2026-08-15"
+}
