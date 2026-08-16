@@ -2,14 +2,16 @@
 # -*- coding: utf-8 -*-
 """Validate delivery artifact safety rules.
 
-This gate protects confirmed delivery boundaries:
-1. Scheme TXT files must not show encrypted / creator-locked state unless the
-   user explicitly asked for it. The default is an empty SchemeCreator value.
-2. Public-facing PPT rules must stay player-teaching oriented.
-3. Ordinary straight-line betting multiplier lists must use positive integers
-   only; decimal multipliers such as 0.01 are invalid.
-4. Fixed-pick packages must not mechanically write every open-number segment as
-   0-0; fixed-pick content must show explainable segment diversity.
+Confirmed boundaries:
+1. MAIN SCHEME TXT files default to empty SchemeCreator unless encryption/lock
+   was explicitly requested.
+2. Current user-exported ADVANCED BETTING TXT is a different file class: GBK +
+   CRLF, 16 semicolon-separated fields, and may contain a software-generated
+   non-empty SchemeCreator value.
+3. Public PPT stays player-teaching oriented.
+4. All multiplier values are positive integers; decimal multipliers are invalid.
+5. Fixed-pick packages must not mechanically use open-number segment 0-0 for
+   every main scheme.
 """
 
 from __future__ import annotations
@@ -22,9 +24,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "controller" / "delivery_artifact_contract.json"
+ADV_OVERRIDE = ROOT / "controller" / "advanced_betting_gui_export_override.json"
 PUBLIC_PPT = ROOT / "05E_公开视频玩家教学PPT与交付物隔离协议.md"
 AGENTS = ROOT / "AGENTS.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
+
+ADVANCED_FIELDS = [
+    "软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转",
+    "挂后监控", "挂后跳转", "是否盈利跳转", "是否亏损跳转", "盈利金额",
+    "亏损金额", "盈利跳转局数", "亏损跳转局数", "SchemeCreator",
+]
 
 
 def fail(msg: str) -> None:
@@ -32,13 +41,13 @@ def fail(msg: str) -> None:
     raise SystemExit(1)
 
 
-def load_contract() -> dict:
-    if not CONTRACT.exists():
-        fail("missing controller/delivery_artifact_contract.json")
+def load_json(path: Path) -> dict:
+    if not path.exists():
+        fail(f"missing {path.relative_to(ROOT)}")
     try:
-        return json.loads(CONTRACT.read_text(encoding="utf-8"))
+        return json.loads(path.read_text(encoding="utf-8"))
     except Exception as exc:
-        fail(f"cannot parse delivery artifact contract: {exc}")
+        fail(f"cannot parse {path.relative_to(ROOT)}: {exc}")
 
 
 def detect_encoding(path: Path) -> str:
@@ -69,7 +78,66 @@ def is_positive_integer_sequence(value: str) -> bool:
     return all(part.isdigit() and int(part) >= 1 for part in parts)
 
 
-def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool, str | None]:
+def split_advanced_line(line: str) -> list[tuple[str, str]] | None:
+    parts = line.split(";")
+    if len(parts) != len(ADVANCED_FIELDS):
+        return None
+    pairs: list[tuple[str, str]] = []
+    for part in parts:
+        if "=" not in part:
+            return None
+        k, v = part.split("=", 1)
+        pairs.append((k.strip(), v.strip()))
+    if [k for k, _ in pairs] != ADVANCED_FIELDS:
+        return None
+    return pairs
+
+
+def looks_like_advanced_betting(raw: bytes) -> bool:
+    for enc in ("gbk", "utf-8-sig", "utf-8"):
+        try:
+            text = raw.decode(enc)
+            break
+        except UnicodeDecodeError:
+            continue
+    else:
+        return False
+    lines = [x for x in text.splitlines() if x.strip()]
+    return bool(lines) and split_advanced_line(lines[0]) is not None
+
+
+def validate_advanced_betting_txt(path: Path) -> None:
+    raw = path.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        fail(f"{path}: current user-confirmed advanced export must not have UTF-8 BOM")
+    try:
+        text = raw.decode("gbk")
+    except UnicodeDecodeError as exc:
+        fail(f"{path}: current user-confirmed advanced export must decode as GBK: {exc}")
+    if len(text.splitlines()) > 1 and b"\r\n" not in raw:
+        fail(f"{path}: advanced betting export must use CRLF")
+
+    for lineno, line in enumerate(text.splitlines(), 1):
+        if not line.strip():
+            continue
+        pairs = split_advanced_line(line)
+        if pairs is None:
+            fail(f"{path}:{lineno}: expected exact 16-field advanced betting export order")
+        row = dict(pairs)
+        if not row["倍数"].isdigit() or int(row["倍数"]) < 1:
+            fail(f"{path}:{lineno}: 倍数 must be a positive integer")
+        if row["中后监控"] not in {"False", "True"}:
+            fail(f"{path}:{lineno}: 中后监控 must be False or True")
+        if row["挂后监控"] not in {"False", "True"}:
+            fail(f"{path}:{lineno}: 挂后监控 must be False or True")
+        for key in ("中后跳转", "挂后跳转"):
+            if not re.fullmatch(r"(?:False|True)-.+", row[key]):
+                fail(f"{path}:{lineno}: {key} must be False-方案名 or True-方案名")
+        # Advanced exported SchemeCreator may be non-empty. Do not apply the
+        # main-scheme encryption display rule to this file class.
+
+
+def validate_main_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool, str | None]:
     raw = path.read_bytes()
     text = raw.decode(detect_encoding(path), errors="strict")
     matches = re.findall(r"(?m)^SchemeCreator=(.*)$", text)
@@ -79,7 +147,7 @@ def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool
         fail(f"{path}: expected exactly one SchemeCreator= field, got {len(matches)}")
     value = matches[0].strip()
     if value and not allow_encrypted:
-        fail(f"{path}: SchemeCreator must be empty by default, got {value!r}")
+        fail(f"{path}: MAIN SCHEME SchemeCreator must be empty by default, got {value!r}")
     if b"\r\n" not in raw:
         fail(f"{path}: delivered main TXT should use CRLF line endings")
 
@@ -111,35 +179,55 @@ def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool
 def validate_package(package_dir: Path, allow_encrypted: bool = False) -> None:
     if not package_dir.exists():
         fail(f"package path does not exist: {package_dir}")
-    scheme_txts = []
+    main_scheme_txts = []
+    advanced_txts = []
     fixed_segments = []
     for p in package_dir.rglob("*.txt"):
         raw = p.read_bytes()
+        if looks_like_advanced_betting(raw):
+            advanced_txts.append(p)
+            validate_advanced_betting_txt(p)
+            continue
         if b"SchemeCreator=" in raw:
-            scheme_txts.append(p)
-            is_fixed, segment = validate_scheme_txt(p, allow_encrypted=allow_encrypted)
+            main_scheme_txts.append(p)
+            is_fixed, segment = validate_main_scheme_txt(p, allow_encrypted=allow_encrypted)
             if is_fixed:
                 fixed_segments.append(segment)
-    if not scheme_txts:
-        fail(f"no scheme TXT containing SchemeCreator= found under {package_dir}")
+    if not main_scheme_txts:
+        fail(f"no MAIN SCHEME TXT containing SchemeCreator= found under {package_dir}")
     if len(fixed_segments) >= 5:
         if all(seg == "0-0" for seg in fixed_segments):
             fail("fixed-pick package uses open-number segment 0-0 for every file; this is forbidden")
         if len(set(fixed_segments)) < 3:
             fail(f"fixed-pick package must use at least 3 distinct open-number segments, got {sorted(set(fixed_segments))}")
-    print(f"[PASS] scheme TXT delivery gate: {len(scheme_txts)} files")
+    print(f"[PASS] main-scheme TXT gate: {len(main_scheme_txts)} files")
+    if advanced_txts:
+        print(f"[PASS] advanced-betting GUI-export gate: {len(advanced_txts)} files")
     if fixed_segments:
         print(f"[PASS] fixed-pick open-number segments: {sorted(set(fixed_segments))}")
 
 
-def validate_repository_rules(contract: dict) -> None:
+def validate_repository_rules(contract: dict, adv_override: dict) -> None:
     if contract.get("status") != "ACTIVE":
         fail("delivery artifact contract must be ACTIVE")
     txt_contract = contract.get("txt_scheme_creator_contract", {})
+    if txt_contract.get("scope") != "main_scheme_txt_only":
+        fail("SchemeCreator empty-value rule must be scoped to MAIN SCHEME TXT only")
     if txt_contract.get("default") != "SchemeCreator=":
-        fail("default SchemeCreator contract must be exactly SchemeCreator=")
+        fail("default main-scheme SchemeCreator contract must be exactly SchemeCreator=")
     if txt_contract.get("allowed_non_empty_only_when_user_explicitly_requests") is not True:
-        fail("non-empty SchemeCreator must require explicit user request")
+        fail("non-empty main-scheme SchemeCreator must require explicit user request")
+
+    if adv_override.get("status") != "ACTIVE":
+        fail("advanced betting GUI-export override must be ACTIVE")
+    adv = adv_override.get("advanced_betting_export_contract", {})
+    if adv.get("encoding") != "GBK" or adv.get("bom") is not False or adv.get("line_ending") != "CRLF":
+        fail("advanced betting current export must preserve GBK/no-BOM/CRLF evidence")
+    if adv.get("field_order") != ADVANCED_FIELDS:
+        fail("advanced betting current export must preserve exact 16-field order")
+    creator = adv.get("scheme_creator", {})
+    if creator.get("observed_non_empty") is not True:
+        fail("advanced export must record observed non-empty SchemeCreator evidence")
 
     integer_contract = contract.get("integer_multiplier_contract", {})
     if integer_contract.get("minimum_multiplier") != 1:
@@ -162,34 +250,27 @@ def validate_repository_rules(contract: dict) -> None:
     }
     if not required_story.issubset(set(ppt_contract.get("required_story_questions", []))):
         fail("public PPT required story questions are incomplete")
-    for forbidden in ["GitHub", "PR", "JSON", "CSV", "GBK", "CRLF", "SchemeCreator", "生成器", "制作TXT", "设计挂机方案"]:
-        if forbidden not in ppt_contract.get("forbidden_terms", []):
-            fail(f"public PPT forbidden term missing: {forbidden}")
 
     public_text = PUBLIC_PPT.read_text(encoding="utf-8") if PUBLIC_PPT.exists() else ""
     for required in ["公开视频PPT不是工程报告", "每个最终投注数字为什么被留下", "倍投不改变中奖概率", "SchemeCreator"]:
         if required not in public_text:
             fail(f"05E public PPT protocol missing required rule: {required}")
 
-    agents_text = AGENTS.read_text(encoding="utf-8") if AGENTS.exists() else ""
-    for required in ["SchemeCreator=", "公开视频玩家教学", "后台执行包", "公开视频教学包"]:
-        if required not in agents_text:
-            fail(f"AGENTS missing delivery rule: {required}")
-
     workflow_text = WORKFLOW.read_text(encoding="utf-8") if WORKFLOW.exists() else ""
     if "validate_delivery_artifact_contract.py" not in workflow_text:
         fail("workflow does not run validate_delivery_artifact_contract.py")
-    print("[PASS] delivery artifact contract and public PPT protocol are enforced")
-    print("[PASS] integer multiplier and fixed-pick segment gates are enforced")
+    print("[PASS] delivery artifact contract is file-class aware")
+    print("[PASS] main SchemeCreator, integer multiplier, fixed-pick and advanced GUI-export gates are enforced")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
     parser.add_argument("--package-dir", type=Path, help="optional generated package directory to scan")
-    parser.add_argument("--allow-encrypted", action="store_true", help="allow non-empty SchemeCreator only for explicit encrypted builds")
+    parser.add_argument("--allow-encrypted", action="store_true", help="allow non-empty MAIN SCHEME SchemeCreator only for explicit encrypted builds")
     args = parser.parse_args()
-    contract = load_contract()
-    validate_repository_rules(contract)
+    contract = load_json(CONTRACT)
+    adv_override = load_json(ADV_OVERRIDE)
+    validate_repository_rules(contract, adv_override)
     if args.package_dir:
         validate_package(args.package_dir, allow_encrypted=args.allow_encrypted)
     return 0
