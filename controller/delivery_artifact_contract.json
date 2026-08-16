@@ -1,10 +1,11 @@
 {
-  "schema_version": "1.1.0",
-  "version": "V3.9.10-DELIVERY-ARTIFACT-CONTRACT-2",
+  "schema_version": "1.2.0",
+  "version": "V3.9.12-DELIVERY-ARTIFACT-CONTRACT-3",
   "status": "ACTIVE",
   "txt_scheme_creator_contract": {
+    "scope": "main_scheme_txt_only",
     "default": "SchemeCreator=",
-    "meaning": "empty value means not encrypted / not creator locked in the user-verified software display",
+    "meaning": "empty value means not encrypted / not creator locked in the user-verified main-scheme software display",
     "forbidden_default_values": [
       "ChatGPT",
       "GPT55",
@@ -16,19 +17,30 @@
       "random_string"
     ],
     "allowed_non_empty_only_when_user_explicitly_requests": true,
-    "delivery_gate": "If encryption/lock is not explicitly requested, every delivered scheme TXT must contain SchemeCreator= with an empty value. Any non-empty value fails the package."
+    "delivery_gate": "If encryption/lock is not explicitly requested, every delivered MAIN SCHEME TXT must contain SchemeCreator= with an empty value. Do not apply this rule mechanically to advanced betting export files."
+  },
+  "advanced_betting_export_contract": {
+    "source": "USER_CONFIRMED_GUI_EXPORT_2026_08_17",
+    "override_file": "controller/advanced_betting_gui_export_override.json",
+    "encoding": "GBK",
+    "bom": false,
+    "line_ending": "CRLF",
+    "field_count": 16,
+    "scheme_creator_policy": "software-exported advanced betting files may contain a non-empty SchemeCreator value; preserve an existing exported value during round-trip edits and do not infer main-scheme encryption semantics from it",
+    "monitor_values": ["False", "True"],
+    "jump_value_pattern": "^(False|True)-.+$"
   },
   "integer_multiplier_contract": {
-    "scope": "ordinary/straight betting plans in delivered TXT",
-    "applies_when": "倍投类型=0 or ordinary straight-line multiplier fields are present",
+    "scope": "ordinary/straight betting plans in delivered TXT and advanced betting 倍数 fields",
+    "applies_when": "倍投类型=0 or ordinary straight-line multiplier fields are present, or advanced betting config contains 倍数=",
     "required_fields": ["倍投计划", "倍投方案"],
-    "allowed_pattern": "positive integers separated by commas only",
+    "allowed_pattern": "positive integers separated by commas only for ordinary plans; single positive integer for each advanced state 倍数",
     "forbidden": ["decimal multipliers", "0", "0.01", "0.001", "empty plan", "negative numbers", "Chinese units inside multiplier list"],
     "minimum_multiplier": 1,
-    "delivery_gate": "For ordinary straight-line betting, 投倍/倍投计划 and 投倍/倍投方案 must be integer sequences such as 1,1,2,3. Any decimal point fails the package."
+    "delivery_gate": "All betting multipliers are positive integers. Any decimal point in a multiplier fails the package."
   },
   "fixed_pick_content_contract": {
-    "scope": "delivered 固定取码 TXT files",
+    "scope": "delivered 固定取码 MAIN SCHEME TXT files",
     "grammar": "位置范围|开出号码段|投注内容",
     "problem_to_prevent": "Do not mechanically write every open-number segment as 0-0; it creates a fake no-design package.",
     "package_gate": {
