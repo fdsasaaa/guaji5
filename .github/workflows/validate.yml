@@ -27,6 +27,8 @@ jobs:
         run: python tools/validate_betting_format_registry.py
       - name: Validate delivery artifact contract
         run: python tools/validate_delivery_artifact_contract.py
+      - name: Validate combo debt relay contract
+        run: python tools/validate_combo_debt_relay_contract.py
       - name: Validate full-function orchestration
         run: python tools/validate_function_orchestration.py --self-test --scan-runs
       - name: Validate orchestration scoring
@@ -68,6 +70,7 @@ jobs:
         run: |
           test -f 05D_PPT技术来源与号码证据协议.md
           test -f 05E_公开视频玩家教学PPT与交付物隔离协议.md
+          test -f 11B_组合债务接力回利与高级倍投协议.md
           test -f PPT技术来源与号码证据规则.json
           test -f PPT技术来源验收测试集.jsonl
           test -f 14_导演执行审计学习总控与模块化变更协议.md
@@ -75,8 +78,10 @@ jobs:
           test -f controller/betting_format_registry.json
           test -f controller/legacy_play_grammar_catalog.json
           test -f controller/delivery_artifact_contract.json
+          test -f controller/combo_debt_relay_contract.json
           test -f tools/validate_betting_format_registry.py
           test -f tools/validate_delivery_artifact_contract.py
+          test -f tools/validate_combo_debt_relay_contract.py
           test -f controller/pipeline.json
           test -f controller/extensions.json
           test -f controller/function_orchestration.json
