@@ -1,5 +1,5 @@
 {
-  "schema_version": 3,
+  "schema_version": 2,
   "controller_id": "LOTTERY-CONTROLLER-V1",
   "status": "ACTIVE",
   "activated_by_pr": 16,
