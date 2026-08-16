@@ -1,8 +1,9 @@
 {
-  "schema_version": "1.0.0",
-  "version": "V3.9.11-COMBO-DEBT-RELAY-1",
+  "schema_version": "1.1.0",
+  "version": "V3.9.12-COMBO-DEBT-RELAY-2",
   "status": "ACTIVE",
-  "purpose": "Prevent future packages from disguising low-pressure integer betting as strict single-hit return betting; enforce combo debt relay language and advanced-state design.",
+  "purpose": "Prevent future packages from disguising low-pressure integer betting as strict single-hit return betting; enforce combo debt relay language and advanced-state design while honoring the current user-confirmed GUI/export format.",
+  "advanced_export_override": "controller/advanced_betting_gui_export_override.json",
   "combo_debt_relay_contract": {
     "allowed_name": "组合债务接力回利",
     "forbidden_claims": [
@@ -20,10 +21,34 @@
     "requires_explicit_boundary": "Must say this is not strict single-hit return betting unless every valid level proves full recovery."
   },
   "advanced_betting_state_graph_contract": {
-    "field_order": ["软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转", "挂后监控", "挂后跳转"],
+    "field_order": [
+      "软件名称",
+      "ID",
+      "倍数",
+      "中后ID",
+      "挂后ID",
+      "中后监控",
+      "中后跳转",
+      "挂后监控",
+      "挂后跳转",
+      "是否盈利跳转",
+      "是否亏损跳转",
+      "盈利金额",
+      "亏损金额",
+      "盈利跳转局数",
+      "亏损跳转局数",
+      "SchemeCreator"
+    ],
     "multiplier_rule": "positive integers only",
     "forbidden_multipliers": ["0", "0.01", "0.001", "decimal", "negative", "empty"],
     "soft_reset_definition": "At least one state with multiplier >= 3 has 中后ID greater than 1 and lower than current ID, so a win lowers pressure without always returning to base.",
-    "cooling_definition": "At least one rescue high-pressure state has 挂后ID pointing to a lower or low-pressure cooling state instead of unbounded escalation."
+    "cooling_definition": "At least one rescue high-pressure state has 挂后ID pointing to a lower or low-pressure cooling state instead of unbounded escalation.",
+    "event_controls": {
+      "中后监控": "False or True; True is current GUI/export evidence for 重新监控",
+      "挂后监控": "False or True; True is current GUI/export evidence for 重新监控",
+      "中后跳转": "False-{方案名} or True-{方案名}; True enables jump to another main scheme",
+      "挂后跳转": "False-{方案名} or True-{方案名}; True enables jump to another main scheme"
+    },
+    "design_requirement": "A combo relay may use internal ID soft reset, re-monitor, and main-scheme jump as separate controls. They must be designed independently rather than copied mechanically across all states."
   }
 }
