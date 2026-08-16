@@ -57,16 +57,21 @@
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
 55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
-56. 任何方案设计在读取 `01_软件格式与已验证执行规则.md` 后，必须继续读取 `00B_完整玩法格式字典与版本优先级.md`、`controller/betting_format_registry.json` 和 `controller/legacy_play_grammar_catalog.json`；当前注册表负责正式状态，历史语法目录负责防止旧能力失忆，两者共同消除V3.2外部依赖。
+56. 任何方案设计在读取 `01_软件格式与已验证执行规则.md` 后，必须继续读取 `00B_完整玩法格式字典与版本优先级.md`、`00C_高级倍投GUI导出强制覆盖规则.md`、`controller/betting_format_registry.json`、`controller/advanced_betting_gui_export_override.json` 和 `controller/legacy_play_grammar_catalog.json`；00C/高级倍投覆盖合同仅在高级倍投冲突处覆盖旧注册表条款。
 57. 玩法格式来源合并必须遵守 `CURRENT_GITHUB_MAIN_VERIFIED > NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED > V3_4_RECOVERED > LEGACY_GENERATOR_DOCS > LEGACY_REAL_TXT_SAMPLE`；低优先级只能填空，禁止覆盖高优先级非空事实、禁令、证据等级或已修复语义。
 58. 已知玩法在当前注册表缺失时，先查历史语法目录确定其已知设计语法与当前处置；两层都缺失才标记 `REGISTRY_DEFECT`。不得要求用户重新提供V3.2，也不得自行猜测字段、分隔符或用相似玩法替代。
 59. 正式方案生成前必须运行 `python tools/validate_betting_format_registry.py`；该校验失败时不得进入方案冻结。
-60. `controller/betting_format_registry.json` 是当前可执行状态总表，`controller/legacy_play_grammar_catalog.json` 是历史完整玩法语法补充表；新增用户确认格式、旧样本恢复事实或新玩法时只允许追加或升级证据，不允许以旧版本整表覆盖当前注册表。
-61. `投注监控`关闭时只允许精确写成 `投注监控=False-`；开启时只允许 `投注监控=True-<非空01序列>`，不得把金额、期数或其他数字串塞进该字段。
+60. `controller/betting_format_registry.json` 是基础当前可执行状态总表，`controller/advanced_betting_gui_export_override.json` 是高级倍投的更新用户实测覆盖层，`controller/legacy_play_grammar_catalog.json` 是历史完整玩法语法补充表；高级倍投冲突必须优先使用覆盖层。
+61. `投注监控`关闭时只允许精确写成 `投注监控=False-`；开启时只允许 `投注监控=True-<非空01序列>`，不得把金额、期数或其他数字串塞进该字段。该规则是主方案“投注监控”字段规则，不等同于高级倍投单局的 `中后监控/挂后监控=True|False`。
 62. 投注监控序列语义固定为 `0=挂、1=中`，序列字符集只能是 `0` 和 `1`；`2-9` 均无监控状态含义，因此 `False-50000`、`True-50000`、`True-0121` 等写法一律判定为非法。
 63. 历史TXT若出现非法投注监控值，只能作为“旧样本错误证据”保存；不得复制进当前模板、注册表默认值或正式方案。`tools/validate_betting_format_registry.py` 必须持续校验这一硬规则。
-64. 用户未明确要求加密或锁定时，所有正式交付TXT必须精确保留空值 `SchemeCreator=`；不得填入方案编号、批次ID、日期、AI名称、作者名或任何非空追踪标识。
-65. 任何生成器、构建器或交付脚本在打包前必须扫描所有TXT；发现 `SchemeCreator=` 非空且任务合同没有显式加密要求时，必须失败并停止交付。
+64. 用户未明确要求加密或锁定时，所有正式交付的**主方案TXT**必须精确保留空值 `SchemeCreator=`；不得填入方案编号、批次ID、日期、AI名称、作者名或任何非空追踪标识。
+65. 打包前必须区分主方案TXT与高级倍投配置TXT。主方案发现 `SchemeCreator=` 非空且未显式要求加密时必须失败；软件原生导出的高级倍投配置允许保留其非空 `SchemeCreator`，不得把主方案空值规则机械套用到 `GJBTScheme` 文件。
 66. 标准交付必须分为后台执行包和公开视频教学包：后台执行包保存TXT、JSON、CSV、资金证明、GitHub记录和字段证据；公开视频教学包只讲玩家能理解的人工投注思路。
 67. 公开视频玩家教学PPT不得出现GitHub、PR、JSON、CSV、GBK、CRLF、SchemeCreator、工程编号、字段、生成器、AI生成、底层逻辑、制作TXT或设计挂机方案等后台制作信息。
 68. 公开视频玩家教学PPT必须讲清玩法、数据窗口、每个数字为什么被选、为什么不选其他数字、多组如何搭配、倍投只是资金管理、连续不中如何处理，以及观众能学走什么。
+69. 当前用户实测高级倍投原生导出为16字段：`软件名称,ID,倍数,中后ID,挂后ID,中后监控,中后跳转,挂后监控,挂后跳转,是否盈利跳转,是否亏损跳转,盈利金额,亏损金额,盈利跳转局数,亏损跳转局数,SchemeCreator`；不得再生成旧9字段版冒充当前格式。
+70. 高级倍投单局 `中后监控/挂后监控` 允许 `True` 与 `False`；`True`是用户GUI勾选“重新监控”后软件原生导出的已确认序列化值。
+71. 高级倍投 `中后跳转/挂后跳转` 使用 `True-主方案名` 或 `False-主方案名`；`True`表示GUI启用跳转，`False`表示未启用，即使False后仍带方案名也不能误判为已跳转。
+72. `中后ID/挂后ID` 是高级倍投内部局号流转；`中后跳转/挂后跳转` 是切换主方案；`中后监控/挂后监控` 是重新监控。三层控制必须分别设计与验证。
+73. 当前用户软件原生导出的高级倍投文件实测为GBK、无BOM、CRLF；这条更新用户实测证据覆盖旧版“高级倍投一定UTF-8 BOM”的假设。跨主方案后的状态继承/重置、重新监控精确时点、盈亏跳转金额口径仍保持运行待验证。
