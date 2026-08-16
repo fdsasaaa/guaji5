@@ -1,0 +1,40 @@
+{
+  "batch_id": "B403_FIXED_PICK_INTEGER_PLAYER_PACKAGE_20260816",
+  "status": "REFINED_AFTER_USER_REJECTION_OF_B402",
+  "source_history": "01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+  "bankroll": 5000,
+  "primary_category": "固定取码",
+  "hard_fixes": [
+    "固定取码内容第二段不再全部写0-0",
+    "倍投计划只允许正整数逗号序列",
+    "倍投方案在普通倍投下也写入正整数逗号序列",
+    "SchemeCreator保持空值"
+  ],
+  "integer_betting_sequence_summary": {
+    "periods": 100,
+    "sequence_blocks": [
+      {"multiplier": 1, "periods": 20},
+      {"multiplier": 2, "periods": 15},
+      {"multiplier": 3, "periods": 15},
+      {"multiplier": 4, "periods": 12},
+      {"multiplier": 5, "periods": 12},
+      {"multiplier": 6, "periods": 10},
+      {"multiplier": 7, "periods": 8},
+      {"multiplier": 8, "periods": 5},
+      {"multiplier": 9, "periods": 3}
+    ],
+    "full_sequence": "1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,2,2,2,2,2,2,2,2,2,2,2,2,2,2,2,3,3,3,3,3,3,3,3,3,3,3,3,3,3,3,4,4,4,4,4,4,4,4,4,4,4,4,5,5,5,5,5,5,5,5,5,5,5,5,6,6,6,6,6,6,6,6,6,6,7,7,7,7,7,7,7,7,8,8,8,8,8,9,9,9",
+    "max_multiplier": 9,
+    "total_units_per_single_plan": 386,
+    "six_plan_total_cost_assuming_2yuan_unit": 4632
+  },
+  "fixed_pick_plans": [
+    {"id":"FX01", "name":"万位热码5", "play_name":"万位", "fixed_content":"0-0|0-2|5", "evidence":"万位5在200期出现26次，位置第1"},
+    {"id":"FX02", "name":"千位热码5", "play_name":"千位", "fixed_content":"1-1|3-5|5", "evidence":"千位5在200期出现26次，位置第1"},
+    {"id":"FX03", "name":"百位热码6", "play_name":"百位", "fixed_content":"2-2|6-9|6", "evidence":"百位6在200期出现26次，位置第1"},
+    {"id":"FX04", "name":"十位热码7", "play_name":"十位", "fixed_content":"3-3|0-3|7", "evidence":"十位7在200期出现26次，位置第1"},
+    {"id":"FX05", "name":"个位热码6", "play_name":"个位", "fixed_content":"4-4|4-8|6", "evidence":"个位6在200期出现29次，位置第1"},
+    {"id":"FX06", "name":"十位替补3", "play_name":"十位", "fixed_content":"3-3|7-9|3", "evidence":"十位3在200期出现25次，位置第2，只比十位7少1次，作为替补观察"}
+  ],
+  "strict_boundary": "B403使用整数低压100档观察路径。不得再使用0.001/0.01等小数倍，也不得把整数100档包装成每档必然强回利。"
+}
