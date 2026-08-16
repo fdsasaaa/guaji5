@@ -1,12 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Validate combo debt relay / advanced betting state design rules.
-
-This repository-level gate protects the B404 design lesson:
-- Low-pressure integer schedules must not be sold as strict single-hit recovery.
-- Combo relay packages must explicitly separate endurance, recovery and rescue.
-- Advanced betting state graphs must include soft reset and cooling concepts.
-"""
+"""Validate combo debt relay / advanced betting state design rules."""
 
 from __future__ import annotations
 
@@ -16,7 +10,14 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "controller" / "combo_debt_relay_contract.json"
+ADV_OVERRIDE = ROOT / "controller" / "advanced_betting_gui_export_override.json"
 PROTOCOL = ROOT / "11B_组合债务接力回利与高级倍投协议.md"
+
+EXPECTED_FIELDS = [
+    "软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转",
+    "挂后监控", "挂后跳转", "是否盈利跳转", "是否亏损跳转", "盈利金额",
+    "亏损金额", "盈利跳转局数", "亏损跳转局数", "SchemeCreator",
+]
 
 
 def fail(msg: str) -> None:
@@ -24,15 +25,20 @@ def fail(msg: str) -> None:
     raise SystemExit(1)
 
 
+def load_json(path: Path) -> dict:
+    if not path.exists():
+        fail(f"missing {path.relative_to(ROOT)}")
+    try:
+        return json.loads(path.read_text(encoding="utf-8"))
+    except Exception as exc:
+        fail(f"cannot parse {path.relative_to(ROOT)}: {exc}")
+
+
 def main() -> int:
-    if not CONTRACT.exists():
-        fail("missing controller/combo_debt_relay_contract.json")
+    data = load_json(CONTRACT)
+    override = load_json(ADV_OVERRIDE)
     if not PROTOCOL.exists():
         fail("missing 11B_组合债务接力回利与高级倍投协议.md")
-    try:
-        data = json.loads(CONTRACT.read_text(encoding="utf-8"))
-    except Exception as exc:
-        fail(f"cannot parse combo debt relay contract: {exc}")
 
     if data.get("status") != "ACTIVE":
         fail("combo debt relay contract must be ACTIVE")
@@ -53,9 +59,8 @@ def main() -> int:
             fail(f"missing forbidden claim: {forbidden}")
 
     adv = data.get("advanced_betting_state_graph_contract", {})
-    expected = ["软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转", "挂后监控", "挂后跳转"]
-    if adv.get("field_order") != expected:
-        fail("advanced betting 9-field order changed")
+    if adv.get("field_order") != EXPECTED_FIELDS:
+        fail("combo contract must use current user-confirmed 16-field advanced order")
     if adv.get("multiplier_rule") != "positive integers only":
         fail("advanced multiplier rule must be positive integers only")
     for bad in ["0", "0.01", "0.001", "decimal", "negative", "empty"]:
@@ -66,13 +71,30 @@ def main() -> int:
     if "挂后ID" not in str(adv.get("cooling_definition", "")):
         fail("cooling definition must mention 挂后ID")
 
+    event_controls = adv.get("event_controls", {})
+    for key in ["中后监控", "挂后监控", "中后跳转", "挂后跳转"]:
+        if key not in event_controls:
+            fail(f"combo contract missing current GUI event control: {key}")
+
+    current = override.get("advanced_betting_export_contract", {})
+    if current.get("field_order") != EXPECTED_FIELDS:
+        fail("advanced GUI export override 16-field order mismatch")
+    if current.get("encoding") != "GBK" or current.get("bom") is not False or current.get("line_ending") != "CRLF":
+        fail("current advanced export evidence must remain GBK/no-BOM/CRLF")
+    monitors = current.get("monitor_contract", {})
+    if not all(k in monitors for k in ("中后监控", "挂后监控")):
+        fail("GUI export override must preserve both re-monitor controls")
+    jumps = current.get("main_scheme_jump_contract", {})
+    if not all(k in jumps for k in ("中后跳转", "挂后跳转")):
+        fail("GUI export override must preserve both main-scheme jump controls")
+
     text = PROTOCOL.read_text(encoding="utf-8")
-    for required in ["组合债务接力", "耐久组", "回补组", "救援组", "软复位", "冷却", "不能称为单次命中强回利"]:
+    for required in ["组合债务接力", "耐久组", "回补组", "救援组", "软复位", "冷却", "不能称为单次命中强回利", "重新监控", "主方案"]:
         if required not in text:
             fail(f"protocol missing required phrase: {required}")
 
     print("[PASS] combo debt relay contract is active and boundary-safe")
-    print("[PASS] advanced state graph requires integer multipliers, soft reset and rescue cooling")
+    print("[PASS] current 16-field advanced GUI/export controls are enforced")
     return 0
 
 
