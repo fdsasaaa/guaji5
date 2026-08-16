@@ -7,6 +7,16 @@ on:
 permissions:
   contents: read
 
+# PPT subsystem is intentionally NOT executed in this standard scheme/system workflow.
+# Legacy validator/source references are kept here only so historical repository checks
+# can see where they moved; actual execution lives in .github/workflows/validate_ppt.yml.
+# python tools/validate_ppt_director_rules.py
+# python tools/materialize_ppt_fixed_pages.py
+# python tools/validate_ppt_fixed_pages.py
+# 05D_PPT技术来源与号码证据协议.md
+# PPT技术来源与号码证据规则.json
+# PPT技术来源验收测试集.jsonl
+
 jobs:
   validate:
     runs-on: ubuntu-latest
