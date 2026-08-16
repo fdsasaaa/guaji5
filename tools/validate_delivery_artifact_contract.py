@@ -1,0 +1,135 @@
+#!/usr/bin/env python3
+# -*- coding: utf-8 -*-
+"""Validate delivery artifact safety rules.
+
+This gate protects two user-confirmed boundaries:
+1. Scheme TXT files must not show encrypted / creator-locked state unless the
+   user explicitly asked for it. The default is an empty SchemeCreator value.
+2. Public-facing PPT rules must stay player-teaching oriented and must not leak
+   private automation / engineering terms into video pages.
+"""
+
+from __future__ import annotations
+
+import argparse
+import json
+import re
+import sys
+from pathlib import Path
+
+ROOT = Path(__file__).resolve().parents[1]
+CONTRACT = ROOT / "controller" / "delivery_artifact_contract.json"
+PUBLIC_PPT = ROOT / "05E_公开视频玩家教学PPT与交付物隔离协议.md"
+AGENTS = ROOT / "AGENTS.md"
+WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
+
+
+def fail(msg: str) -> None:
+    print(f"[FAIL] {msg}")
+    raise SystemExit(1)
+
+
+def load_contract() -> dict:
+    if not CONTRACT.exists():
+        fail("missing controller/delivery_artifact_contract.json")
+    try:
+        return json.loads(CONTRACT.read_text(encoding="utf-8"))
+    except Exception as exc:
+        fail(f"cannot parse delivery artifact contract: {exc}")
+
+
+def detect_encoding(path: Path) -> str:
+    raw = path.read_bytes()
+    if raw.startswith(b"\xef\xbb\xbf"):
+        return "utf-8-sig"
+    try:
+        raw.decode("gbk")
+        return "gbk"
+    except UnicodeDecodeError:
+        return "utf-8"
+
+
+def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> None:
+    text = path.read_text(encoding=detect_encoding(path), errors="strict")
+    matches = re.findall(r"(?m)^SchemeCreator=(.*)$", text)
+    if not matches:
+        fail(f"{path}: missing SchemeCreator= field")
+    if len(matches) != 1:
+        fail(f"{path}: expected exactly one SchemeCreator= field, got {len(matches)}")
+    value = matches[0].strip()
+    if value and not allow_encrypted:
+        fail(f"{path}: SchemeCreator must be empty by default, got {value!r}")
+    if "\r\n" not in text:
+        fail(f"{path}: delivered main TXT should use CRLF line endings")
+
+
+def validate_package(package_dir: Path, allow_encrypted: bool = False) -> None:
+    if not package_dir.exists():
+        fail(f"package path does not exist: {package_dir}")
+    txts = list(package_dir.rglob("*.txt"))
+    scheme_txts = []
+    for p in txts:
+        raw = p.read_bytes()
+        if b"SchemeCreator=" in raw:
+            scheme_txts.append(p)
+    if not scheme_txts:
+        fail(f"no scheme TXT containing SchemeCreator= found under {package_dir}")
+    for p in scheme_txts:
+        validate_scheme_txt(p, allow_encrypted=allow_encrypted)
+    print(f"[PASS] scheme TXT SchemeCreator gate: {len(scheme_txts)} files")
+
+
+def validate_repository_rules(contract: dict) -> None:
+    if contract.get("status") != "ACTIVE":
+        fail("delivery artifact contract must be ACTIVE")
+    txt_contract = contract.get("txt_scheme_creator_contract", {})
+    if txt_contract.get("default") != "SchemeCreator=":
+        fail("default SchemeCreator contract must be exactly SchemeCreator=")
+    if txt_contract.get("allowed_non_empty_only_when_user_explicitly_requests") is not True:
+        fail("non-empty SchemeCreator must require explicit user request")
+    required_forbidden_values = {"ChatGPT", "GPT55", "AI_GENERATED", "batch_id", "scheme_id", "run_id"}
+    if not required_forbidden_values.issubset(set(txt_contract.get("forbidden_default_values", []))):
+        fail("SchemeCreator forbidden default values are incomplete")
+
+    ppt_contract = contract.get("public_ppt_contract", {})
+    required_story = {
+        "玩法是什么", "数据窗口是什么", "每个数字为什么被选", "为什么不选其他数字",
+        "多组如何搭配", "倍投只是资金管理不是提高命中", "连续不中如何停止或减压", "观众能学走什么",
+    }
+    if not required_story.issubset(set(ppt_contract.get("required_story_questions", []))):
+        fail("public PPT required story questions are incomplete")
+    for forbidden in ["GitHub", "PR", "JSON", "CSV", "GBK", "CRLF", "SchemeCreator", "生成器", "制作TXT", "设计挂机方案"]:
+        if forbidden not in ppt_contract.get("forbidden_terms", []):
+            fail(f"public PPT forbidden term missing: {forbidden}")
+
+    public_text = PUBLIC_PPT.read_text(encoding="utf-8") if PUBLIC_PPT.exists() else ""
+    for required in ["公开视频PPT不是工程报告", "每个最终投注数字为什么被留下", "倍投不改变中奖概率", "SchemeCreator"]:
+        if required not in public_text:
+            fail(f"05E public PPT protocol missing required rule: {required}")
+
+    agents_text = AGENTS.read_text(encoding="utf-8") if AGENTS.exists() else ""
+    for required in ["SchemeCreator=", "公开视频玩家教学", "后台执行包", "公开视频教学包"]:
+        if required not in agents_text:
+            fail(f"AGENTS missing delivery rule: {required}")
+
+    workflow_text = WORKFLOW.read_text(encoding="utf-8") if WORKFLOW.exists() else ""
+    if "validate_delivery_artifact_contract.py" not in workflow_text:
+        fail("workflow does not run validate_delivery_artifact_contract.py")
+    print("[PASS] delivery artifact contract and public PPT protocol are enforced")
+
+
+def main() -> int:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--package-dir", type=Path, help="optional generated package directory to scan")
+    parser.add_argument("--allow-encrypted", action="store_true", help="allow non-empty SchemeCreator only for explicit encrypted builds")
+    args = parser.parse_args()
+
+    contract = load_contract()
+    validate_repository_rules(contract)
+    if args.package_dir:
+        validate_package(args.package_dir, allow_encrypted=args.allow_encrypted)
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())
