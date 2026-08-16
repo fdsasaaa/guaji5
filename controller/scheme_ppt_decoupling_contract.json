@@ -1,0 +1,47 @@
+{
+  "schema_version": "1.0.0",
+  "version": "V3.9.13-SCHEME-PPT-DECOUPLING-1",
+  "status": "ACTIVE",
+  "standard_scheme_task": {
+    "task_type": "STANDARD_SCHEME_TASK",
+    "auto_generate_ppt": false,
+    "required_bridge_artifact": "玩家教学素材卡.md",
+    "forbidden_artifacts": ["*.ppt", "*.pptx", "PPT蓝图", "PPT页面脚本", "PPT渲染图"],
+    "failure_code": "SCHEME_PPT_COUPLING_REGRESSION",
+    "may_read_ppt_protocols": false,
+    "must_not_change_scheme_for_future_ppt": true
+  },
+  "player_teaching_ppt_task": {
+    "task_type": "PLAYER_TEACHING_PPT_TASK",
+    "trigger": "EXPLICIT_USER_REQUEST_ONLY",
+    "master_prompt": "玩家教学PPT独立创建总控口述_V1.0.md",
+    "protocol": "05F_玩家教学PPT独立二次任务协议.md",
+    "primary_input": "玩家教学素材卡.md",
+    "may_modify_scheme_logic": false,
+    "may_generate_ppt": true,
+    "must_run_ppt_specific_validation": true
+  },
+  "teaching_card_contract": {
+    "required_sections": [
+      "玩法一句话",
+      "数据窗口",
+      "最终号码或位置",
+      "每个号码为什么留下",
+      "为什么不选接近候选",
+      "多组如何搭配",
+      "人工投注怎么理解",
+      "资金与降压思路",
+      "本金止盈止损",
+      "历史观察与前向验证边界",
+      "公开视频可讲案例",
+      "风险限制"
+    ],
+    "forbidden_terms": ["GitHub", "PR", "JSON", "CSV", "GBK", "CRLF", "SchemeCreator", "注册表", "字段序列化", "CI", "生成器"]
+  },
+  "legacy_ppt_protocol_policy": {
+    "05A_方案讲解PPT生产协议.md": "PPT_ONLY_LEGACY_REFERENCE",
+    "05E_公开视频玩家教学PPT与交付物隔离协议.md": "PPT_ONLY_LEGACY_REFERENCE",
+    "11A_本金止盈止损设计与PPT披露协议.md": "PPT_ONLY_LEGACY_REFERENCE",
+    "loaded_by_standard_scheme_task": false
+  }
+}
