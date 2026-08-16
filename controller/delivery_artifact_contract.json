@@ -1,6 +1,6 @@
 {
-  "schema_version": "1.0.0",
-  "version": "V3.9.9-DELIVERY-ARTIFACT-CONTRACT-1",
+  "schema_version": "1.1.0",
+  "version": "V3.9.10-DELIVERY-ARTIFACT-CONTRACT-2",
   "status": "ACTIVE",
   "txt_scheme_creator_contract": {
     "default": "SchemeCreator=",
@@ -17,6 +17,26 @@
     ],
     "allowed_non_empty_only_when_user_explicitly_requests": true,
     "delivery_gate": "If encryption/lock is not explicitly requested, every delivered scheme TXT must contain SchemeCreator= with an empty value. Any non-empty value fails the package."
+  },
+  "integer_multiplier_contract": {
+    "scope": "ordinary/straight betting plans in delivered TXT",
+    "applies_when": "倍投类型=0 or ordinary straight-line multiplier fields are present",
+    "required_fields": ["倍投计划", "倍投方案"],
+    "allowed_pattern": "positive integers separated by commas only",
+    "forbidden": ["decimal multipliers", "0", "0.01", "0.001", "empty plan", "negative numbers", "Chinese units inside multiplier list"],
+    "minimum_multiplier": 1,
+    "delivery_gate": "For ordinary straight-line betting, 投倍/倍投计划 and 投倍/倍投方案 must be integer sequences such as 1,1,2,3. Any decimal point fails the package."
+  },
+  "fixed_pick_content_contract": {
+    "scope": "delivered 固定取码 TXT files",
+    "grammar": "位置范围|开出号码段|投注内容",
+    "problem_to_prevent": "Do not mechanically write every open-number segment as 0-0; it creates a fake no-design package.",
+    "package_gate": {
+      "if_fixed_pick_files_gte": 5,
+      "minimum_distinct_open_number_segments": 3,
+      "all_zero_zero_open_segment_forbidden": true
+    },
+    "recommended_design": "Use explainable low/mid/high open-number segment roles such as 0-2, 3-5, 6-9, 0-3, 4-8, 7-9. Each segment must have a role in the evidence record."
   },
   "public_ppt_contract": {
     "audience": "ordinary lottery players watching a video",
