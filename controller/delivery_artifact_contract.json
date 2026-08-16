@@ -1,0 +1,57 @@
+{
+  "schema_version": "1.0.0",
+  "version": "V3.9.9-DELIVERY-ARTIFACT-CONTRACT-1",
+  "status": "ACTIVE",
+  "txt_scheme_creator_contract": {
+    "default": "SchemeCreator=",
+    "meaning": "empty value means not encrypted / not creator locked in the user-verified software display",
+    "forbidden_default_values": [
+      "ChatGPT",
+      "GPT55",
+      "AI_GENERATED",
+      "batch_id",
+      "scheme_id",
+      "run_id",
+      "date",
+      "random_string"
+    ],
+    "allowed_non_empty_only_when_user_explicitly_requests": true,
+    "delivery_gate": "If encryption/lock is not explicitly requested, every delivered scheme TXT must contain SchemeCreator= with an empty value. Any non-empty value fails the package."
+  },
+  "public_ppt_contract": {
+    "audience": "ordinary lottery players watching a video",
+    "purpose": "teach an artificial betting thought process, not explain how the private automation package was generated",
+    "forbidden_terms": [
+      "GitHub",
+      "PR",
+      "commit",
+      "JSON",
+      "CSV",
+      "GBK",
+      "CRLF",
+      "SchemeCreator",
+      "E2",
+      "E3",
+      "RUN_ID",
+      "PROBE",
+      "字段",
+      "编码",
+      "生成器",
+      "AI生成",
+      "底层逻辑",
+      "注册表",
+      "制作TXT",
+      "设计挂机方案"
+    ],
+    "required_story_questions": [
+      "玩法是什么",
+      "数据窗口是什么",
+      "每个数字为什么被选",
+      "为什么不选其他数字",
+      "多组如何搭配",
+      "倍投只是资金管理不是提高命中",
+      "连续不中如何停止或减压",
+      "观众能学走什么"
+    ]
+  }
+}
