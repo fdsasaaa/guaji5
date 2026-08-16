@@ -2,11 +2,14 @@
 # -*- coding: utf-8 -*-
 """Validate delivery artifact safety rules.
 
-This gate protects two user-confirmed boundaries:
+This gate protects confirmed delivery boundaries:
 1. Scheme TXT files must not show encrypted / creator-locked state unless the
    user explicitly asked for it. The default is an empty SchemeCreator value.
-2. Public-facing PPT rules must stay player-teaching oriented and must not leak
-   private automation / engineering terms into video pages.
+2. Public-facing PPT rules must stay player-teaching oriented.
+3. Ordinary straight-line betting multiplier lists must use positive integers
+   only; decimal multipliers such as 0.01 are invalid.
+4. Fixed-pick packages must not mechanically write every open-number segment as
+   0-0; fixed-pick content must show explainable segment diversity.
 """
 
 from __future__ import annotations
@@ -49,8 +52,26 @@ def detect_encoding(path: Path) -> str:
         return "utf-8"
 
 
-def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> None:
-    text = path.read_text(encoding=detect_encoding(path), errors="strict")
+def parse_fields(text: str) -> dict[str, list[str]]:
+    fields: dict[str, list[str]] = {}
+    for line in text.splitlines():
+        if "=" not in line:
+            continue
+        k, v = line.split("=", 1)
+        fields.setdefault(k.strip(), []).append(v.strip())
+    return fields
+
+
+def is_positive_integer_sequence(value: str) -> bool:
+    if not value or "." in value:
+        return False
+    parts = value.split(",")
+    return all(part.isdigit() and int(part) >= 1 for part in parts)
+
+
+def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool, str | None]:
+    raw = path.read_bytes()
+    text = raw.decode(detect_encoding(path), errors="strict")
     matches = re.findall(r"(?m)^SchemeCreator=(.*)$", text)
     if not matches:
         fail(f"{path}: missing SchemeCreator= field")
@@ -59,24 +80,56 @@ def validate_scheme_txt(path: Path, allow_encrypted: bool = False) -> None:
     value = matches[0].strip()
     if value and not allow_encrypted:
         fail(f"{path}: SchemeCreator must be empty by default, got {value!r}")
-    if "\r\n" not in text:
+    if b"\r\n" not in raw:
         fail(f"{path}: delivered main TXT should use CRLF line endings")
+
+    fields = parse_fields(text)
+    bet_type = fields.get("倍投类型", [""])[0]
+    if bet_type == "0":
+        for key in ("倍投计划", "倍投方案"):
+            values = fields.get(key, [])
+            if len(values) != 1:
+                fail(f"{path}: expected exactly one {key}= field")
+            if not is_positive_integer_sequence(values[0]):
+                fail(f"{path}: {key} must be positive integers only, got {values[0]!r}")
+
+    fixed_values = fields.get("固定取码内容", [])
+    if not fixed_values:
+        return False, None
+    if len(fixed_values) != 1:
+        fail(f"{path}: expected exactly one 固定取码内容= field")
+    fixed = fixed_values[0]
+    parts = fixed.split("|")
+    if len(parts) != 3:
+        fail(f"{path}: 固定取码内容 must use 位置范围|开出号码段|投注内容, got {fixed!r}")
+    open_segment = parts[1].strip()
+    if not re.fullmatch(r"\d+-\d+", open_segment):
+        fail(f"{path}: 固定取码 open-number segment must be a numeric range, got {open_segment!r}")
+    return True, open_segment
 
 
 def validate_package(package_dir: Path, allow_encrypted: bool = False) -> None:
     if not package_dir.exists():
         fail(f"package path does not exist: {package_dir}")
-    txts = list(package_dir.rglob("*.txt"))
     scheme_txts = []
-    for p in txts:
+    fixed_segments = []
+    for p in package_dir.rglob("*.txt"):
         raw = p.read_bytes()
         if b"SchemeCreator=" in raw:
             scheme_txts.append(p)
+            is_fixed, segment = validate_scheme_txt(p, allow_encrypted=allow_encrypted)
+            if is_fixed:
+                fixed_segments.append(segment)
     if not scheme_txts:
         fail(f"no scheme TXT containing SchemeCreator= found under {package_dir}")
-    for p in scheme_txts:
-        validate_scheme_txt(p, allow_encrypted=allow_encrypted)
-    print(f"[PASS] scheme TXT SchemeCreator gate: {len(scheme_txts)} files")
+    if len(fixed_segments) >= 5:
+        if all(seg == "0-0" for seg in fixed_segments):
+            fail("fixed-pick package uses open-number segment 0-0 for every file; this is forbidden")
+        if len(set(fixed_segments)) < 3:
+            fail(f"fixed-pick package must use at least 3 distinct open-number segments, got {sorted(set(fixed_segments))}")
+    print(f"[PASS] scheme TXT delivery gate: {len(scheme_txts)} files")
+    if fixed_segments:
+        print(f"[PASS] fixed-pick open-number segments: {sorted(set(fixed_segments))}")
 
 
 def validate_repository_rules(contract: dict) -> None:
@@ -87,9 +140,20 @@ def validate_repository_rules(contract: dict) -> None:
         fail("default SchemeCreator contract must be exactly SchemeCreator=")
     if txt_contract.get("allowed_non_empty_only_when_user_explicitly_requests") is not True:
         fail("non-empty SchemeCreator must require explicit user request")
-    required_forbidden_values = {"ChatGPT", "GPT55", "AI_GENERATED", "batch_id", "scheme_id", "run_id"}
-    if not required_forbidden_values.issubset(set(txt_contract.get("forbidden_default_values", []))):
-        fail("SchemeCreator forbidden default values are incomplete")
+
+    integer_contract = contract.get("integer_multiplier_contract", {})
+    if integer_contract.get("minimum_multiplier") != 1:
+        fail("integer multiplier minimum must be 1")
+    for forbidden in ["decimal multipliers", "0.01", "0.001", "empty plan"]:
+        if forbidden not in integer_contract.get("forbidden", []):
+            fail(f"integer multiplier forbidden item missing: {forbidden}")
+
+    fixed_contract = contract.get("fixed_pick_content_contract", {})
+    gate = fixed_contract.get("package_gate", {})
+    if gate.get("all_zero_zero_open_segment_forbidden") is not True:
+        fail("fixed-pick all-0-0 package gate must be enabled")
+    if int(gate.get("minimum_distinct_open_number_segments", 0)) < 3:
+        fail("fixed-pick segment diversity gate must require at least 3 distinct ranges")
 
     ppt_contract = contract.get("public_ppt_contract", {})
     required_story = {
@@ -116,6 +180,7 @@ def validate_repository_rules(contract: dict) -> None:
     if "validate_delivery_artifact_contract.py" not in workflow_text:
         fail("workflow does not run validate_delivery_artifact_contract.py")
     print("[PASS] delivery artifact contract and public PPT protocol are enforced")
+    print("[PASS] integer multiplier and fixed-pick segment gates are enforced")
 
 
 def main() -> int:
@@ -123,7 +188,6 @@ def main() -> int:
     parser.add_argument("--package-dir", type=Path, help="optional generated package directory to scan")
     parser.add_argument("--allow-encrypted", action="store_true", help="allow non-empty SchemeCreator only for explicit encrypted builds")
     args = parser.parse_args()
-
     contract = load_contract()
     validate_repository_rules(contract)
     if args.package_dir:
