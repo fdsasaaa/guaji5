@@ -3,8 +3,8 @@
 """Validate the self-contained betting format knowledge base.
 
 Checks current authority, precedence, current formal coverage, legacy knowledge
-supplement, and strict 投注监控 0/1 sequence semantics. It intentionally does
-not promote legacy knowledge to current runtime evidence.
+supplement, strict 投注监控 semantics, and the newer user-confirmed advanced
+betting GUI/export override.
 """
 
 from __future__ import annotations
@@ -15,10 +15,18 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
 REGISTRY = ROOT / "controller" / "betting_format_registry.json"
+ADV_OVERRIDE = ROOT / "controller" / "advanced_betting_gui_export_override.json"
 LEGACY = ROOT / "controller" / "legacy_play_grammar_catalog.json"
 RULES = ROOT / "01_软件格式与已验证执行规则.md"
 OVERLAY = ROOT / "00B_完整玩法格式字典与版本优先级.md"
+ADV_OVERLAY = ROOT / "00C_高级倍投GUI导出强制覆盖规则.md"
 AGENTS = ROOT / "AGENTS.md"
+
+ADVANCED_FIELDS = [
+    "软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转",
+    "挂后监控", "挂后跳转", "是否盈利跳转", "是否亏损跳转", "盈利金额",
+    "亏损金额", "盈利跳转局数", "亏损跳转局数", "SchemeCreator",
+]
 
 
 def fail(msg: str) -> None:
@@ -34,10 +42,11 @@ def load_json(path: Path):
 
 
 def valid_monitor_value(value: str) -> bool:
-    """Current hard grammar for 投注监控.
+    """Current hard grammar for main-scheme 投注监控.
 
     OFF is exactly False-. ON is True- followed by a non-empty sequence in
-    which 0=挂 and 1=中. No other digit has monitor-state meaning.
+    which 0=挂 and 1=中. This is NOT the same field as advanced-state
+    中后监控/挂后监控, which are simple True/False booleans.
     """
     if value == "False-":
         return True
@@ -80,11 +89,12 @@ def extract_formal_rows(text: str):
 
 
 def main() -> int:
-    for p in (REGISTRY, LEGACY, RULES, OVERLAY, AGENTS):
+    for p in (REGISTRY, ADV_OVERRIDE, LEGACY, RULES, OVERLAY, ADV_OVERLAY, AGENTS):
         if not p.exists():
             fail(f"missing required file: {p.relative_to(ROOT)}")
 
     data = load_json(REGISTRY)
+    adv_override = load_json(ADV_OVERRIDE)
     legacy = load_json(LEGACY)
 
     if data.get("unknown_format_policy") != "REGISTRY_DEFECT_AND_BLOCK_GENERATION":
@@ -122,22 +132,39 @@ def main() -> int:
     if not required_coldhot.issubset(set(coldhot.get("dedicated_fields", []))):
         fail("cold/hot/warm dedicated fields are incomplete")
 
-    advanced = data.get("betting_registry", {}).get("高级倍投", {})
-    expected_advanced_fields = ["软件名称", "ID", "倍数", "中后ID", "挂后ID", "中后监控", "中后跳转", "挂后监控", "挂后跳转"]
-    if advanced.get("fields_in_order") != expected_advanced_fields:
-        fail("advanced betting 9-field order changed")
+    # Newer user-confirmed advanced-betting export overrides the legacy 9-field
+    # block in betting_format_registry.json where they conflict.
+    if adv_override.get("status") != "ACTIVE":
+        fail("advanced betting GUI-export override must be ACTIVE")
+    if adv_override.get("evidence_priority") != "NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED":
+        fail("advanced override must use NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED priority")
+    current_adv = adv_override.get("advanced_betting_export_contract", {})
+    if current_adv.get("field_order") != ADVANCED_FIELDS:
+        fail("current advanced betting export must preserve exact 16-field order")
+    if current_adv.get("encoding") != "GBK" or current_adv.get("bom") is not False or current_adv.get("line_ending") != "CRLF":
+        fail("current advanced betting export must preserve GBK/no-BOM/CRLF evidence")
+    monitor_contract = current_adv.get("monitor_contract", {})
+    if not all(k in monitor_contract for k in ("中后监控", "挂后监控")):
+        fail("current advanced export must preserve both re-monitor controls")
+    jump_contract = current_adv.get("main_scheme_jump_contract", {})
+    if not all(k in jump_contract for k in ("中后跳转", "挂后跳转")):
+        fail("current advanced export must preserve both main-scheme jump controls")
+    superseded = " ".join(adv_override.get("supersedes_for_advanced_betting", []))
+    for required in ["9-field", "中后监控=True", "挂后监控=True", "中后跳转=True-方案名", "挂后跳转=True-方案名", "UTF-8 BOM"]:
+        if required not in superseded:
+            fail(f"advanced override does not explicitly supersede old rule: {required}")
 
     settings = data.get("settings_registry", {})
     for key in ["投注监控", "换号规则", "正反集", "真实模拟切换", "盈亏停止", "盈亏跳转", "时间控制", "顶部方案轮投"]:
         if key not in settings:
             fail(f"missing settings registry: {key}")
 
-    # 2026-08-13 user-confirmed monitor semantics: 0=挂, 1=中, only 0/1.
+    # Main-scheme 投注监控 semantics: 0=挂, 1=中, only 0/1.
     monitor = settings.get("投注监控", {})
-    monitor_contract = monitor.get("field_contract", {})
-    if monitor_contract.get("off") != "False-":
+    main_monitor_contract = monitor.get("field_contract", {})
+    if main_monitor_contract.get("off") != "False-":
         fail("投注监控 OFF must be exactly False-")
-    if monitor_contract.get("enabled") != "True-{01_sequence}":
+    if main_monitor_contract.get("enabled") != "True-{01_sequence}":
         fail("投注监控 ON grammar must be True-{01_sequence}")
     monitor_semantics = str(monitor.get("sequence_semantics", ""))
     if "0/1" not in monitor_semantics or "挂/中" not in monitor_semantics:
@@ -182,7 +209,7 @@ def main() -> int:
     if not any("方案2-冷热温出号" in str(item.get("source", "")) for item in evidence):
         fail("legacy real cold/hot/warm TXT evidence is not recorded")
 
-    # Historical knowledge completeness: these are design-known categories, not formal promotions.
+    # Historical knowledge completeness: design-known categories, not formal promotions.
     if legacy.get("status") != "KNOWLEDGE_SUPPLEMENT_ONLY":
         fail("legacy catalog must remain knowledge-only")
     hist = legacy.get("historical_level1_catalog", {})
@@ -229,13 +256,19 @@ def main() -> int:
         if required_monitor_rule not in overlay_text:
             fail(f"00B strict monitor rule missing: {required_monitor_rule}")
 
+    adv_overlay_text = ADV_OVERLAY.read_text(encoding="utf-8")
+    for required in ["16字段", "中后监控=True", "挂后监控=True", "中后跳转=True-主方案名", "挂后跳转=True-主方案名", "GBK", "无BOM"]:
+        if required not in adv_overlay_text:
+            fail(f"00C advanced override missing required evidence: {required}")
+
     agents_text = AGENTS.read_text(encoding="utf-8")
-    for required_agent_rule in ["0=挂、1=中", "False-50000", "True-50000", "True-0121"]:
+    for required_agent_rule in ["0=挂、1=中", "False-50000", "True-50000", "True-0121", "00C_高级倍投GUI导出强制覆盖规则.md", "16字段", "GBK、无BOM、CRLF"]:
         if required_agent_rule not in agents_text:
-            fail(f"AGENTS strict monitor rule missing: {required_agent_rule}")
+            fail(f"AGENTS missing current rule: {required_agent_rule}")
 
     print("[PASS] betting format knowledge base is self-contained and precedence-safe")
-    print("[PASS] 投注监控 grammar is strict: OFF=False-, ON=True-[01]+, 0=挂, 1=中")
+    print("[PASS] main 投注监控 grammar is strict: OFF=False-, ON=True-[01]+, 0=挂, 1=中")
+    print("[PASS] effective advanced betting format uses user-confirmed 16-field GBK/CRLF override")
     print(f"[INFO] current_primary_categories={len(categories)}")
     print(f"[INFO] historical_level1_known={len(hist)}")
     print(f"[INFO] legacy_play_grammar_families={len(catalog)}")
