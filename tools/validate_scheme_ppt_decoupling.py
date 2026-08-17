@@ -15,6 +15,7 @@ AGENTS = ROOT / "AGENTS.md"
 OVERRIDE = ROOT / "00D_方案与PPT彻底解耦强制覆盖规则.md"
 PPT_PROTOCOL = ROOT / "05F_玩家教学PPT独立二次任务协议.md"
 MASTER_PROMPT = ROOT / "玩家教学PPT独立创建总控口述_V1.0.md"
+CARD_TEMPLATE = ROOT / "controller" / "templates" / "player_teaching_material_card.template.md"
 
 
 def fail(msg: str) -> None:
@@ -23,9 +24,9 @@ def fail(msg: str) -> None:
 
 
 def main() -> int:
-    for p in (CONTRACT, PIPELINE, AGENTS, OVERRIDE, PPT_PROTOCOL, MASTER_PROMPT):
+    for p in (CONTRACT, PIPELINE, AGENTS, OVERRIDE, PPT_PROTOCOL, MASTER_PROMPT, CARD_TEMPLATE):
         if not p.exists():
-            fail(f"missing required decoupling source: {p.name}")
+            fail(f"missing required decoupling source: {p.relative_to(ROOT)}")
 
     contract = json.loads(CONTRACT.read_text(encoding="utf-8"))
     if contract.get("status") != "ACTIVE":
@@ -36,11 +37,21 @@ def main() -> int:
         fail("STANDARD_SCHEME_TASK must have auto_generate_ppt=false")
     if scheme.get("required_bridge_artifact") != "玩家教学素材卡.md":
         fail("scheme task must require 玩家教学素材卡.md as bridge artifact")
+    if scheme.get("bridge_template") != "controller/templates/player_teaching_material_card.template.md":
+        fail("scheme task must bind the player teaching material-card template")
     forbidden = set(scheme.get("forbidden_artifacts", []))
     if not {"*.ppt", "*.pptx", "PPT蓝图"}.issubset(forbidden):
         fail("standard scheme task must forbid PPT/PPTX/PPT blueprint")
     if scheme.get("may_read_ppt_protocols") is not False:
         fail("standard scheme task must not load PPT protocols")
+
+    teaching = contract.get("teaching_card_contract", {})
+    card_text = CARD_TEMPLATE.read_text(encoding="utf-8")
+    if teaching.get("template") != "controller/templates/player_teaching_material_card.template.md":
+        fail("teaching-card contract must point to the template")
+    for section in teaching.get("required_sections", []):
+        if section not in card_text:
+            fail(f"material-card template missing section: {section}")
 
     ppt = contract.get("player_teaching_ppt_task", {})
     if ppt.get("trigger") != "EXPLICIT_USER_REQUEST_ONLY":
@@ -85,6 +96,7 @@ def main() -> int:
             fail(f"00D missing decoupling phrase: {phrase}")
 
     print("[PASS] STANDARD_SCHEME_TASK is decoupled from PPT generation")
+    print("[PASS] player teaching material card is bound to a reproducible template")
     print("[PASS] player PPT is explicit secondary task with teaching-card bridge")
     return 0
 
