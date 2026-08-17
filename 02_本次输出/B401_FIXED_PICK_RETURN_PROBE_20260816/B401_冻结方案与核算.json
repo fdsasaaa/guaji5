@@ -1,0 +1,41 @@
+{
+  "batch_id": "B401_FIXED_PICK_RETURN_PROBE_20260816",
+  "source": "fdsasaaa/guaji5 main @ ae12bc8a2311fbd95ad6bfd8d8b229673049a6f1; history file 01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+  "primary_category": "固定取码",
+  "format_status": "固定取码在legacy catalog中为KNOWN_ATOM；正式执行需匹配当前定位胆模板并先模拟导入。",
+  "bankroll": 5000,
+  "economic_assumptions": {
+    "single_note_stake": 2,
+    "dwd_reward_per_hit": 19.6,
+    "rebate_rate_used_in_proof": 0,
+    "min_multiplier_required": 0.001,
+    "platform_limit_status": "unknown in source params; must verify before real bet"
+  },
+  "scheme_count": 6,
+  "strict_chain": {
+    "play": "定位胆单位置单码",
+    "cost_per_1x": 2,
+    "reward_per_hit_1x": 19.6,
+    "hit_net_per_1x": 17.6,
+    "valid_recovery_periods_under_5000": 111,
+    "full_loss_at_111_misses": 4522.716,
+    "required_last_multiplier": 230.752
+  },
+  "selected_digits": {
+    "万位": "5",
+    "千位": "5",
+    "百位": "6",
+    "十位": "7",
+    "个位": "6"
+  },
+  "history_summary": {
+    "万位5": {"history_hit_rate": 0.13, "max_history_miss": 30},
+    "千位5": {"history_hit_rate": 0.13, "max_history_miss": 19},
+    "百位6": {"history_hit_rate": 0.13, "max_history_miss": 26},
+    "十位7": {"history_hit_rate": 0.13, "max_history_miss": 40},
+    "个位6": {"history_hit_rate": 0.145, "max_history_miss": 33},
+    "五位至少一中": {"history_hit_rate": 0.52, "max_history_miss": 6}
+  },
+  "simultaneous_warning": "6个方案可以一起导入/勾选，但若全部按回利链同时跑，最坏风险会叠加，不能声称5000覆盖六条111档独立马丁。建议只允许1-2条回利链，其余平衡护栏最低倍监控。",
+  "mathematical_boundary": "在2元单注、19.6返奖、最低0.001倍条件下，5000本金严谨回利只支持约111档；要求200档需要更低最低投注单位、更高返奖/返点或放弃首次命中全覆盖硬约束。"
+}

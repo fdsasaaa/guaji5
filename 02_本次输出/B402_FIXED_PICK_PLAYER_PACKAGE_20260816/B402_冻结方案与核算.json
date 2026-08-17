@@ -1,0 +1,54 @@
+{
+  "batch_id": "B402_FIXED_PICK_PLAYER_PACKAGE_20260816",
+  "source": "fdsasaaa/guaji5 main @ PR42 branch; history file 01_本次输入/哈希分分彩_20260731_0181至0380.txt",
+  "fixes_applied": [
+    "All delivered scheme TXT files use exact empty SchemeCreator= by default.",
+    "PPT rewritten as public player-teaching deck; private engineering terms are excluded."
+  ],
+  "primary_category": "固定取码",
+  "format_status": "fixed pick is still treated as a known atom; actual software import should be simulated before real funds.",
+  "bankroll": 5000,
+  "economic_assumptions": {
+    "single_note_stake": 2,
+    "dwd_reward_per_hit": 19.6,
+    "rebate_rate_used_in_proof": 0,
+    "min_multiplier_required": 0.001,
+    "platform_limit_status": "unknown in source params; verify before real bet"
+  },
+  "selected_digits": {
+    "万位": "5",
+    "千位": "5",
+    "百位": "6",
+    "十位": "7",
+    "个位": "6"
+  },
+  "selection_evidence_summary": [
+    {"position": "万位", "digit": "5", "hits_200": 26, "rank": 1, "current_omit": 8, "max_miss": 30, "top5": "5:26 / 2:25 / 6:24 / 7:24 / 8:19"},
+    {"position": "千位", "digit": "5", "hits_200": 26, "rank": 1, "current_omit": 19, "max_miss": 19, "top5": "5:26 / 4:23 / 9:23 / 2:20 / 6:20"},
+    {"position": "百位", "digit": "6", "hits_200": 26, "rank": 1, "current_omit": 14, "max_miss": 26, "top5": "6:26 / 2:25 / 1:22 / 5:22 / 9:21"},
+    {"position": "十位", "digit": "7", "hits_200": 26, "rank": 1, "current_omit": 14, "max_miss": 40, "top5": "7:26 / 3:25 / 0:22 / 1:22 / 6:21"},
+    {"position": "个位", "digit": "6", "hits_200": 29, "rank": 1, "current_omit": 1, "max_miss": 33, "top5": "6:29 / 8:25 / 4:24 / 3:22 / 5:21"}
+  ],
+  "combined_selected_at_least_one": {
+    "history_hits_200": 104,
+    "history_hit_rate": 0.52,
+    "max_miss": 6,
+    "current_omit": 1
+  },
+  "strict_chain": {
+    "play": "定位胆单位置单码",
+    "cost_per_1x": 2,
+    "reward_per_hit_1x": 19.6,
+    "hit_net_per_1x": 17.6,
+    "valid_recovery_periods_under_5000": 111,
+    "full_loss_at_111_misses": 4522.716,
+    "required_last_multiplier": 230.752
+  },
+  "simultaneous_warning": "Do not run all six strict recovery chains at full pressure under one 5000 bankroll. Use at most 1-2 recovery chains; keep remaining items as flat low-exposure observations.",
+  "mathematical_boundary": "200 strict recovery periods are not supported under current assumptions; 111 periods are the hard boundary for a single chain under 5000 bankroll.",
+  "delivery_validation": {
+    "scheme_creator_empty_scan": "PASS",
+    "public_ppt_forbidden_engineering_terms_scan": "PASS",
+    "ppt_style": "public player-teaching deck"
+  }
+}

@@ -1,0 +1,76 @@
+{
+  "schema_version": "1.0.0",
+  "version": "V3.9.12-ADVANCED-GUI-EXPORT-1",
+  "status": "ACTIVE",
+  "evidence_priority": "NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED",
+  "evidence_date": "2026-08-17",
+  "evidence_source": "user adjusted current GUI and exported 高级倍投_A_耐久软复位.txt",
+  "supersedes_for_advanced_betting": [
+    "legacy 9-field-only contract",
+    "legacy ban on 中后监控=True",
+    "legacy ban on 挂后监控=True",
+    "legacy ban on 中后跳转=True-方案名",
+    "legacy ban on 挂后跳转=True-方案名",
+    "legacy ban on cross-main-scheme jump",
+    "legacy assumption that current advanced export is always UTF-8 BOM"
+  ],
+  "advanced_betting_export_contract": {
+    "encoding": "GBK",
+    "bom": false,
+    "line_ending": "CRLF",
+    "trailing_newline_observed": false,
+    "line_count_observed": 12,
+    "field_separator": ";",
+    "field_order": [
+      "软件名称",
+      "ID",
+      "倍数",
+      "中后ID",
+      "挂后ID",
+      "中后监控",
+      "中后跳转",
+      "挂后监控",
+      "挂后跳转",
+      "是否盈利跳转",
+      "是否亏损跳转",
+      "盈利金额",
+      "亏损金额",
+      "盈利跳转局数",
+      "亏损跳转局数",
+      "SchemeCreator"
+    ],
+    "monitor_contract": {
+      "中后监控": {"false": "GUI unchecked", "true": "GUI checked: 重新监控"},
+      "挂后监控": {"false": "GUI unchecked", "true": "GUI checked: 重新监控"}
+    },
+    "main_scheme_jump_contract": {
+      "中后跳转": "True-{主方案名} means GUI jump enabled; False-{serialized name} means jump disabled",
+      "挂后跳转": "True-{主方案名} means GUI jump enabled; False-{serialized name} means jump disabled",
+      "note": "target name may still be serialized when False; boolean prefix controls enabled state"
+    },
+    "internal_state_jump_contract": {
+      "中后ID": "advanced-betting internal target ID after hit",
+      "挂后ID": "advanced-betting internal target ID after miss",
+      "must_not_confuse_with_main_scheme_jump": true
+    },
+    "profit_loss_jump_fields_observed": [
+      "是否盈利跳转",
+      "是否亏损跳转",
+      "盈利金额",
+      "亏损金额",
+      "盈利跳转局数",
+      "亏损跳转局数"
+    ],
+    "scheme_creator": {
+      "observed_non_empty": true,
+      "observed_value_example": "trWG8zebc3w=",
+      "policy": "main-scheme empty SchemeCreator gate does not automatically apply to advanced betting files; preserve software-exported value during round-trip edits until stronger evidence exists"
+    }
+  },
+  "runtime_boundaries": [
+    "GUI/export proves configurability and serialization, not exact event timing under every runtime combination",
+    "重新监控 exact runtime timing and state-reset scope still require forward verification",
+    "profit/loss jump amount scope and trigger timing remain unverified",
+    "cross-scheme automatic debt accounting is not implied by jump capability"
+  ]
+}
