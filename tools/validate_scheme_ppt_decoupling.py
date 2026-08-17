@@ -49,15 +49,24 @@ def main() -> int:
         fail("player PPT task must not modify frozen scheme logic")
 
     pipeline = json.loads(PIPELINE.read_text(encoding="utf-8"))
-    pipeline_text = PIPELINE.read_text(encoding="utf-8")
-    for forbidden_text in ["PPT蓝图", "PPT一致性"]:
-        if forbidden_text in pipeline_text:
-            fail(f"pipeline still contains coupled PPT text: {forbidden_text}")
     dec = pipeline.get("scheme_ppt_decoupling", {})
     if dec.get("standard_scheme_auto_ppt") is not False:
         fail("pipeline must explicitly disable standard scheme auto PPT")
+    if dec.get("standard_scheme_reads_ppt_protocols") is not False:
+        fail("pipeline must explicitly block PPT protocols in standard scheme task")
     if dec.get("bridge_artifact") != "玩家教学素材卡.md":
         fail("pipeline bridge artifact must be 玩家教学素材卡.md")
+
+    phases = {x.get("id"): x for x in pipeline.get("phases", [])}
+    execution = str(phases.get("EXECUTION", {}).get("role", ""))
+    audit = str(phases.get("AUDIT", {}).get("role", ""))
+    delivery = str(phases.get("DELIVERY", {}).get("role", ""))
+    if "禁止自动生成PPT" not in execution:
+        fail("EXECUTION phase must explicitly forbid auto PPT")
+    if "不做PPT审计" not in audit:
+        fail("AUDIT phase must explicitly exclude PPT audit for standard scheme task")
+    if "不含PPT" not in delivery:
+        fail("DELIVERY phase must explicitly exclude PPT from standard scheme ZIP")
 
     agents_text = AGENTS.read_text(encoding="utf-8")
     required_agents = [
