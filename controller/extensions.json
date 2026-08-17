@@ -56,7 +56,7 @@
       "owned_paths": ["全仓库，仅通过清理计划授权"],
       "protected_dependencies": ["所有被协议、清单、工作流、代码、索引或历史证据引用的文件"],
       "required_validators": ["引用扫描", "清理前后仓库总校验", "恢复清单校验"],
-      "compatibility_contract": "先解除标准方案引用，再将旧PPT协议降级为PPT_ONLY_LEGACY_REFERENCE；不因解耦误删未来独立PPT仍需的素材",
+      "compatibility_contract": "先隔离后删除；本次PPT解耦优先解除标准方案引用，再将旧PPT协议降级为PPT_ONLY_LEGACY_REFERENCE；不为清理而误删未来独立PPT仍可复用的资产",
       "rollback_unit": "一次清理批次及其完整恢复清单"
     }
   ]
