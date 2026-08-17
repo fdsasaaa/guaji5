@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 # -*- coding: utf-8 -*-
-"""Validate delivery artifact safety rules.
+"""Validate STANDARD_SCHEME_TASK delivery artifact safety rules.
 
 Confirmed boundaries:
 1. MAIN SCHEME TXT files default to empty SchemeCreator unless encryption/lock
@@ -8,10 +8,10 @@ Confirmed boundaries:
 2. Current user-exported ADVANCED BETTING TXT is a different file class: GBK +
    CRLF, 16 semicolon-separated fields, and may contain a software-generated
    non-empty SchemeCreator value.
-3. Public PPT stays player-teaching oriented.
-4. All multiplier values are positive integers; decimal multipliers are invalid.
-5. Fixed-pick packages must not mechanically use open-number segment 0-0 for
+3. All multiplier values are positive integers; decimal multipliers are invalid.
+4. Fixed-pick packages must not mechanically use open-number segment 0-0 for
    every main scheme.
+5. PPT is deliberately outside this validator and outside STANDARD_SCHEME_TASK.
 """
 
 from __future__ import annotations
@@ -25,8 +25,6 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parents[1]
 CONTRACT = ROOT / "controller" / "delivery_artifact_contract.json"
 ADV_OVERRIDE = ROOT / "controller" / "advanced_betting_gui_export_override.json"
-PUBLIC_PPT = ROOT / "05E_公开视频玩家教学PPT与交付物隔离协议.md"
-AGENTS = ROOT / "AGENTS.md"
 WORKFLOW = ROOT / ".github" / "workflows" / "validate.yml"
 
 ADVANCED_FIELDS = [
@@ -133,8 +131,6 @@ def validate_advanced_betting_txt(path: Path) -> None:
         for key in ("中后跳转", "挂后跳转"):
             if not re.fullmatch(r"(?:False|True)-.+", row[key]):
                 fail(f"{path}:{lineno}: {key} must be False-方案名 or True-方案名")
-        # Advanced exported SchemeCreator may be non-empty. Do not apply the
-        # main-scheme encryption display rule to this file class.
 
 
 def validate_main_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple[bool, str | None]:
@@ -179,6 +175,8 @@ def validate_main_scheme_txt(path: Path, allow_encrypted: bool = False) -> tuple
 def validate_package(package_dir: Path, allow_encrypted: bool = False) -> None:
     if not package_dir.exists():
         fail(f"package path does not exist: {package_dir}")
+    if list(package_dir.rglob("*.ppt")) or list(package_dir.rglob("*.pptx")):
+        fail(f"{package_dir}: STANDARD_SCHEME_TASK package must not contain PPT/PPTX")
     main_scheme_txts = []
     advanced_txts = []
     fixed_segments = []
@@ -210,6 +208,11 @@ def validate_package(package_dir: Path, allow_encrypted: bool = False) -> None:
 def validate_repository_rules(contract: dict, adv_override: dict) -> None:
     if contract.get("status") != "ACTIVE":
         fail("delivery artifact contract must be ACTIVE")
+    if contract.get("scope") != "STANDARD_SCHEME_TASK_DELIVERY_ONLY":
+        fail("delivery contract scope must be STANDARD_SCHEME_TASK_DELIVERY_ONLY")
+    if "public_ppt_contract" in contract:
+        fail("PPT rules must not remain inside standard scheme delivery contract")
+
     txt_contract = contract.get("txt_scheme_creator_contract", {})
     if txt_contract.get("scope") != "main_scheme_txt_only":
         fail("SchemeCreator empty-value rule must be scoped to MAIN SCHEME TXT only")
@@ -243,29 +246,16 @@ def validate_repository_rules(contract: dict, adv_override: dict) -> None:
     if int(gate.get("minimum_distinct_open_number_segments", 0)) < 3:
         fail("fixed-pick segment diversity gate must require at least 3 distinct ranges")
 
-    ppt_contract = contract.get("public_ppt_contract", {})
-    required_story = {
-        "玩法是什么", "数据窗口是什么", "每个数字为什么被选", "为什么不选其他数字",
-        "多组如何搭配", "倍投只是资金管理不是提高命中", "连续不中如何停止或减压", "观众能学走什么",
-    }
-    if not required_story.issubset(set(ppt_contract.get("required_story_questions", []))):
-        fail("public PPT required story questions are incomplete")
-
-    public_text = PUBLIC_PPT.read_text(encoding="utf-8") if PUBLIC_PPT.exists() else ""
-    for required in ["公开视频PPT不是工程报告", "每个最终投注数字为什么被留下", "倍投不改变中奖概率", "SchemeCreator"]:
-        if required not in public_text:
-            fail(f"05E public PPT protocol missing required rule: {required}")
-
     workflow_text = WORKFLOW.read_text(encoding="utf-8") if WORKFLOW.exists() else ""
     if "validate_delivery_artifact_contract.py" not in workflow_text:
         fail("workflow does not run validate_delivery_artifact_contract.py")
-    print("[PASS] delivery artifact contract is file-class aware")
+    print("[PASS] STANDARD_SCHEME_TASK delivery contract is PPT-free and file-class aware")
     print("[PASS] main SchemeCreator, integer multiplier, fixed-pick and advanced GUI-export gates are enforced")
 
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--package-dir", type=Path, help="optional generated package directory to scan")
+    parser.add_argument("--package-dir", type=Path, help="optional generated STANDARD_SCHEME_TASK package directory to scan")
     parser.add_argument("--allow-encrypted", action="store_true", help="allow non-empty MAIN SCHEME SchemeCreator only for explicit encrypted builds")
     args = parser.parse_args()
     contract = load_json(CONTRACT)

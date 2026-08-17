@@ -2,7 +2,7 @@
 
 任何AI或自动化代理接管本仓库时必须：
 
-1. 先读取 `SYSTEM_MANIFEST.json`、`SYSTEM_STATE.json`、`00_启动入口与系统状态.md`、`00A_当前强制覆盖与废止规则.md` 和第10—14号协议。00A用于覆盖00中保留的历史旧条款。
+1. 先读取 `SYSTEM_MANIFEST.json`、`SYSTEM_STATE.json`、`00_启动入口与系统状态.md`、`00A_当前强制覆盖与废止规则.md`、`00D_方案与PPT彻底解耦强制覆盖规则.md` 和第10—14号协议。00A/00D用于覆盖历史旧条款。
 2. 默认直接执行用户任务，不等待二次确认。
 3. 用户的“仅供参考”不是硬规格，无法直接生成TXT时必须优先重构为可执行方案。
 4. 不得用错误软件类别伪造TXT；高级映射不得把同一常量集合复制到0—9。
@@ -11,32 +11,32 @@
 7. `main`是唯一稳定正式源；ZIP、PPTX属于构建产物，不替代源文件。
 8. 项目规则、底层逻辑和协议修改必须直接写入GitHub正式源。聊天长期记忆不得替代仓库规则。
 9. 标准方案任务对外默认发送一个完整交付ZIP；系统规则、索引、状态、优化记录与回滚证据直接回写GitHub。
-10. 每套项目只生成一个讲解PPT，不得额外生成独立口播稿、技术报告、事实校验表或操作说明。
-11. PPT必须先读取 `05A_方案讲解PPT生产协议.md`、`05E_公开视频玩家教学PPT与交付物隔离协议.md`、`11A_本金止盈止损设计与PPT披露协议.md`、`PPT页面类型卡片.jsonl`、`PPT讲解验收测试集.jsonl` 和 `PPT压缩与精度规则.json`。
-12. PPT生成前必须识别项目核心动作，标题准确优先于绝对简短；不得把核心动作写偏。
-13. PPT必须先由讲解导演建立讲解蓝图和动态模块结构，禁止把技术报告直接拆页。
-14. 每张候选页面必须通过页面独立价值门槛；简单技术主讲通常控制在7至10页。
-15. PPT主体默认先讲核心技术、真实缘由和可执行规则，再用案例证明观众已经理解。
-16. 主讲页优先使用准确自然的人话；公式、程序变量和正式口径进入备注或GitHub内部记录。
-17. 必须检查数字、图表、标题和底部结论的视觉重复，允许留白。
-18. 风险和停止建议必须明确停止或暂停的具体对象；建议只保留2至4条。
+10. **标准方案任务禁止自动生成PPT、PPTX、PPT蓝图、PPT页面脚本或PPT渲染图。** 方案任务与PPT任务必须彻底解耦。
+11. 每个标准方案任务必须在完整交付ZIP中生成 `玩家教学素材卡.md`，作为未来独立PPT任务的事实桥梁；素材卡不得包含GitHub、字段、编码、生成器等工程制作信息。
+12. `STANDARD_SCHEME_TASK` 不得读取05A/05E/11A等历史PPT协议作为必需依赖，也不得为了未来PPT改变玩法、号码、倍投、资金或验证逻辑。
+13. 只有用户**明确二次请求**创建PPT，或粘贴《玩家教学PPT独立创建总控口述》时，才允许进入 `PLAYER_TEACHING_PPT_TASK`。
+14. `PLAYER_TEACHING_PPT_TASK` 必须读取 `05F_玩家教学PPT独立二次任务协议.md` 和 `玩家教学PPT独立创建总控口述_V1.0.md`；它只能表达已冻结方案事实，禁止反向修改方案。
+15. 独立PPT任务优先读取 `玩家教学素材卡.md`；只有核对事实需要时才读取TXT/工程记录，且工程信息不得进入观众页面。
+16. 独立PPT任务必须从真人玩家分享人工投注思路的角度重写故事线，优先自然大白话、第一人称、真实筛选过程，禁止工程报告式拆页。
+17. 独立PPT任务必须讲清“为什么选、为什么不选、怎么搭配、连续不中怎么办、什么时候停”；倍投只能解释为资金管理，不得说成提高中奖概率。
+18. PPT专项美工、备注、渲染、页面类型、品牌页和PPT验收只在 `PLAYER_TEACHING_PPT_TASK` 中执行，不得成为标准方案CI或交付门槛。
 19. 每个正式挂机方案必须先冻结建议本金和止盈止损模式。
-20. 挂机方案PPT主讲部分必须显示建议本金金额；启用止盈或止损时必须显示对应金额，未启用项目必须明确写“不设置”。
+20. 标准方案的 `玩家教学素材卡.md` 必须记录建议本金、止盈、止损或“不设置”，并用普通玩家能理解的语言说明资金与降压思路。
 21. 建议本金、止盈和止损必须根据单注金额、实际注数、资金路径、压力连挂、最大回撤、赔率、风险预算和字典中的已验证规则设计。
 22. GitHub内部证据必须保存本金、止盈和止损的计算依据、模式、金额、比例、达到后动作、软件证据和替代停止条件。
 23. 证据必须保存足够的样本、命中、基准、统计、版本、验证状态和执行边界。
-24. 每页必须先识别页面类型并遵循 `PPT页面类型卡片.jsonl`。
-25. PPT必须通过 `PPT讲解验收测试集.jsonl`，并完成讲解审查、压缩去程序化审查、精度审查和全页渲染审查。
-26. 所有正式PPT最后一张正常播放页面必须清楚显示 `www.laocaimi.org` 和 `https://t.me/laocaimi1314`。
-27. 一句话任务仍必须执行 `director—contract—execute—validate—audit—delivery—learning` 全链路，先读取 `14_导演执行审计学习总控与模块化变更协议.md`、`controller/pipeline.json` 和 `controller/extensions.json`。
+24. 独立PPT任务每页必须先识别页面类型并遵循当前PPT专项协议；该要求不进入标准方案任务。
+25. 独立PPT任务交付前必须完成讲解审查、去工程化审查、精度审查、全页渲染和文字溢出检查；该要求不进入标准方案任务。
+26. 只有用户或当前PPT协议仍要求品牌结束页时，独立PPT最后一张正常播放页面才显示 `www.laocaimi.org` 和 `https://t.me/laocaimi1314`。
+27. 一句话标准方案任务仍必须执行 `director—contract—execute—validate—audit—delivery—learning` 全链路，先读取 `14_导演执行审计学习总控与模块化变更协议.md`、`controller/pipeline.json` 和 `controller/extensions.json`。
 28. 正式生成前必须建立本次运行证据包，至少包含 `task.json`、`rollback_manifest.json`、`director_decision.json`、`design_contract.json`、验证报告和审计报告。
-29. 设计合同冻结后，关键方案或PPT逻辑不得静默修改；需要变化时退回导演或合同阶段并记录原因。
+29. 设计合同冻结后，关键方案逻辑不得静默修改；独立PPT任务若发现事实不足，只能要求补证据或修正素材卡，不得擅自改方案。
 30. 自动返工最多3轮。超过上限必须进入BLOCKED并保留失败证据。
-31. 所有变更先归类到PPT、SCHEME、PROGRAM、SYSTEM或CLEANUP扩展域；跨域变更必须提交影响报告并运行各域专项校验。
-32. 清理任务默认只生成计划，必须完成引用扫描、先隔离后删除、恢复清单和清理前后校验。
+31. 所有变更先归类到PPT、SCHEME、PROGRAM、SYSTEM或CLEANUP扩展域；跨域变更必须提交影响报告并运行各域专项校验。标准方案任务不得自动跨入PPT域。
+32. 清理任务默认只生成计划，必须完成引用扫描、先隔离后删除、恢复清单和清理前后校验。PPT解耦优先解除引用和降级历史协议，不为清理而误删未来独立PPT仍可复用的资产。
 33. 系统升级写入前必须记录基线提交、计划文件、修改前哈希、影响范围和回滚顺序；写入后补充修改后哈希、校验和PR证据。
-34. 禁止直接写main、强推、自动合并或删除失败分支；默认创建Draft PR，由独立审查决定是否Ready和合并。
-35. 运行 `python tools/validate_controller_architecture.py` 与 `python tools/lottery_controller.py validate`，并运行受影响扩展域的专项校验。
+34. 禁止直接写main、强推、自动合并或删除失败分支；核心协议升级应使用独立PR。
+35. 运行 `python tools/validate_controller_architecture.py`、`python tools/lottery_controller.py validate` 和受影响扩展域专项校验；方案/PPT解耦升级必须运行 `python tools/validate_scheme_ppt_decoupling.py`。
 36. 标准方案任务必须读取 `11_智能功能调度与资金路径编排协议.md`、`controller/function_orchestration.json` 和 `controller/templates/function_orchestration.template.json`。
 37. 每个标准方案任务必须在运行证据目录生成 `function_orchestration.json`；缺失时不得冻结 `design_contract.json`。
 38. 候选池至少包含 `BASELINE`、`STATE`、`EXECUTION_OR_FUNDING`、`LOW_COVERAGE_PROBE` 四种画像，且至少三种画像在号码、触发、执行、资金、停止、时间/模拟六维中实质不同。
@@ -56,7 +56,7 @@
 52. 标准方案PR必须修改本次 `function_orchestration.json` 和中央覆盖账本；只新增构建器、批次归档或YouTube配置而不提交编排证据时，CI必须失败。
 53. 仓库CI必须运行 `python tools/validate_orchestration_scoring.py --scan-runs`、`python tools/validate_scheme_orchestration_gate.py` 和 `python tools/test_orchestration_gates.py`。
 54. 到期首批优先实质审议投注监控、高级状态倍投和模拟/真实切换；证据不足时必须给出可运行的隔离探针，不得伪装成正式成熟功能。
-55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本和PR闸门全部通过前，不得标记为合格交付。
+55. 任何标准方案在功能编排、中央证据上限、评分、覆盖账本、PPT解耦门禁和PR闸门全部通过前，不得标记为合格交付。
 56. 任何方案设计在读取 `01_软件格式与已验证执行规则.md` 后，必须继续读取 `00B_完整玩法格式字典与版本优先级.md`、`00C_高级倍投GUI导出强制覆盖规则.md`、`controller/betting_format_registry.json`、`controller/advanced_betting_gui_export_override.json` 和 `controller/legacy_play_grammar_catalog.json`；00C/高级倍投覆盖合同仅在高级倍投冲突处覆盖旧注册表条款。
 57. 玩法格式来源合并必须遵守 `CURRENT_GITHUB_MAIN_VERIFIED > NEWER_USER_CONFIRMED_OR_GITHUB_VERIFIED > V3_4_RECOVERED > LEGACY_GENERATOR_DOCS > LEGACY_REAL_TXT_SAMPLE`；低优先级只能填空，禁止覆盖高优先级非空事实、禁令、证据等级或已修复语义。
 58. 已知玩法在当前注册表缺失时，先查历史语法目录确定其已知设计语法与当前处置；两层都缺失才标记 `REGISTRY_DEFECT`。不得要求用户重新提供V3.2，也不得自行猜测字段、分隔符或用相似玩法替代。
@@ -67,9 +67,9 @@
 63. 历史TXT若出现非法投注监控值，只能作为“旧样本错误证据”保存；不得复制进当前模板、注册表默认值或正式方案。`tools/validate_betting_format_registry.py` 必须持续校验这一硬规则。
 64. 用户未明确要求加密或锁定时，所有正式交付的**主方案TXT**必须精确保留空值 `SchemeCreator=`；不得填入方案编号、批次ID、日期、AI名称、作者名或任何非空追踪标识。
 65. 打包前必须区分主方案TXT与高级倍投配置TXT。主方案发现 `SchemeCreator=` 非空且未显式要求加密时必须失败；软件原生导出的高级倍投配置允许保留其非空 `SchemeCreator`，不得把主方案空值规则机械套用到 `GJBTScheme` 文件。
-66. 标准交付必须分为后台执行包和公开视频教学包：后台执行包保存TXT、JSON、CSV、资金证明、GitHub记录和字段证据；公开视频教学包只讲玩家能理解的人工投注思路。
-67. 公开视频玩家教学PPT不得出现GitHub、PR、JSON、CSV、GBK、CRLF、SchemeCreator、工程编号、字段、生成器、AI生成、底层逻辑、制作TXT或设计挂机方案等后台制作信息。
-68. 公开视频玩家教学PPT必须讲清玩法、数据窗口、每个数字为什么被选、为什么不选其他数字、多组如何搭配、倍投只是资金管理、连续不中如何处理，以及观众能学走什么。
+66. 标准方案的公开内容桥梁只有 `玩家教学素材卡.md`；不得同时生成“公开视频教学包”或PPT。未来PPT任务通过素材卡重新组织，不直接继承工程叙事。
+67. 玩家教学素材卡必须讲清玩法、数据窗口、每个数字为什么被选、为什么不选接近候选、多组如何搭配、人工投注怎么理解、资金如何降压、连续不中如何处理以及风险边界。
+68. 素材卡与未来独立PPT均不得把历史命中率包装成未来保证，不得声称倍投提高中奖率。
 69. 当前用户实测高级倍投原生导出为16字段：`软件名称,ID,倍数,中后ID,挂后ID,中后监控,中后跳转,挂后监控,挂后跳转,是否盈利跳转,是否亏损跳转,盈利金额,亏损金额,盈利跳转局数,亏损跳转局数,SchemeCreator`；不得再生成旧9字段版冒充当前格式。
 70. 高级倍投单局 `中后监控/挂后监控` 允许 `True` 与 `False`；`True`是用户GUI勾选“重新监控”后软件原生导出的已确认序列化值。
 71. 高级倍投 `中后跳转/挂后跳转` 使用 `True-主方案名` 或 `False-主方案名`；`True`表示GUI启用跳转，`False`表示未启用，即使False后仍带方案名也不能误判为已跳转。

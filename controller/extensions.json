@@ -1,30 +1,35 @@
 {
-  "schema_version": 1,
+  "schema_version": 2,
   "registry_id": "LOTTERY-EXTENSIONS-V1",
   "rules": {
     "unknown_domain_is_blocked": true,
     "cross_domain_change_requires_impact_report": true,
     "core_protocol_change_requires_separate_pr": true,
     "delete_requires_cleanup_domain": true,
-    "all_changes_require_rollback_manifest": true
+    "all_changes_require_rollback_manifest": true,
+    "standard_scheme_must_not_invoke_ppt_domain": true,
+    "ppt_domain_requires_explicit_user_request": true
   },
   "domains": [
     {
       "id": "PPT",
-      "purpose": "封面、页面结构、备注、模板、渲染与PPT验收",
-      "owned_paths": ["05A_", "05B_", "05D_", "PPT", "tools/materialize_ppt", "tools/validate_ppt"],
-      "protected_dependencies": ["方案TXT语义", "软件执行规则", "资金冻结合同"],
+      "purpose": "独立二次任务：把已冻结方案事实翻译成玩家教学型公开视频PPT；负责封面、页面结构、备注、模板、渲染与PPT验收",
+      "trigger": "EXPLICIT_PLAYER_TEACHING_PPT_REQUEST_ONLY",
+      "owned_paths": ["05A_", "05B_", "05D_", "05E_", "05F_", "PPT", "玩家教学PPT独立创建总控口述", "tools/materialize_ppt", "tools/validate_ppt"],
+      "protected_dependencies": ["已冻结方案事实", "玩家教学素材卡", "资金冻结合同"],
       "required_validators": ["tools/validate_repository.py", "tools/validate_ppt_director_rules.py", "tools/validate_ppt_fixed_pages.py"],
-      "compatibility_contract": "PPT只能表达已冻结方案，不得反向修改方案逻辑",
-      "rollback_unit": "PPT规则、模板与相关测试"
+      "compatibility_contract": "PPT是明确二次请求才启动的独立域；只能表达已冻结方案，不得反向修改方案逻辑，也不得成为STANDARD_SCHEME_TASK必需输出",
+      "rollback_unit": "PPT规则、模板、提示词与相关测试"
     },
     {
       "id": "SCHEME",
-      "purpose": "方案逻辑、TXT格式、枪弹组合、监控、正反投、功能编排和资金路径",
-      "owned_paths": ["01_软件", "02_技术", "03_思路", "04_验证", "10_静默", "11_智能", "12_双期", "功能能力卡片", "资金路径模板库", "方案", "controller/runs/*/function_orchestration.json"],
-      "protected_dependencies": ["PPT固定品牌页", "GitHub治理规则", "历史证据不可删除"],
-      "required_validators": ["tools/validate_repository.py", "tools/audit_scheme_semantics.py", "tools/validate_function_orchestration.py"],
-      "compatibility_contract": "正式TXT必须可导入、可追踪，并与通过机器校验的功能编排和设计合同一致",
+      "purpose": "方案逻辑、TXT格式、枪弹组合、监控、正反投、功能编排、资金路径、验证和玩家教学素材卡",
+      "owned_paths": ["01_软件", "02_技术", "03_思路", "04_验证", "10_静默", "11_智能", "12_双期", "功能能力卡片", "资金路径模板库", "方案", "玩家教学素材卡", "controller/runs/*/function_orchestration.json"],
+      "protected_dependencies": ["GitHub治理规则", "历史证据不可删除", "玩法与资金事实一致性"],
+      "forbidden_outputs": ["PPT", "PPTX", "PPT蓝图", "PPT渲染图"],
+      "required_bridge_output": "玩家教学素材卡.md",
+      "required_validators": ["tools/validate_repository.py", "tools/audit_scheme_semantics.py", "tools/validate_function_orchestration.py", "tools/validate_scheme_ppt_decoupling.py"],
+      "compatibility_contract": "正式TXT必须可导入、可追踪，并与通过机器校验的功能编排和设计合同一致；标准方案任务禁止自动生成PPT",
       "rollback_unit": "方案规则、功能编排、模板、测试与对应索引"
     },
     {
@@ -33,16 +38,16 @@
       "owned_paths": ["tools/", "05_工具/", ".github/workflows/"],
       "protected_dependencies": ["正式协议语义", "历史方案记录", "稳定交付格式"],
       "required_validators": ["python语法检查", "tools/validate_repository.py", "tools/validate_controller_architecture.py", "tools/validate_function_orchestration.py --self-test"],
-      "compatibility_contract": "程序升级必须向后兼容现有正式源，破坏性变化需迁移器",
+      "compatibility_contract": "程序升级必须向后兼容现有正式源，破坏性变化需迁移器；方案CI与PPT专项CI应解耦",
       "rollback_unit": "单个工具或一组明确耦合的工具"
     },
     {
       "id": "SYSTEM",
       "purpose": "总控流程、功能覆盖债务、版本、状态、协议、治理、学习与回滚",
       "owned_paths": ["AGENTS.md", "README.md", "SYSTEM_", "系统状态", "当前任务", "CHANGELOG", "00_", "09_", "11_智能", "13_", "14_", "controller/"],
-      "protected_dependencies": ["可导入TXT", "已验证PPT规则", "失败审计证据"],
-      "required_validators": ["tools/validate_repository.py", "tools/validate_controller_architecture.py", "tools/validate_function_orchestration.py --self-test --scan-runs"],
-      "compatibility_contract": "系统规则修改不得静默改变方案或PPT的已冻结含义；功能编排未通过不得冻结合同",
+      "protected_dependencies": ["可导入TXT", "独立PPT任务边界", "失败审计证据"],
+      "required_validators": ["tools/validate_repository.py", "tools/validate_controller_architecture.py", "tools/validate_function_orchestration.py --self-test --scan-runs", "tools/validate_scheme_ppt_decoupling.py"],
+      "compatibility_contract": "系统规则修改不得静默改变方案已冻结含义；功能编排未通过不得冻结合同；标准方案与独立PPT任务保持解耦",
       "rollback_unit": "一个可解释的系统能力升级"
     },
     {
@@ -51,7 +56,7 @@
       "owned_paths": ["全仓库，仅通过清理计划授权"],
       "protected_dependencies": ["所有被协议、清单、工作流、代码、索引或历史证据引用的文件"],
       "required_validators": ["引用扫描", "清理前后仓库总校验", "恢复清单校验"],
-      "compatibility_contract": "先隔离后删除；默认只生成计划，不直接删除",
+      "compatibility_contract": "先隔离后删除；本次PPT解耦优先解除标准方案引用，再将旧PPT协议降级为PPT_ONLY_LEGACY_REFERENCE；不为清理而误删未来独立PPT仍可复用的资产",
       "rollback_unit": "一次清理批次及其完整恢复清单"
     }
   ]
