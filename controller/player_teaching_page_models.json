@@ -1,0 +1,86 @@
+{
+  "schema_version": "1.0.0",
+  "version": "PLAYER-TEACHING-PAGE-MODELS-V1.1",
+  "status": "ACTIVE",
+  "principle": "Every core page must answer one viewer question. Any visible number must have an explicit identity and meaning.",
+  "primary_storylines": [
+    "WHY_THESE_NUMBERS",
+    "HOW_THE_BETTING_AND_MONEY_WORK_TOGETHER"
+  ],
+  "number_identity_types": [
+    "历史数据",
+    "观察条件",
+    "候选号码",
+    "最终投注号码",
+    "倍数",
+    "投注金额",
+    "盈亏金额",
+    "期数"
+  ],
+  "page_gate": {
+    "questions": [
+      "这页让观众新懂了什么？",
+      "不听旁白只看页面，观众能不能大致看懂？",
+      "页面上是否存在身份或因果关系不明确的数字、箭头、区间？"
+    ],
+    "failure_if_any_answer_is_unclear": true,
+    "forbid_director_text_on_slide": true,
+    "forbidden_visible_prefixes": ["讲法：", "导演提示：", "本页目的：", "下一页：", "制作说明："]
+  },
+  "models": [
+    {
+      "id": "PICK_CANDIDATE_ELIMINATION",
+      "family": "选号讲解",
+      "viewer_question": "为什么最后选它，而没有选另外几个？",
+      "required_flow": ["数据窗口", "候选3至4个", "最后比较1至2个", "真实淘汰理由", "最终投注动作"],
+      "preferred_title_examples": ["为什么百位最后留下6？", "最热的那个，我为什么没追？"],
+      "visual_rule": "少量候选对比 + 圈选最终号码；不要展示全0-9大表。",
+      "forbidden": ["只给排名第一就直接下结论", "用系统筛选结果代替理由", "事后编热码/冷码故事"]
+    },
+    {
+      "id": "PICK_MULTI_POSITION_BREAKDOWN",
+      "family": "选号讲解",
+      "viewer_question": "一串最终数字里的每一个位置到底怎么来的？",
+      "required_flow": ["按位置拆开", "每位置显示少量候选", "每位置说明保留理由", "最后才拼成组合"],
+      "preferred_title_examples": ["这5个位置，我是分开看的", "55676不是一个整体猜出来的"],
+      "visual_rule": "位置卡片只保留候选、证据、最终号码三层；内容多时拆成两页。",
+      "forbidden": ["先展示整串号码再补理由", "让重复数字看起来像人为统一"]
+    },
+    {
+      "id": "PICK_CONDITION_TO_ACTION",
+      "family": "选号讲解",
+      "viewer_question": "看到什么情况以后，下一期到底投什么？",
+      "required_flow": ["明确上一期/当前观察对象", "明确观察条件", "明确触发与不触发", "明确下一期投注位置和号码"],
+      "preferred_title_examples": ["百位出现3、4、5以后，我下一期看什么？", "条件出现后，我具体怎么下？"],
+      "visual_rule": "条件和动作必须写完整自然语言，并分别标注观察条件/投注号码。",
+      "forbidden": ["3-5 → 2 这类无语义箭头", "无法用一句完整口语解释的字段映射", "把软件字段直接画给观众"]
+    },
+    {
+      "id": "MONEY_ROLE_DIVISION",
+      "family": "倍投配合",
+      "viewer_question": "为什么多组不是一起加倍？",
+      "required_flow": ["低压试错组", "中段回补组", "短时高压组", "避免同时高压的总原则"],
+      "preferred_title_examples": ["6组不是一起追，我把它们分成3种任务", "为什么不能6组一起往上加？"],
+      "visual_rule": "用三类任务而不是A/B/C/D/F工程节点；重点解释分工。",
+      "forbidden": ["跨方案ID", "状态网络", "复杂节点流程图"]
+    },
+    {
+      "id": "MONEY_FOUR_STAGE_PATH",
+      "family": "倍投配合",
+      "viewer_question": "连续不中以后，金额到底怎么变化？",
+      "required_flow": ["低额试", "亏损累积后少数组适度加压", "命中未回完则低压继续收", "压力过高则降压/换组/暂停"],
+      "preferred_title_examples": ["连续不中，我不是一路往上翻", "金额什么时候加，什么时候退？"],
+      "visual_rule": "压缩成3至5个阶段，不铺完整倍投表。",
+      "forbidden": ["几十局完整倍数表", "把倍投包装成提高命中率"]
+    },
+    {
+      "id": "MONEY_RECOVERY_EXAMPLE",
+      "family": "倍投配合",
+      "viewer_question": "中了一次为什么还没回本，之后怎么办？",
+      "required_flow": ["给出累计亏损", "给出本次命中回收金额", "算出剩余亏损", "下一次低压回补", "真正回到零附近后再重置"],
+      "preferred_title_examples": ["中了一次，为什么还不能算回本？", "一枪没回完，后面怎么接着收？"],
+      "visual_rule": "用3至4个大数字展示盈亏变化，例如 -120 → -50 → +15。",
+      "forbidden": ["只写软复位/组合债务术语", "用抽象流程代替具体金额变化"]
+    }
+  ]
+}
